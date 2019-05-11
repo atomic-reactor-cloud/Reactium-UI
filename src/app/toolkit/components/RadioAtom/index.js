@@ -1,32 +1,40 @@
+
 /**
  * -----------------------------------------------------------------------------
  * Imports
  * -----------------------------------------------------------------------------
  */
 import React, { Component, Fragment } from 'react';
-import Button, { ENUMS } from 'components/common-ui/Button';
+import Radio from 'components/common-ui/Radio';
+
 
 /**
  * -----------------------------------------------------------------------------
- * Toolkit Element: ButtonAtom
+ * Toolkit Element: RadioAtom
  * -----------------------------------------------------------------------------
  */
 
-export default class ButtonAtom extends Component {
+class RadioAtom extends Component {
+
     static dependencies() {
-        return typeof module !== 'undefined' ? module.children : [];
+        return (typeof module !== 'undefined') ? module.children : [];
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {};
     }
 
     render() {
         return (
             <Fragment>
-                <Button
-                    outline
-                    color={ENUMS.COLOR.PRIMARY}
-                    size={ENUMS.SIZE.XS}>
-                    Button
-                </Button>
+                <Radio />
             </Fragment>
         );
     }
 }
+
+// Default properties
+RadioAtom.defaultProps = {};
+
+export default RadioAtom;

@@ -1,0 +1,105 @@
+$ar-radio-bg-color: $color-grey !default;
+$ar-radio-bg-active-color: $color-blue !default;
+$ar-radio-handle-color: $color-white !default;
+$ar-radio-border-color: $color-gray-dark !default;
+$ar-radio-size: 18px !default;
+$ar-radio-mark: "\2715" !default;
+
+label.ar-radio {
+    position: relative;
+    display: flex;
+    min-width: $ar-radio-size;
+    flex-grow: 0;
+    flex-shrink: 0;
+    align-items: center;
+    cursor: pointer;
+
+    * {
+        pointer-events: none;
+    }
+
+    input {
+        opacity: 0;
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    span:last-child {
+        position: relative;
+        width: $ar-radio-size;
+        height: $ar-radio-size;
+        top: 0;
+        right: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 2px solid $ar-radio-border-color;
+        border-radius: 100%;
+
+        svg {
+            opacity: 0;
+        }
+    }
+
+    span:first-child {
+        flex-grow: 1;
+    }
+
+    &.ar-radio-label-left {
+        span:first-child {
+            margin-right: 10px;
+            text-align: left;
+        }
+    }
+
+    &.ar-radio-label-right {
+        flex-direction: row-reverse;
+
+        span:first-child {
+            margin-left: 10px;
+            text-align: right;
+        }
+    }
+
+    input:focus + span:last-child {
+        box-shadow: 0 0 1px 2px rgba($ar-radio-bg-active-color, 0.25);
+    }
+
+    input:checked + span:last-child {
+        color: $ar-radio-bg-active-color;
+
+        svg {
+            opacity: 1;
+            fill: $ar-radio-bg-active-color;
+        }
+    }
+
+    @each $clr-name, $clr-codes in $buttons {
+        &-#{$clr-name} {
+            input:focus + span:last-child {
+                box-shadow: 0 0 1px 2px rgba(nth($clr-codes, 1), 0.25);
+            }
+
+            input + span:last-child {
+                svg {
+                    fill: nth($clr-codes, 1);
+                }
+            }
+
+            input:checked + span:last-child {
+                color: nth($clr-codes, 1);
+                svg {
+                    opacity: 1;
+                    fill: nth($clr-codes, 1);
+                }
+            }
+        }
+    }
+
+    &:hover {
+        input:focus + span:last-child {
+            box-shadow: none;
+        }
+    }
+}

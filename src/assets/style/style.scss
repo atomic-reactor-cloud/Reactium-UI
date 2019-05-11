@@ -20,8 +20,12 @@
 
 
 // Global
-@import './_scss/button';
 @import './_scss/grid/grid';
 @import './_scss/layout';
 @import './_scss/typography';
 @import './_scss/form';
+
+@import '../../app/components/common-ui/Button/style';
+@import '../../app/components/common-ui/Toggle/style';
+
+@import '../../app/components/common-ui/Checkbox/style';

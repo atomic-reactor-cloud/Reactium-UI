@@ -1,32 +1,40 @@
+
 /**
  * -----------------------------------------------------------------------------
  * Imports
  * -----------------------------------------------------------------------------
  */
 import React, { Component, Fragment } from 'react';
-import Button, { ENUMS } from 'components/common-ui/Button';
+import Toggle from 'components/common-ui/Toggle';
+
 
 /**
  * -----------------------------------------------------------------------------
- * Toolkit Element: ButtonAtom
+ * Toolkit Element: ToggleMolecule
  * -----------------------------------------------------------------------------
  */
 
-export default class ButtonAtom extends Component {
+class ToggleMolecule extends Component {
+
     static dependencies() {
-        return typeof module !== 'undefined' ? module.children : [];
+        return (typeof module !== 'undefined') ? module.children : [];
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {};
     }
 
     render() {
         return (
             <Fragment>
-                <Button
-                    outline
-                    color={ENUMS.COLOR.PRIMARY}
-                    size={ENUMS.SIZE.XS}>
-                    Button
-                </Button>
+                <Toggle label='Toggle Me' />
             </Fragment>
         );
     }
 }
+
+// Default properties
+ToggleMolecule.defaultProps = {};
+
+export default ToggleMolecule;

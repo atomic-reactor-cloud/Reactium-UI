@@ -1,32 +1,40 @@
+
 /**
  * -----------------------------------------------------------------------------
  * Imports
  * -----------------------------------------------------------------------------
  */
 import React, { Component, Fragment } from 'react';
-import Button, { ENUMS } from 'components/common-ui/Button';
+import Checkbox from 'components/common-ui/Checkbox';
+
 
 /**
  * -----------------------------------------------------------------------------
- * Toolkit Element: ButtonAtom
+ * Toolkit Element: CheckboxAtom
  * -----------------------------------------------------------------------------
  */
 
-export default class ButtonAtom extends Component {
+class CheckboxAtom extends Component {
+
     static dependencies() {
-        return typeof module !== 'undefined' ? module.children : [];
+        return (typeof module !== 'undefined') ? module.children : [];
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {};
     }
 
     render() {
         return (
             <Fragment>
-                <Button
-                    outline
-                    color={ENUMS.COLOR.PRIMARY}
-                    size={ENUMS.SIZE.XS}>
-                    Button
-                </Button>
+                <Checkbox label='Check Me' />
             </Fragment>
         );
     }
 }
+
+// Default properties
+CheckboxAtom.defaultProps = {};
+
+export default CheckboxAtom;

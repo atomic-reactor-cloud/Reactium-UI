@@ -1,4 +1,4 @@
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useLayoutEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
@@ -27,7 +27,7 @@ let Button = (
 
     const [height, setHeight] = useState(null);
 
-    const doHeight = () => {
+    const updateHeight = () => {
         const elm = btn.current;
         if (elm && style === ENUMS.STYLE.CIRCLE) {
             const pos = elm.getBoundingClientRect();
@@ -36,13 +36,11 @@ let Button = (
             if (height !== w) {
                 setHeight(w);
             }
-            setTimeout(() => doHeight(), 1);
+            setTimeout(() => updateHeight(), 1);
         }
     };
 
-    useEffect(doHeight);
-
-    doHeight();
+    useLayoutEffect(updateHeight);
 
     return (
         <button className={cls} {...props} ref={btn} style={{height}}>
@@ -51,6 +49,6 @@ let Button = (
     );
 };
 
-Button = forwardRef(Button);
+// Button = forwardRef(Button);
 
 export { Button as default, ENUMS };
