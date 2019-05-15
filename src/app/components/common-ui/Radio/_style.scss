@@ -1,9 +1,14 @@
-$ar-radio-bg-color: $color-grey !default;
 $ar-radio-bg-active-color: $color-blue !default;
-$ar-radio-handle-color: $color-white !default;
 $ar-radio-border-color: $color-gray-dark !default;
 $ar-radio-size: 18px !default;
-$ar-radio-mark: "\2715" !default;
+$ar-radio-dot-size: 10px !default;
+
+@mixin radio-dot($radio-color) {
+    border-radius: 100%;
+    background-color: $radio-color;
+    width: $ar-radio-dot-size;
+    height: $ar-radio-dot-size;
+}
 
 label.ar-radio {
     position: relative;
@@ -25,29 +30,31 @@ label.ar-radio {
         top: 0;
     }
 
-    span:last-child {
+    > span:last-child {
         position: relative;
         width: $ar-radio-size;
         height: $ar-radio-size;
-        top: 0;
-        right: 0;
         display: flex;
         justify-content: center;
         align-items: center;
         border: 2px solid $ar-radio-border-color;
         border-radius: 100%;
+        padding: 0;
 
-        svg {
+        > span {
+            position: relative;
             opacity: 0;
+            margin: 0;
+            @include radio-dot($ar-radio-bg-active-color);
         }
     }
 
-    span:first-child {
+    > span:first-child {
         flex-grow: 1;
     }
 
     &.ar-radio-label-left {
-        span:first-child {
+        > span:first-child {
             margin-right: 10px;
             text-align: left;
         }
@@ -56,7 +63,7 @@ label.ar-radio {
     &.ar-radio-label-right {
         flex-direction: row-reverse;
 
-        span:first-child {
+        > span:first-child {
             margin-left: 10px;
             text-align: right;
         }
@@ -67,11 +74,9 @@ label.ar-radio {
     }
 
     input:checked + span:last-child {
-        color: $ar-radio-bg-active-color;
-
-        svg {
+        > span {
             opacity: 1;
-            fill: $ar-radio-bg-active-color;
+            @include radio-dot($ar-radio-bg-active-color);
         }
     }
 
@@ -82,16 +87,18 @@ label.ar-radio {
             }
 
             input + span:last-child {
-                svg {
-                    fill: nth($clr-codes, 1);
+                > span {
+                    opacity: 0;
+                    @include radio-dot(nth($clr-codes, 1));
                 }
             }
 
             input:checked + span:last-child {
                 color: nth($clr-codes, 1);
-                svg {
+
+                > span {
                     opacity: 1;
-                    fill: nth($clr-codes, 1);
+                    @include radio-dot(nth($clr-codes, 1));
                 }
             }
         }

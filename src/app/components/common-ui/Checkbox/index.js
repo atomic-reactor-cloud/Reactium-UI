@@ -3,18 +3,21 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React from 'react';
-import ENUMS from './enums';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import Toggle from 'components/common-ui/Toggle';
 import { Feather } from 'components/common-ui/Icon';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 
 /**
  * -----------------------------------------------------------------------------
  * Functional Component: Checkbox
  * -----------------------------------------------------------------------------
  */
-const cn = ({ className, color = ENUMS.COLOR.DANGER, label, labelAlign }) => {
+
+const ENUMS = Toggle.ENUMS;
+
+const cn = ({ className, color = ENUMS.COLOR.PRIMARY, label, labelAlign }) => {
     const lbl = `ar-checkbox-label-${labelAlign}`;
     const clr = `ar-checkbox-${color}`;
 
@@ -26,51 +29,74 @@ const cn = ({ className, color = ENUMS.COLOR.DANGER, label, labelAlign }) => {
     });
 };
 
-const Checkbox = ({
-    className,
-    htmlFor,
-    id,
-    label,
-    labelAlign,
-    labelStyle,
-    name,
-    style,
-    title,
-    ...props
-}) => (
-    <label
-        aria-label={label}
-        aria-labelledby={!label && name}
-        className={cn({ labelAlign, label, className })}
-        htmlFor={id || name}
-        style={style}
-        title={title}>
-        <span
-            className={classnames({ ['sr-only']: !label })}
-            style={labelStyle}>
-            {label || title || name}
-        </span>
-        <input {...props} />
-        <span>
-            <Feather.Check width={14} height={14} />
-        </span>
-    </label>
-);
+let Checkbox = (
+    {
+        className,
+        htmlFor,
+        id,
+        label,
+        labelAlign,
+        labelStyle,
+        name,
+        style,
+        title,
+        ...props
+    },
+    ref,
+) => {
+    const inputRef = useRef();
+    const labelRef = useRef();
+
+    useImperativeHandle(ref, () => ({
+        blur: () => {
+            labelRef.current.blur;
+        },
+        check: () => {
+            inputRef.current.checked = true;
+        },
+        focus: () => {
+            labelRef.current.focus();
+        },
+        input: inputRef.current,
+        label: labelRef.current,
+        toggle: () => {
+            inputRef.current.checked = !inputRef.current.checked;
+        },
+        uncheck: () => {
+            inputRef.current.checked = false;
+        },
+        value: inputRef.current.value,
+    }));
+
+    return (
+        <label
+            ref={labelRef}
+            aria-label={label}
+            aria-labelledby={!label && name}
+            className={cn({ labelAlign, label, className })}
+            style={style}
+            title={title}>
+            <span
+                className={classnames({ ['sr-only']: !label })}
+                style={labelStyle}>
+                {label || title || name}
+            </span>
+            <input ref={inputRef} {...props} id={id} name={name} />
+            <span>
+                <Feather.Check width={14} height={14} />
+            </span>
+        </label>
+    );
+};
+
+Checkbox = forwardRef(Checkbox);
 
 Checkbox.ENUMS = ENUMS;
 
-Checkbox.propTypes = {
-    className: PropTypes.string,
-    label: PropTypes.any,
-    labelAlign: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
-    labelStyle: PropTypes.object,
-    style: PropTypes.object,
-    title: PropTypes.string,
-    type: PropTypes.oneOf(Object.values(ENUMS.TYPE)),
-};
+Checkbox.propTypes = { ...Toggle.propTypes };
 
 Checkbox.defaultProps = {
-    labelAlign: ENUMS.ALIGN.LEFT,
+    ...Toggle.defaultProps,
     type: ENUMS.TYPE.CHECKBOX,
 };
 

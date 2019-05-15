@@ -1,12 +1,10 @@
-
 /**
  * -----------------------------------------------------------------------------
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Radio from 'components/common-ui/Radio';
-
 
 /**
  * -----------------------------------------------------------------------------
@@ -15,9 +13,8 @@ import Radio from 'components/common-ui/Radio';
  */
 
 class RadioAtom extends Component {
-
     static dependencies() {
-        return (typeof module !== 'undefined') ? module.children : [];
+        return typeof module !== 'undefined' ? module.children : [];
     }
 
     constructor(props) {
@@ -27,9 +24,22 @@ class RadioAtom extends Component {
 
     render() {
         return (
-            <Fragment>
-                <Radio />
-            </Fragment>
+            <>
+                <div className='mb-xs-4'>
+                    <Radio
+                        label='Check Me'
+                        name='toolkit-radio-atom'
+                        id='toolkit-radio-atom-1'
+                    />
+                </div>
+                <div>
+                    <Radio
+                        label='Check Me Too'
+                        name='toolkit-radio-atom'
+                        id='toolkit-radio-atom-2'
+                    />
+                </div>
+            </>
         );
     }
 }

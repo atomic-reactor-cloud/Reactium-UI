@@ -36,8 +36,9 @@ label.ar-checkbox {
         align-items: center;
         border: 2px solid $ar-checkbox-border-color;
 
-        > span {
+        > svg {
             opacity: 0;
+            fill: $ar-checkbox-bg-active-color;
         }
     }
 
@@ -68,9 +69,9 @@ label.ar-checkbox {
     input:checked + span:last-child {
         color: $ar-checkbox-bg-active-color;
 
-        > span {
+        svg {
             opacity: 1;
-            background-color: $ar-checkbox-bg-active-color;
+            fill: $ar-checkbox-bg-active-color;
         }
     }
 
@@ -81,7 +82,7 @@ label.ar-checkbox {
             }
 
             input + span:last-child {
-                > span {
+                svg {
                     fill: nth($clr-codes, 1);
                 }
             }
@@ -89,7 +90,7 @@ label.ar-checkbox {
             input:checked + span:last-child {
                 color: nth($clr-codes, 1);
 
-                > span {
+                svg {
                     opacity: 1;
                     fill: nth($clr-codes, 1);
                 }

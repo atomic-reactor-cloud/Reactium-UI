@@ -81,9 +81,6 @@ $button-sizes: (
 
 @mixin h-gradient($clr-l, $clr-r) {
     background: $clr-r;
-    // background: -moz-linear-gradient(left, $clr-l 0%, $clr-r 100%);
-    // background: -webkit-linear-gradient(left, $clr-l 0%, $clr-r 100%);
-    // background: linear-gradient(to right, $clr-l 0%, $clr-r 100%);
 }
 
 @mixin button() {

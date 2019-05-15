@@ -3,10 +3,11 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React from 'react';
 import ENUMS from './enums';
 import PropTypes from 'prop-types';
 import classnames from 'classnames';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+
 
 /**
  * -----------------------------------------------------------------------------
@@ -25,7 +26,7 @@ const cn = ({ className, color = ENUMS.COLOR.PRIMARY, label, labelAlign }) => {
     });
 };
 
-const Toggle = ({
+let Toggle = ({
     className,
     htmlFor,
     id,
@@ -36,12 +37,38 @@ const Toggle = ({
     style,
     title,
     ...props
-}) => (
+}, ref) => {
+
+    const inputRef = useRef();
+    const labelRef = useRef();
+
+    useImperativeHandle(ref, () => ({
+        blur: () => {
+            labelRef.current.blur;
+        },
+        check: () => {
+            inputRef.current.checked = true;
+        },
+        focus: () => {
+            labelRef.current.focus();
+        },
+        input: inputRef.current,
+        label: labelRef.current,
+        toggle: () => {
+            inputRef.current.checked = !inputRef.current.checked;
+        },
+        uncheck: () => {
+            inputRef.current.checked = false;
+        },
+        value: inputRef.current.value,
+    }));
+
+    return (
     <label
+        ref={labelRef}
         aria-label={label}
         aria-labelledby={!label && name}
         className={cn({ labelAlign, label, className })}
-        htmlFor={id || name}
         style={style}
         title={title}>
         <span
@@ -49,10 +76,12 @@ const Toggle = ({
             style={labelStyle}>
             {label || title || name}
         </span>
-        <input {...props} />
+        <input ref={inputRef} {...props} id={id} name={name} />
         <span />
     </label>
-);
+);}
+
+Toggle = forwardRef(Toggle);
 
 Toggle.ENUMS = ENUMS;
 
