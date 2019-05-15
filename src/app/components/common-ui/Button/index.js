@@ -1,4 +1,4 @@
-import React, { forwardRef, useLayoutEffect, useRef, useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
 import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
@@ -23,7 +23,7 @@ let Button = (
     ]).join('-');
 
     const cls = cn({ [className]: !!className, [buttonClassName]: true });
-    const btn = React.createRef();
+    const btn = useRef();
 
     const [height, setHeight] = useState(null);
 
@@ -49,6 +49,11 @@ let Button = (
     );
 };
 
-// Button = forwardRef(Button);
+Button.ENUMS = ENUMS;
+
+Button.defaultProps = {
+    type: 'button',
+    tabIndex: 0,
+};
 
 export { Button as default, ENUMS };
