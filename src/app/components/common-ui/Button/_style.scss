@@ -96,6 +96,7 @@ $button-sizes: (
             svg {
                 fill: nth($clr-codes, 3);
                 stroke: nth($clr-codes, 3);
+                flex-shrink: 0;
             }
 
             @include h-gradient(nth($clr-codes, 1), nth($clr-codes, 2));

@@ -1,4 +1,9 @@
-import React, { useLayoutEffect, useRef, useState } from 'react';
+import React, {
+    forwardRef,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
@@ -9,7 +14,7 @@ import ENUMS from './enums';
  * -----------------------------------------------------------------------------
  */
 let Button = (
-    { children, className, color, outline, size, style, ...props },
+    { children, className, color, outline, size, style, inlineStyle, ...props },
     ref,
 ) => {
     outline = outline === true ? 'outline' : null;
@@ -22,36 +27,32 @@ let Button = (
         style,
     ]).join('-');
 
-    const cls = cn({ [className]: !!className, [buttonClassName]: true });
     const btn = useRef();
 
-    const [height, setHeight] = useState(null);
+    useImperativeHandle(ref, () => ({
+        element: btn.current,
+    }));
 
-    const updateHeight = () => {
-        const elm = btn.current;
-        if (elm && style === ENUMS.STYLE.CIRCLE) {
-            const pos = elm.getBoundingClientRect();
-            let w = parseFloat(pos.width);
-
-            if (height !== w) {
-                setHeight(w);
-            }
-            setTimeout(() => updateHeight(), 1);
-        }
+    const render = () => {
+        const cls = cn({ [className]: !!className, [buttonClassName]: true });
+        return (
+            <button className={cls} {...props} ref={btn} style={inlineStyle}>
+                {children}
+            </button>
+        );
     };
 
-    useLayoutEffect(updateHeight);
-
-    return (
-        <button className={cls} {...props} ref={btn} style={{height}}>
-            {children}
-        </button>
-    );
+    return render();
 };
+
+Button = forwardRef(Button);
 
 Button.ENUMS = ENUMS;
 
 Button.defaultProps = {
+    color: ENUMS.COLOR.PRIMARY,
+    inlineStyle: null,
+    size: ENUMS.SIZE.SM,
     type: 'button',
     tabIndex: 0,
 };
