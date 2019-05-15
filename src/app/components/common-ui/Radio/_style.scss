@@ -82,27 +82,22 @@ label.ar-radio {
 
     @each $clr-name, $clr-codes in $buttons {
         &-#{$clr-name} {
-            > span:last-child {
-                border-color: nth($clr-codes, 1);
-            }
 
             input:focus + span:last-child {
                 box-shadow: 0 0 1px 2px rgba(nth($clr-codes, 1), 0.25);
             }
 
             input + span:last-child {
+                border-color: nth($clr-codes, 1);
+
                 > span {
                     opacity: 0;
-                    // @include radio-dot(nth($clr-codes, 1));
                 }
             }
 
             input:checked + span:last-child {
-                color: nth($clr-codes, 1);
-
                 > span {
                     opacity: 1;
-                    // @include radio-dot(nth($clr-codes, 1));
                 }
             }
         }

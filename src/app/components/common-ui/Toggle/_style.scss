@@ -32,7 +32,7 @@ label.ar-toggle {
         border-radius: 24px;
         display: block;
         background-color: $ar-toggle-bg-color;
-        transition: all 0.4s ease-in-out;
+        transition: all 0.25s ease-in-out;
 
         &:after {
             position: absolute;
@@ -42,7 +42,7 @@ label.ar-toggle {
             right: 35px;
             bottom: 3px;
             background-color: $ar-toggle-handle-color;
-            transition: all 0.4s ease-in-out;
+            transition: all 0.25s ease-in-out;
             border-radius: 100%;
             transform: translateX(100%);
         }
