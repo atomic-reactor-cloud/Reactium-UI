@@ -1,7 +1,7 @@
 $ar-checkbox-bg-color: $color-grey !default;
-$ar-checkbox-bg-active-color: $color-blue !default;
+$ar-checkbox-bg-active-color: $color-gray-dark !default;
 $ar-checkbox-handle-color: $color-white !default;
-$ar-checkbox-border-color: $color-gray-dark !default;
+$ar-checkbox-border-color: $color-blue !default;
 $ar-checkbox-size: 18px !default;
 $ar-checkbox-mark: "\2715" !default;
 
@@ -35,6 +35,7 @@ label.ar-checkbox {
         justify-content: center;
         align-items: center;
         border: 2px solid $ar-checkbox-border-color;
+        border-radius: 2px;
 
         > svg {
             opacity: 0;
@@ -67,8 +68,6 @@ label.ar-checkbox {
     }
 
     input:checked + span:last-child {
-        color: $ar-checkbox-bg-active-color;
-
         svg {
             opacity: 1;
             fill: $ar-checkbox-bg-active-color;
@@ -82,18 +81,7 @@ label.ar-checkbox {
             }
 
             input + span:last-child {
-                svg {
-                    fill: nth($clr-codes, 1);
-                }
-            }
-
-            input:checked + span:last-child {
-                color: nth($clr-codes, 1);
-
-                svg {
-                    opacity: 1;
-                    fill: nth($clr-codes, 1);
-                }
+                border-color: nth($clr-codes, 1);
             }
         }
     }
