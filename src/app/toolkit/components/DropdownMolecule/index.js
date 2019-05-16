@@ -21,9 +21,16 @@ class DropdownMolecule extends Component {
     constructor(props) {
         super(props);
         this.state = {};
+        this.typeahead;
     }
 
+    onTypeAhead = e => {
+        this.setState({ typeahead: e.target.value });
+    };
+
     render() {
+        const { typeahead } = this.state;
+
         return (
             <div className='row' style={{ minHeight: 400 }}>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
@@ -36,13 +43,19 @@ class DropdownMolecule extends Component {
                     </Dropdown>
                 </div>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
-                    <Dropdown expandEvent={Dropdown.ENUMS.EVENT.FOCUS}>
+                    <Dropdown
+                        expandEvent={Dropdown.ENUMS.EVENT.FOCUS}
+                        multiSelect
+                        filter={typeahead}>
                         <div className='input-group'>
                             <input
                                 id='dropdown-input-2'
                                 type='text'
                                 placeholder='Dropdown 2'
                                 data-dropdown-element
+                                autoComplete='off'
+                                value={typeahead || ''}
+                                onChange={this.onTypeAhead}
                             />
                             <Button
                                 size={Button.ENUMS.SIZE.XS}

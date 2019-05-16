@@ -1,8 +1,24 @@
+$ar-dropdown-shadow: 0 0 5px 0 rgba($color-grey, .5) !default;
+$ar-dropdown-inner-shadow: inset 0 0 1px 2px rgba($color-blue, 0.25) !default;
+$ar-dropdown-menu-color: $color-white !default;
+$ar-dropdown-item-color: $color-gray-dark !default;
+$ar-dropdown-item-hover: $color-black !default;
+$ar-dropdown-item-hover-bg: darken($color-grey-light, 2%) !default;
+$ar-dropdown-item-active-bg: $color-grey-light !default;
+$ar-dropdown-border-radius: 4px !default;
+$ar-dropdown-border-color: $color-grey-light !default;
+
 .ar-dropdown {
     position: relative;
-    display: inline-block;
+    display: inline-flex;
+    flex-direction: column;
+
+    > * {
+        z-index: 10;
+    }
 
     &-menu {
+        z-index: 1;
         position: absolute;
         width: 100%;
         bottom: 0;
@@ -11,6 +27,8 @@
         display: none;
         overflow: hidden;
         height: 0;
+        box-shadow: $ar-dropdown-shadow;
+        border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
 
         &.expanded {
             display: block;
@@ -19,9 +37,71 @@
         }
 
         ul, ul li {
+            min-width: 100%;
             list-style: none;
             padding: 0;
             margin: 0;
+        }
+
+        ul li {
+            &:last-child {
+                button {
+                    border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+                }
+            }
+
+            &.active {
+                color: $ar-dropdown-item-hover;
+
+                button {
+                    z-index: 2;
+                    color: $ar-dropdown-item-hover;
+                    background-color: $ar-dropdown-item-active-bg;
+                }
+
+                svg {
+                    fill: $ar-dropdown-item-hover;
+                }
+            }
+
+            > span, a, button {
+                z-index: 1;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                flex-direction: row;
+                min-height: 42px;
+                width: 100%;
+                padding: 12px 10px;
+                margin: 0;
+                border: none;
+                text-decoration: none;
+                text-align: left;
+                font-size: 12px;
+                line-height: 1;
+                color: $ar-dropdown-item-color;
+                border-collapse: collapse;
+                background-color: $ar-dropdown-menu-color;
+                transition: background-color .5s ease-in-out;
+
+                svg {
+                    fill: $ar-dropdown-item-color;
+                }
+
+                &:hover {
+                    z-index: 3;
+                    color: $ar-dropdown-item-hover;
+                    background-color: $ar-dropdown-item-hover-bg;
+
+                    svg {
+                        fill: $ar-dropdown-item-hover;
+                    }
+                }
+
+                &:focus {
+                    box-shadow: $ar-dropdown-inner-shadow;
+                }
+            }
         }
     }
 }
