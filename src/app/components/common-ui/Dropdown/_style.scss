@@ -1,12 +1,12 @@
 $ar-dropdown-shadow: 0 0 5px 0 rgba($color-grey, .5) !default;
-$ar-dropdown-inner-shadow: inset 0 0 1px 2px rgba($color-blue, 0.25) !default;
+$ar-dropdown-inner-shadow: inset 0 0 1px 1px rgba($color-blue, 0.125) !default;
 $ar-dropdown-menu-color: $color-white !default;
 $ar-dropdown-item-color: $color-gray-dark !default;
 $ar-dropdown-item-hover: $color-black !default;
 $ar-dropdown-item-hover-bg: darken($color-grey-light, 2%) !default;
 $ar-dropdown-item-active-bg: $color-grey-light !default;
 $ar-dropdown-border-radius: 4px !default;
-$ar-dropdown-border-color: $color-grey-light !default;
+$ar-dropdown-border-color: rgba($color-blue, 0.5) !default;
 
 .ar-dropdown {
     position: relative;
@@ -64,6 +64,10 @@ $ar-dropdown-border-color: $color-grey-light !default;
                 }
             }
 
+            &.ranked {
+                border-bottom: 1px solid $ar-dropdown-border-color;
+            }
+
             > span, a, button {
                 z-index: 1;
                 display: flex;
@@ -99,7 +103,9 @@ $ar-dropdown-border-color: $color-grey-light !default;
                 }
 
                 &:focus {
-                    box-shadow: $ar-dropdown-inner-shadow;
+                    border-top: 1px solid $ar-dropdown-border-color;
+                    border-bottom: 1px solid $ar-dropdown-border-color;
+                    padding: 10px;
                 }
             }
         }

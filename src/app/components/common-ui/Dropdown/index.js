@@ -1,10 +1,11 @@
 import lunr from 'lunr';
 import _ from 'underscore';
-import cn from 'classnames';
 import uuid from 'uuid/v4';
+import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
 import Icon from 'components/common-ui/Icon';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
 
 import React, {
@@ -18,32 +19,36 @@ import React, {
 
 const ENUMS = {
     EVENT: {
-        BLUR: 'onblur',
-        CLICK: 'onclick',
-        FOCUS: 'onfocus',
         BEFORE_COLLAPSE: 'beforeCollapse',
         BEFORE_EXPAND: 'beforeExpand',
+        BLUR: 'onblur',
+        CHANGE: 'change',
+        CLICK: 'onclick',
         COLLAPSE: 'collapse',
         EXPAND: 'expand',
+        FOCUS: 'onfocus',
         ITEM_CLICK: 'itemClick',
         ITEM_SELECT: 'itemSelect',
         ITEM_UNSELECT: 'itemUnselect',
+        MOUSE_DOWN: 'onmousedown',
+        MOUSE_UP: 'onmouseup',
     },
 };
 
 const noop = () => {};
 
 const mockData = [
-    { label: 'Test 1', value: 1, icon: 'Feather.Search' },
+    { label: 'Test 1', value: 'test', icon: 'Feather.Search' },
+    { label: 'Item 1', value: 1, icon: 'Feather.User' },
     { label: 'Item 2', value: 2, icon: 'Feather.User' },
     { label: 'Item 3', value: 3, icon: 'Linear.Grumpy' },
-    { label: 'Item 4', value: 4 },
-    { label: 'Item 5', value: 5 },
-    { label: 'Item 6', value: 6 },
-    { label: 'Item 7', value: 7 },
-    { label: 'Item 8', value: 8 },
-    { label: 'Item 9', value: 9 },
-    { label: 'Item 10', value: 10 },
+    { label: 'Item 4', value: 4, icon: 'Feather.User' },
+    { label: 'Item 5', value: 5, icon: 'Feather.User' },
+    { label: 'Item 6', value: 6, icon: 'Feather.User' },
+    { label: 'Item 7', value: 7, icon: 'Feather.User' },
+    { label: 'Item 8', value: 8, icon: 'Feather.User' },
+    { label: 'Item 9', value: 9, icon: 'Feather.User' },
+    { label: 'Item 10', value: 10, icon: 'Feather.User' },
 ];
 
 /**
@@ -53,14 +58,15 @@ const mockData = [
  */
 let Dropdown = (props, ref) => {
     let animation = null;
+    let animating = false;
     let ElementComponent = null;
     const id = uuid();
 
     // State
     const [data, setData] = useState(props.data || []);
     const [expanded, setExpanded] = useState(props.expanded);
-    const [index, setIndex] = useState(-1);
     const [selection, setSelection] = useState(props.selection || []);
+    const [tabIndex, setTabIndex] = useState(-1);
 
     // Refs
     const activeButton = useRef();
@@ -71,15 +77,18 @@ let Dropdown = (props, ref) => {
     const cname = suffix => _.compact([props.namespace, suffix]).join('-');
 
     const collapse = () => {
-        setIndex(-1);
+        setTabIndex(-1);
 
-        if (expanded !== true) {
+        if (expanded !== true || animating === true) {
             animation = null;
             return Promise.resolve();
         }
+
         if (animation) {
             return animation;
         }
+
+        animating = true;
 
         const {
             animationEase,
@@ -114,9 +123,9 @@ let Dropdown = (props, ref) => {
 
                     menu.removeAttribute('style');
                     setExpanded(false);
-                    setIndex(-1);
                     onCollapse(evt);
                     animation = null;
+                    animating = false;
                     resolve();
                 },
             }),
@@ -125,10 +134,14 @@ let Dropdown = (props, ref) => {
         return animation;
     };
 
-    const dismiss = (e = {}) => {
+    const dismiss = e => {
+        if (!e) {
+            return true;
+        }
+
         const { dismissable } = props;
 
-        if (dismissable === true && !isChild(op.get(e, 'target'))) {
+        if (dismissable === true && !isChild(e.target)) {
             return collapse(e);
         } else {
             return Promise.resolve();
@@ -151,7 +164,6 @@ let Dropdown = (props, ref) => {
             onExpand,
         } = props;
 
-        // setExpanded(true);
         const menu = menuRef.current;
 
         menu.style.height = 'auto';
@@ -190,13 +202,13 @@ let Dropdown = (props, ref) => {
 
     const isChild = child => {
         if (!child) {
-            return false;
+            return true;
         }
 
         const parent = containerRef.current;
         let node = child.parentNode;
         while (node !== null) {
-            if (node === parent) {
+            if (node == parent) {
                 return true;
             }
             node = node.parentNode;
@@ -219,34 +231,52 @@ let Dropdown = (props, ref) => {
 
     // Before Render
     useEffect(() => {
-        document.addEventListener('click', dismiss);
+        const win = op.get(props, 'iWindow', window);
+        const doc = op.get(props, 'iDocument', document);
+
+        doc.addEventListener('mousedown', dismiss);
+        win.addEventListener('keydown', _onKeyDown);
 
         return function cleanup() {
-            document.removeEventListener('click', dismiss);
+            doc.removeEventListener('mousedown', dismiss);
+            win.removeEventListener('keydown', _onKeyDown);
         };
     });
 
     // After Render
     useLayoutEffect(() => {
-        const { collapseEvent, expandEvent, toggleEvent } = props;
+        let { collapseEvent, expandEvent, toggleEvent } = props;
         const selector = op.get(props, 'selector') || 'button';
 
         ElementComponent = containerRef.current.querySelector(selector);
 
         if (collapseEvent || expandEvent) {
             if (collapseEvent) {
-                ElementComponent[collapseEvent] = e => collapse(e);
+                collapseEvent = _.flatten([collapseEvent]);
+                collapseEvent.forEach(evt => {
+                    ElementComponent[evt] = e => collapse(e);
+                });
             }
 
             if (expandEvent) {
-                ElementComponent[expandEvent] = e => expand(e);
+                expandEvent = _.flatten([expandEvent]);
+                expandEvent.forEach(evt => {
+                    ElementComponent[evt] = e => expand(e);
+                });
             }
         } else {
-            ElementComponent[toggleEvent] = e => toggle(e);
+            toggleEvent = _.flatten([toggleEvent]);
+            toggleEvent.forEach(evt => {
+                ElementComponent[evt] = e => toggle(e);
+            });
         }
 
-        if (activeButton.current && index > -1) {
-            activeButton.current.focus();
+        const buttons = containerRef.current.querySelectorAll('li button');
+        if (buttons && tabIndex > -1) {
+            const focusButton = buttons[tabIndex];
+            try {
+                focusButton.focus();
+            } catch (err) {}
         }
     });
 
@@ -257,6 +287,7 @@ let Dropdown = (props, ref) => {
             iconField,
             labelField,
             multiSelect,
+            onChange,
             onItemClick,
             onItemSelect,
             onItemUnselect,
@@ -287,13 +318,14 @@ let Dropdown = (props, ref) => {
         const evt = {
             icons,
             index: idx,
-            item: data[index],
+            item: data[idx],
             labels,
             selection: sel,
             type: action,
         };
 
-        setIndex(val);
+        setSelection(sel);
+        setTabIndex(idx);
 
         onItemClick({ ...evt, type: ENUMS.EVENT.ITEM_CLICK });
 
@@ -306,60 +338,145 @@ let Dropdown = (props, ref) => {
         }
 
         if (multiSelect !== true) {
-            collapse();
+            collapse().then(() => ElementComponent.focus());
         }
 
-        setSelection(sel);
+        onChange({ ...evt, type: ENUMS.EVENT.CHANGE });
     };
 
-    const renderMenuItems = () => {
-        const { iconField, labelField, valueField } = props;
-        // const filter = String(op.get(props, 'filter') || '*').split(' ').join('~').replace(/\s\s+/, ' ');
-        const filter = op.get(props, 'filter') || '*';
+    const _onKeyDown = e => {
+        if (isChild(e.target)) {
+            console.log(e.keyCode);
+        }
 
-        const lnr = lunr(function() {
-            this.ref(labelField);
-            this.field(valueField);
-            this.field(labelField);
-            data.forEach(item => this.add(item));
-        }, this);
+        switch (e.keyCode) {
 
-        const filteredData = lnr
-            .search(filter)
-            .map(result => _.findWhere(data, { [labelField]: result.ref }));
+            case 27:
+                e.preventDefault();
+                _onEsc(e);
+                break;
 
-        return filteredData.map((item, i) => {
-            const key = `ar-dropdown-item-${id}-${i}`;
-            const val = op.get(item, valueField);
-            const label = op.get(item, labelField, val);
-            const sel = selection.includes(val);
-            const className = cn({ active: sel });
-
-            let Ico = null;
-
-            if (iconField) {
-                const icon = op.get(item, iconField);
-                if (icon) {
-                    Ico = op.get(Icon, icon);
+            case 38:
+            case 40:
+                e.preventDefault();
+                if (isChild(e.target)) {
+                    expand().then(() => _onNav(e));
                 }
-            }
+                break;
 
-            return (
-                <li key={key} className={className}>
-                    <button
-                        type='button'
-                        onClick={e => _onItemClick(e, val)}
-                        ref={val === index ? activeButton : null}>
-                        {Ico && (
-                            <span className='mr-xs-8'>
-                                <Ico width={18} height={18} />
-                            </span>
-                        )}
-                        {label}
-                    </button>
-                </li>
-            );
-        });
+            default:
+                if (isChild(e.target)) {
+                    expand();
+                }
+        }
+    };
+
+    const _onEsc = e => {
+        if (isChild(e.target)) {
+            collapse().then(() => ElementComponent.focus());
+        }
+    };
+
+    const _onNav = e => {
+        const { valueField } = props;
+
+        const inc = e.keyCode === 38 ? -1 : 1;
+        const max = data.length;
+        let idx = tabIndex + inc;
+        idx = Math.max(idx, -2);
+        idx = Math.min(idx, max);
+        idx = idx === max ? -1 : idx;
+        idx = idx < -1 ? max - 1 : idx;
+
+        setTabIndex(idx);
+        if (idx === -1) {
+            setTimeout(() => ElementComponent.focus(), 1);
+        }
+    };
+
+    // Renderers
+    const renderMenuItems = () => {
+        const { iconField, labelField, menuRenderer, name, valueField } = props;
+        const filter = op.get(props, 'filter');
+
+        const idx = !filter
+            ? []
+            : lunr(function() {
+                  this.ref('sortIndex');
+                  this.field(labelField);
+                  data.forEach((item, i) => {
+                      item['sortIndex'] = i;
+                      this.add(item);
+                  });
+              }, this);
+
+        let ranked = -1;
+
+        const filteredData = !filter
+            ? data
+            : idx.search(filter).map((result, i) => {
+                  const item = _.findWhere(data, {
+                      ['sortIndex']: isNaN(result.ref)
+                          ? result.ref
+                          : Number(result.ref),
+                  });
+
+                  item.score = result.score;
+
+                  ranked = item.score >= 1 ? i : ranked;
+
+                  return item;
+              });
+
+        return menuRenderer ? (
+            menuRenderer(filteredData)
+        ) : (
+            <Scrollbars
+                autoHeight
+                autoHeightMin={0}
+                autoHeightMax={210}
+                thumbMinSize={5}>
+                <ul>
+                    {filteredData.map((item, i) => {
+                        const key = `ar-dropdown-item-${id}-${i}`;
+                        const val = op.get(item, valueField);
+                        const label = op.get(item, labelField, val);
+                        const sel = selection.includes(val);
+                        const score = op.get(item, 'score', 0);
+                        const className = cn({
+                            active: sel,
+                            ranked: i === ranked,
+                        });
+
+                        let Ico = null;
+
+                        if (iconField) {
+                            const icon = op.get(item, iconField);
+                            if (icon) {
+                                Ico = op.get(Icon, icon);
+                            }
+                        }
+
+                        return (
+                            <li key={key} className={className}>
+                                <input type='hidden' value={val} name={name} />
+                                <button
+                                    type='button'
+                                    onClick={e => _onItemClick(e, val)}
+                                    ref={i === tabIndex ? activeButton : null}>
+                                    {Ico && (
+                                        <span className='mr-xs-8'>
+                                            <Ico width={18} height={18} />
+                                        </span>
+                                    )}
+                                    {label}
+                                </button>
+                            </li>
+                        );
+                    })}
+                </ul>
+            </Scrollbars>
+        );
     };
 
     const render = () => {
@@ -372,7 +489,7 @@ let Dropdown = (props, ref) => {
             <div ref={containerRef} className={contClassName}>
                 {children}
                 <div ref={menuRef} className={menuClassName}>
-                    <ul>{renderMenuItems()}</ul>
+                    {renderMenuItems()}
                 </div>
             </div>
         );
@@ -389,19 +506,33 @@ Dropdown.propTypes = {
     animationEase: PropTypes.object,
     animationSpeed: PropTypes.number,
     className: PropTypes.string,
-    collapseEvent: PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    collapseEvent: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    ]),
     data: PropTypes.array,
     dismissable: PropTypes.bool,
     expanded: PropTypes.bool,
-    expandEvent: PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    expandEvent: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    ]),
     filter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     iconField: PropTypes.string,
     labelField: PropTypes.string,
+    menuRenderer: PropTypes.func,
     multiSelect: PropTypes.bool,
+    name: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.number,
+    ]),
     namespace: PropTypes.string,
     selection: PropTypes.array,
     selector: PropTypes.string,
-    toggleEvent: PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    toggleEvent: PropTypes.oneOfType([
+        PropTypes.array,
+        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+    ]),
     onBeforeCollapse: PropTypes.func,
     onBeforeExpand: PropTypes.func,
     onChange: PropTypes.func,
@@ -425,6 +556,8 @@ Dropdown.defaultProps = {
     filter: null,
     iconField: 'icon',
     labelField: 'label',
+    name: uuid(),
+    menuRenderer: null,
     multiSelect: false,
     namespace: 'ar-dropdown',
     selection: [],

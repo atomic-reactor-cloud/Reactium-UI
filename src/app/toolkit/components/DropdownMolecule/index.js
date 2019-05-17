@@ -3,6 +3,7 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
+import op from 'object-path';
 import React, { Component } from 'react';
 import Button from 'components/common-ui/Button';
 import { Feather } from 'components/common-ui/Icon';
@@ -20,7 +21,10 @@ class DropdownMolecule extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+
+        this.state = {
+            selection: 'Dropdown 1',
+        };
         this.typeahead;
     }
 
@@ -28,25 +32,48 @@ class DropdownMolecule extends Component {
         this.setState({ typeahead: e.target.value });
     };
 
+    onSelect = e => {
+        const def = ['Dropdown 1'];
+        let selection = op.get(e, 'labels') || def;
+
+        selection = selection.length < 1 ? def : selection;
+
+        this.setState({ selection: selection.join(', ')});
+    };
+
     render() {
-        const { typeahead } = this.state;
+        const { iDocument, iWindow } = this.props;
+        const { selection, typeahead } = this.state;
 
         return (
-            <div className='row' style={{ minHeight: 400 }}>
+            <div className='row' style={{ minHeight: 450 }}>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
-                    <Dropdown expanded={true}>
+                    <Dropdown
+                        expanded={true}
+                        multiSelect
+                        onChange={this.onSelect}
+                        iWindow={iWindow}
+                        iDocument={iDocument}>
                         <Button
                             color={Button.ENUMS.COLOR.PRIMARY}
+                            inlineStyle={{
+                                width: 140,
+                                justifyContent: 'flex-start',
+                                padding: 10,
+                                overflowX: 'hidden',
+                                textOverflow: 'ellipsis',
+                            }}
                             data-dropdown-element>
-                            Dropdown 1
+                            {selection}
                         </Button>
                     </Dropdown>
                 </div>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
                     <Dropdown
-                        expandEvent={Dropdown.ENUMS.EVENT.FOCUS}
-                        multiSelect
-                        filter={typeahead}>
+                        expandEvent={Dropdown.ENUMS.EVENT.MOUSE_DOWN}
+                        filter={typeahead}
+                        iWindow={iWindow}
+                        iDocument={iDocument}>
                         <div className='input-group'>
                             <input
                                 id='dropdown-input-2'

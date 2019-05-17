@@ -10,7 +10,8 @@
     "moment": "^2.20.1",
     "gsap": "^2.1.0",
     "classnames": "^2.2.6",
-    "react": "^16.8.5"
+    "react": "^16.8.5",
+    "react-custom-scrollbars": "^4.2.1"
   },
   "repository": {
     "url": "",
