@@ -381,6 +381,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'collapsible-molecule': {
+                    type: 'molecule',
+                    label: 'Collapsible',
+                    route: '/toolkit/components/collapsible-molecule',
+                    dna: '/toolkit/components/CollapsibleMolecule',
+                    component: require('appdir/toolkit/components/CollapsibleMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'dropdown-molecule': {
                     type: 'molecule',
                     label: 'Dropdown',
