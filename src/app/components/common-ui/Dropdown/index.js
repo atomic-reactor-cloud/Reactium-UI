@@ -63,7 +63,7 @@ let Dropdown = (props, ref) => {
     const id = uuid();
 
     // State
-    const [data, setData] = useState(props.data || []);
+    const [data] = useState(props.data || []);
     const [expanded, setExpanded] = useState(props.expanded);
     const [selection, setSelection] = useState(props.selection || []);
     const [tabIndex, setTabIndex] = useState(-1);
@@ -254,14 +254,30 @@ let Dropdown = (props, ref) => {
             if (collapseEvent) {
                 collapseEvent = _.flatten([collapseEvent]);
                 collapseEvent.forEach(evt => {
-                    ElementComponent[evt] = e => collapse(e);
+                    if (evt === ENUMS.EVENT.BLUR) {
+                        ElementComponent[evt] = e => {
+                            if (!isChild(e.relatedTarget)) {
+                                collapse(e);
+                            }
+                        };
+                    } else {
+                        ElementComponent[evt] = e => collapse(e);
+                    }
                 });
             }
 
             if (expandEvent) {
                 expandEvent = _.flatten([expandEvent]);
                 expandEvent.forEach(evt => {
-                    ElementComponent[evt] = e => expand(e);
+                    if (evt === ENUMS.EVENT.FOCUS) {
+                        ElementComponent[evt] = e => {
+                            if (!isChild(e.relatedTarget)) {
+                                expand(e);
+                            }
+                        };
+                    } else {
+                        ElementComponent[evt] = e => expand(e);
+                    }
                 });
             }
         } else {
@@ -271,11 +287,10 @@ let Dropdown = (props, ref) => {
             });
         }
 
-        const buttons = containerRef.current.querySelectorAll('li button');
+        const buttons = menuRef.current.querySelectorAll('button');
         if (buttons && tabIndex > -1) {
-            const focusButton = buttons[tabIndex];
             try {
-                focusButton.focus();
+                buttons[tabIndex].focus();
             } catch (err) {}
         }
     });
@@ -345,12 +360,7 @@ let Dropdown = (props, ref) => {
     };
 
     const _onKeyDown = e => {
-        if (isChild(e.target)) {
-            console.log(e.keyCode);
-        }
-
         switch (e.keyCode) {
-
             case 27:
                 e.preventDefault();
                 _onEsc(e);
@@ -378,8 +388,6 @@ let Dropdown = (props, ref) => {
     };
 
     const _onNav = e => {
-        const { valueField } = props;
-
         const inc = e.keyCode === 38 ? -1 : 1;
         const max = data.length;
         let idx = tabIndex + inc;
@@ -434,7 +442,7 @@ let Dropdown = (props, ref) => {
             <Scrollbars
                 autoHeight
                 autoHeightMin={0}
-                autoHeightMax={210}
+                autoHeightMax={220}
                 thumbMinSize={5}>
                 <ul>
                     {filteredData.map((item, i) => {
@@ -442,7 +450,6 @@ let Dropdown = (props, ref) => {
                         const val = op.get(item, valueField);
                         const label = op.get(item, labelField, val);
                         const sel = selection.includes(val);
-                        const score = op.get(item, 'score', 0);
                         const className = cn({
                             active: sel,
                             ranked: i === ranked,
@@ -522,10 +529,7 @@ Dropdown.propTypes = {
     labelField: PropTypes.string,
     menuRenderer: PropTypes.func,
     multiSelect: PropTypes.bool,
-    name: PropTypes.oneOfType([
-        PropTypes.string,
-        PropTypes.number,
-    ]),
+    name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     namespace: PropTypes.string,
     selection: PropTypes.array,
     selector: PropTypes.string,
