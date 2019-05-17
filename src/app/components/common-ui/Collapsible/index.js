@@ -161,7 +161,11 @@ let Collapsible = (props, ref) => {
         let { className } = state;
         const { children, expanded, namespace } = state;
 
-        className = cn({ [className]: !!className, namespace, expanded });
+        className = cn({
+            [className]: !!className,
+            [namespace]: true,
+            expanded,
+        });
 
         return (
             <div ref={containerRef} className={className}>

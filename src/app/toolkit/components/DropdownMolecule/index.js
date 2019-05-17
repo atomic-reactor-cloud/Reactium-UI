@@ -55,7 +55,7 @@ class DropdownMolecule extends Component {
                         iDocument={iDocument}>
                         <Button
                             color={Button.ENUMS.COLOR.PRIMARY}
-                            inlineStyle={{
+                            style={{
                                 width: 140,
                                 justifyContent: 'flex-start',
                                 padding: 10,
@@ -90,7 +90,7 @@ class DropdownMolecule extends Component {
                             />
                             <Button
                                 size={Button.ENUMS.SIZE.XS}
-                                inlineStyle={{ maxWidth: 41 }}>
+                                style={{ maxWidth: 41 }}>
                                 <Feather.Search width={18} height={18} />
                             </Button>
                         </div>

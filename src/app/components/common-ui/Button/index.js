@@ -4,39 +4,63 @@ import React, {
     useRef,
     useState,
 } from 'react';
+
 import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
+import PropTypes from 'prop-types';
 
 /**
  * -----------------------------------------------------------------------------
  * Functional Component: Button
  * -----------------------------------------------------------------------------
  */
-let Button = (
-    { children, className, color, outline, size, style, inlineStyle, ...props },
-    ref,
-) => {
-    outline = outline === true ? 'outline' : null;
+let Button = (props, ref) => {
+    const [state, setNewState] = useState(props);
 
-    const buttonClassName = _.compact([
-        'btn',
-        color,
-        size,
-        outline,
-        style,
-    ]).join('-');
+    const setState = newState => setNewState({ ...state, ...newState });
 
-    const btn = useRef();
+    const elementRef = useRef();
 
     useImperativeHandle(ref, () => ({
-        element: btn.current,
+        element: elementRef.current,
+        setState,
+        state,
     }));
 
+    const cname = () => {
+        const { appearance, className, color, outline, size } = state;
+        const c = _.compact([
+            'btn',
+            color,
+            size,
+            outline === true ? 'outline' : null,
+            appearance,
+        ]).join('-');
+
+        return cn({ [className]: !!className, [c]: true });
+    };
+
     const render = () => {
-        const cls = cn({ [className]: !!className, [buttonClassName]: true });
+        const { children } = state;
+        const exclude = [
+            'appearance',
+            'children',
+            'className',
+            'color',
+            'outline',
+            'size',
+        ];
+        const elementProps = _.without(Object.keys(state), exclude).reduce(
+            (obj, key) => {
+                obj[key] = state[key];
+                return obj;
+            },
+            {},
+        );
+
         return (
-            <button className={cls} {...props} ref={btn} style={inlineStyle}>
+            <button className={cname()} {...elementProps} ref={elementRef}>
                 {children}
             </button>
         );
@@ -49,12 +73,20 @@ Button = forwardRef(Button);
 
 Button.ENUMS = ENUMS;
 
+Button.propTypes = {
+    appearance: PropTypes.oneOf(Object.values(ENUMS.APPEARANCE)),
+    color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
+    size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),
+    tabIndex: PropTypes.number,
+    type: PropTypes.oneOf(Object.values(ENUMS.TYPE)),
+};
+
 Button.defaultProps = {
+    appearance: null,
     color: ENUMS.COLOR.PRIMARY,
-    inlineStyle: null,
     size: ENUMS.SIZE.SM,
-    type: 'button',
     tabIndex: 0,
+    type: ENUMS.TYPE.BUTTON,
 };
 
 export { Button as default, ENUMS };

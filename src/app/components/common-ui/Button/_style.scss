@@ -111,8 +111,8 @@ $button-sizes: (
             &.active {
                 text-decoration: none;
                 @include h-gradient(
-                    lighten(nth($clr-codes, 1), 5%),
-                    lighten(nth($clr-codes, 2), 5%)
+                    lighten(nth($clr-codes, 1), 7%),
+                    lighten(nth($clr-codes, 2), 7%)
                 );
             }
 

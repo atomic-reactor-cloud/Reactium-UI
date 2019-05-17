@@ -447,6 +447,17 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
+                'tab-molecule': {
+                    type: 'molecule',
+                    label: 'Tabs',
+                    route: '/toolkit/components/tab-molecule',
+                    dna: '/toolkit/components/TabMolecule',
+                    component: require('appdir/toolkit/components/TabMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/TabMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
             },
         },
         pages: {

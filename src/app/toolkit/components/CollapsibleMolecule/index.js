@@ -52,7 +52,7 @@ class CollapsibleMolecule extends Component {
                         <Button
                             size={Button.ENUMS.SIZE.XS}
                             onClick={this.collapse}
-                            inlineStyle={{ width: 33 }}>
+                            style={{ width: 33 }}>
                             <Feather.X />
                         </Button>
                     </div>
