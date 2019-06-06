@@ -16,6 +16,8 @@ import React, { Component, Fragment } from 'react';
 import { Plugins } from 'reactium-core/components/Plugable';
 import config from 'appdir/toolkit';
 
+const assetPath = op.get(config, 'assets.path', '/assets');
+
 /**
  * -----------------------------------------------------------------------------
  * React Component: Toolkit
@@ -367,6 +369,7 @@ export default class Toolkit extends Component {
                     update={update}
                     themes={themes}
                     style={style}
+                    assetPath={assetPath}
                     onThemeChange={this.onThemeChange.bind(this)}
                 />
 

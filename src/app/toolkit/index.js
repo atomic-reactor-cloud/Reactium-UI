@@ -381,6 +381,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'data-table-molecule': {
+                    type: 'molecule',
+                    label: 'Data Table',
+                    route: '/toolkit/components/data-table-molecule',
+                    dna: '/toolkit/components/DataTableMolecule',
+                    component: require('appdir/toolkit/components/DataTableMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/DataTableMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'dropdown-molecule': {
                     type: 'molecule',
                     label: 'Dropdown',

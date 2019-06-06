@@ -1,10 +1,11 @@
 export default {
     COLOR: {
+        CLEAR: 'clear',
+        DANGER: 'danger',
         PRIMARY: 'primary',
         SECONDARY: 'secondary',
+        SUCCESS: 'success',
         TERTIARY: 'tertiary',
-        DANGER: 'danger',
-        SUCCESS: 'success'
     },
     SIZE: {
         XS: 'xs',
@@ -14,6 +15,6 @@ export default {
     },
     STYLE: {
         CIRCLE: 'circle',
-        PILL: 'pill'
-    }
-}
+        PILL: 'pill',
+    },
+};
