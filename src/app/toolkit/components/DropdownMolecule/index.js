@@ -38,7 +38,7 @@ class DropdownMolecule extends Component {
 
         selection = selection.length < 1 ? def : selection;
 
-        this.setState({ selection: selection.join(', ')});
+        this.setState({ selection: selection.join(', ') });
     };
 
     render() {
@@ -50,13 +50,12 @@ class DropdownMolecule extends Component {
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
                     <Dropdown
                         expanded={true}
-                        multiSelect
                         onChange={this.onSelect}
                         iWindow={iWindow}
                         iDocument={iDocument}>
                         <Button
                             color={Button.ENUMS.COLOR.PRIMARY}
-                            inlineStyle={{
+                            style={{
                                 width: 140,
                                 justifyContent: 'flex-start',
                                 padding: 10,
@@ -70,7 +69,12 @@ class DropdownMolecule extends Component {
                 </div>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
                     <Dropdown
-                        expandEvent={Dropdown.ENUMS.EVENT.MOUSE_DOWN}
+                        multiSelect
+                        expandEvent={[
+                            Dropdown.ENUMS.EVENT.MOUSE_DOWN,
+                            Dropdown.ENUMS.EVENT.FOCUS,
+                        ]}
+                        collapseEvent={Dropdown.ENUMS.EVENT.BLUR}
                         filter={typeahead}
                         iWindow={iWindow}
                         iDocument={iDocument}>
@@ -86,7 +90,7 @@ class DropdownMolecule extends Component {
                             />
                             <Button
                                 size={Button.ENUMS.SIZE.XS}
-                                inlineStyle={{ maxWidth: 41 }}>
+                                style={{ maxWidth: 41 }}>
                                 <Feather.Search width={18} height={18} />
                             </Button>
                         </div>

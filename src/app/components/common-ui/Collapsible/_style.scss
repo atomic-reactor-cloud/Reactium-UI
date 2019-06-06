@@ -1,0 +1,13 @@
+.ar-collapsible {
+    position: relative;
+
+    display: none;
+    height: 0;
+    overflow: hidden;
+
+    &.expanded {
+        display: block;
+        height: auto;
+        overflow: auto;
+    }
+}

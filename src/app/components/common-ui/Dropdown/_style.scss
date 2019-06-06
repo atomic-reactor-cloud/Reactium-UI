@@ -2,11 +2,12 @@ $ar-dropdown-shadow: 0 0 5px 0 rgba($color-grey, .5) !default;
 $ar-dropdown-inner-shadow: inset 0 0 1px 1px rgba($color-blue, 0.125) !default;
 $ar-dropdown-menu-color: $color-white !default;
 $ar-dropdown-item-color: $color-gray-dark !default;
-$ar-dropdown-item-hover: $color-black !default;
-$ar-dropdown-item-hover-bg: darken($color-grey-light, 2%) !default;
+$ar-dropdown-item-hover: $color-white !default;
+$ar-dropdown-item-hover-bg: $color-blue !default;
+$ar-dropdown-item-active: $color-gray-dark !default;
 $ar-dropdown-item-active-bg: $color-grey-light !default;
 $ar-dropdown-border-radius: 4px !default;
-$ar-dropdown-border-color: rgba($color-blue, 0.5) !default;
+$ar-dropdown-border-color: $color-grey-light !default;
 
 .ar-dropdown {
     position: relative;
@@ -51,16 +52,16 @@ $ar-dropdown-border-color: rgba($color-blue, 0.5) !default;
             }
 
             &.active {
-                color: $ar-dropdown-item-hover;
+                color: $ar-dropdown-item-active;
 
                 button {
                     z-index: 2;
-                    color: $ar-dropdown-item-hover;
+                    color: $ar-dropdown-item-active;
                     background-color: $ar-dropdown-item-active-bg;
                 }
 
                 svg {
-                    fill: $ar-dropdown-item-hover;
+                    fill: $ar-dropdown-item-active;
                 }
             }
 
@@ -79,17 +80,25 @@ $ar-dropdown-border-color: rgba($color-blue, 0.5) !default;
                 padding: 12px 10px;
                 margin: 0;
                 border: none;
+                border-top: 1px solid transparent;
+                border-bottom: 1px solid darken($ar-dropdown-menu-color, 1%);
                 text-decoration: none;
                 text-align: left;
                 font-size: 12px;
                 line-height: 1;
                 color: $ar-dropdown-item-color;
-                border-collapse: collapse;
                 background-color: $ar-dropdown-menu-color;
-                transition: background-color .5s ease-in-out;
+                transition: background-color .25s ease-in-out, color .25s ease-in-out;
 
                 svg {
                     fill: $ar-dropdown-item-color;
+                    transition: fill .25s ease-in-out;
+                }
+
+                &:focus {
+                    border-top: 1px solid $ar-dropdown-border-color;
+                    border-bottom: 1px solid $ar-dropdown-border-color;
+                    background-color: darken($ar-dropdown-border-color, 2%);
                 }
 
                 &:hover {
@@ -100,13 +109,7 @@ $ar-dropdown-border-color: rgba($color-blue, 0.5) !default;
                     svg {
                         fill: $ar-dropdown-item-hover;
                     }
-                }
-
-                &:focus {
-                    border-top: 1px solid $ar-dropdown-border-color;
-                    border-bottom: 1px solid $ar-dropdown-border-color;
-                    padding: 10px;
-                }
+                }                
             }
         }
     }
