@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
 import React, {
     forwardRef,
+    useImperativeHandle,
     useRef,
     useState,
-    useImperativeHandle,
+    useEffect,
 } from 'react';
 
 const ENUMS = {
@@ -25,17 +26,35 @@ const noop = () => {};
  * -----------------------------------------------------------------------------
  */
 let Collapsible = (props, ref) => {
-    // State
-    const [state, setNewState] = useState(props);
-
     // Refs
+    const stateRef = useRef({
+        prevState: {},
+        ...props,
+    });
+
     const containerRef = useRef();
 
+    // State
+    const [state, setNewState] = useState(stateRef.current);
+
     // Internal Interface
-    const setState = newState => setNewState({ ...state, ...newState });
+    const setState = newState => {
+        // Get the previous state
+        const prevState = { ...stateRef.current };
+
+        // Update the stateRef
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+            prevState,
+        };
+
+        // Trigger useEffect()
+        setNewState(stateRef.current);
+    };
 
     const collapse = () => {
-        const { animation, expanded } = state;
+        const { animation, expanded } = stateRef.current;
 
         if (expanded !== true) {
             setState({ animation: null });
@@ -51,7 +70,7 @@ let Collapsible = (props, ref) => {
             animationSpeed,
             onBeforeCollapse,
             onCollapse,
-        } = state;
+        } = stateRef.current;
 
         const container = containerRef.current;
 
@@ -89,7 +108,7 @@ let Collapsible = (props, ref) => {
     };
 
     const expand = () => {
-        const { expanded, animation } = state;
+        const { expanded, animation } = stateRef.current;
 
         if (expanded === true) {
             setState({ animation: null });
@@ -105,7 +124,7 @@ let Collapsible = (props, ref) => {
             animationSpeed,
             onBeforeExpand,
             onExpand,
-        } = state;
+        } = stateRef.current;
 
         const container = containerRef.current;
 
@@ -143,7 +162,7 @@ let Collapsible = (props, ref) => {
     };
 
     const toggle = e => {
-        const { expanded } = state;
+        const { expanded } = stateRef.current;
         return expanded !== true ? expand(e) : collapse(e);
     };
 
@@ -157,9 +176,11 @@ let Collapsible = (props, ref) => {
         toggle,
     }));
 
+    useEffect(() => setState(props), Object.values(props));
+
     const render = () => {
-        let { className } = state;
-        const { children, expanded, namespace } = state;
+        const { children } = props;
+        let { className, expanded, namespace } = stateRef.current;
 
         className = cn({
             [className]: !!className,
@@ -194,7 +215,7 @@ Collapsible.propTypes = {
 Collapsible.defaultProps = {
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
-    className: 'ar-collapsible',
+    className: null,
     expanded: true,
     namespace: 'ar-collapsible',
     onBeforeCollapse: noop,

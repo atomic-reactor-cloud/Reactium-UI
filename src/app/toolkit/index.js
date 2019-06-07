@@ -447,6 +447,17 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
+                'collapsible-molecule': {
+                    type: 'molecule',
+                    label: 'Collapsible',
+                    route: '/toolkit/components/collapsible-molecule',
+                    dna: '/toolkit/components/CollapsibleMolecule',
+                    component: require('appdir/toolkit/components/CollapsibleMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
             },
         },
         pages: {
