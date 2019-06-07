@@ -51,13 +51,11 @@ let Button = (props, ref) => {
             'outline',
             'size',
         ];
-        const elementProps = _.without(Object.keys(state), exclude).reduce(
-            (obj, key) => {
-                obj[key] = state[key];
-                return obj;
-            },
-            {},
-        );
+
+        const elementProps = { ...state };
+        exclude.forEach(key => {
+            delete elementProps[key];
+        });
 
         return (
             <button className={cname()} {...elementProps} ref={elementRef}>

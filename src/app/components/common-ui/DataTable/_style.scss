@@ -124,6 +124,10 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         display: flex;
         align-items: center;
         border-radius: 0 0 2px 2px;
+
+        &:empty {
+            display: none;
+        }
     }
 
     &-row,
@@ -211,9 +215,29 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         font-family: $ar-table-font-heading;
         font-size: 14px;
         align-items: center;
+        border: none;
 
         svg {
             fill: $ar-table-color-text-heading;
+        }
+
+        .ico {
+            margin-left: 8px;
+
+            &:empty {
+                display: none;
+            }
+        }
+
+        &:hover,
+        &.sort-active-asc,
+        &.sort-active-desc {
+            user-select: none;
+            cursor: pointer;
+
+            svg {
+                fill: $ar-table-color-background-checkbox;
+            }
         }
     }
 

@@ -1,4 +1,8 @@
 export default {
+    APPEARANCE: {
+        CIRCLE: 'circle',
+        PILL: 'pill',
+    },
     COLOR: {
         CLEAR: 'clear',
         DANGER: 'danger',
@@ -13,8 +17,8 @@ export default {
         MD: 'md',
         LG: 'lg',
     },
-    STYLE: {
-        CIRCLE: 'circle',
-        PILL: 'pill',
+    TYPE: {
+        BUTTON: 'button',
+        SUBMIT: 'submit',
     },
 };

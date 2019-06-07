@@ -33,7 +33,7 @@ const noop = () => {};
  * Hook Component: DataTable
  * -----------------------------------------------------------------------------
  */
-let DataTable = (props, ref) => {
+let DataTable = ({ onChange, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -41,6 +41,8 @@ let DataTable = (props, ref) => {
         prevState: { page: 0 },
         selection: [],
         search: props.search,
+        sort: props.sort,
+        sortBy: props.sortBy,
     });
 
     // State
@@ -61,7 +63,10 @@ let DataTable = (props, ref) => {
     };
 
     const getData = search => {
+        let output;
+        const { sort, sortBy } = stateRef.current;
         const { data = [], filter = defaultFilter } = props;
+
         search = search || op.get(stateRef, 'current.search');
 
         if (search) {
@@ -104,16 +109,23 @@ let DataTable = (props, ref) => {
                 return isNaN(id) ? id : Number(id);
             });
 
-            const filtered = Array.from(
+            output = Array.from(
                 data.filter((item, i, arr) =>
                     filter(item, i, arr, { results, ids }),
                 ),
             );
-
-            return filtered;
         } else {
-            return Array.from(data);
+            output = Array.from(data);
         }
+
+        // sort
+        output = _.sortBy(output, sortBy);
+
+        if (sort === ENUMS.SORT.DESC) {
+            output.reverse();
+        }
+
+        return output;
     };
 
     const getPages = () => {
@@ -158,6 +170,13 @@ let DataTable = (props, ref) => {
         if (currPage !== page) {
             setState({ page });
         }
+    };
+
+    const applySort = ({ sort, sortBy }) => {
+        setState({
+            sort,
+            sortBy,
+        });
     };
 
     const onToggle = e => {
@@ -213,10 +232,7 @@ let DataTable = (props, ref) => {
 
     // Side Effects
     useEffect(() => {
-        const { onChange } = props;
         const { page } = stateRef.current;
-
-        //stateRef.current.selection = getSelection();
 
         if (page > getPages()) {
             setState({ page: 1 });
@@ -230,18 +246,25 @@ let DataTable = (props, ref) => {
     }, [state]);
 
     const render = () => {
-        const { children, className, id, namespace } = props;
+        const { sort, sortBy } = stateRef.current;
+        const { children, className, id, namespace, style = {} } = props;
 
         return (
             <div
                 id={`data-table-${id}`}
                 ref={containerRef}
+                style={style}
                 className={cn({
                     [className]: !!className,
                     [namespace]: !!namespace,
                 })}>
                 <Header {...props} />
-                <Headings {...props} />
+                <Headings
+                    {...props}
+                    onClick={applySort}
+                    sortBy={sortBy}
+                    sort={sort}
+                />
                 {children}
                 <Rows
                     {...props}
@@ -264,8 +287,8 @@ DataTable.ENUMS = ENUMS;
 
 DataTable.propTypes = {
     className: PropTypes.string,
-    columns: PropTypes.object,
-    data: PropTypes.array,
+    columns: PropTypes.object.isRequired,
+    data: PropTypes.array.isRequired,
     filter: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     footer: PropTypes.node,
     header: PropTypes.node,
@@ -275,27 +298,33 @@ DataTable.propTypes = {
     onChange: PropTypes.func,
     onFilter: PropTypes.func,
     onSelect: PropTypes.func,
+    onSort: PropTypes.func,
     onUnSelect: PropTypes.func,
     page: PropTypes.number,
     rowsPerPage: PropTypes.number,
     selectable: PropTypes.bool,
-    sort: PropTypes.oneOf(['ascending', 'descending']),
+    sort: PropTypes.oneOf(_.uniq(Object.values(ENUMS.SORT))),
     sortable: PropTypes.bool,
     sortBy: PropTypes.string,
+    style: PropTypes.object,
 };
 
 DataTable.defaultProps = {
     data: [],
     id: uuid(),
-    multiselect: true,
+    multiselect: false,
     namespace: 'ar-data-table',
     onChange: noop,
     onFilter: noop,
     onSelect: noop,
+    onSort: noop,
     onUnSelect: noop,
     page: 1,
     rowsPerPage: -1,
     selectable: true,
+    sort: ENUMS.SORT.ASC,
+    sortable: false,
+    style: {},
 };
 
 export { DataTable as default, Row, Column, Heading, Pagination, SearchBar };

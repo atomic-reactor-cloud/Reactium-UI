@@ -64,8 +64,8 @@ const Rows = ({
                             </Column>
                         )}
                         {Object.keys(columns).map((key, c) => {
-                            const value = itemTmp[key];
-                            const col = { ...columns[key] };
+                            let value = itemTmp[key];
+                            const col = { ...columns[key], field: key };
                             delete col.label;
 
                             return (
