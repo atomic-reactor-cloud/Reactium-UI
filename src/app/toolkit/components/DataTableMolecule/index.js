@@ -7,7 +7,6 @@ import moment from 'moment';
 import op from 'object-path';
 import React, { Component } from 'react';
 import Button from 'components/common-ui/Button';
-import { Feather } from 'components/common-ui/Icon';
 import DataTable, {
     Column,
     Pagination,
@@ -115,13 +114,14 @@ class DataTableMolecule extends Component {
     );
 
     render() {
-        const { columns, data, rowsPerPage } = this.props;
+        const { columns, data } = this.props;
         const tableData = op.get(this, 'table.data');
         const search = op.get(this, 'table.search');
 
         return (
             <div style={{ minHeight: 380 }}>
                 <DataTable
+                    reorderable={false}
                     multiselect
                     selectable
                     sort={DataTable.ENUMS.SORT.DESC}

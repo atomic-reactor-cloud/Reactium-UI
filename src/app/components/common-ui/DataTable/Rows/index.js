@@ -4,18 +4,18 @@ import Column from '../Column';
 import ENUMS from '../enums';
 import { Feather } from 'components/common-ui/Icon';
 
-const Rows = ({
+const DefaultRows = ({
     columns = {},
     data = [],
     selection = [],
     id,
     multiselect,
     namespace,
+    reorderable = false,
     rowsPerPage = -1,
     selectable = false,
     state,
     onToggle,
-    ...props
 }) => {
     const { page = 1 } = state;
 
@@ -39,11 +39,28 @@ const Rows = ({
 
                 return (
                     <Row key={`${id}-row-${i}`} selectable={selectable}>
+                        {reorderable === true && (
+                            <Column
+                                verticalAlign={ENUMS.VERTICAL_ALIGN.MIDDLE}
+                                style={{ padding: 0 }}
+                                className={`${namespace}-handle`}
+                                key={`${id}-row-${i}-col-handle`}
+                                width={40}>
+                                <button className='drag-handle' type='button'>
+                                    <Feather.MoreVertical
+                                        width={10}
+                                        height={10}
+                                    />
+                                </button>
+                            </Column>
+                        )}
+
                         {selectable === true && (
                             <Column
                                 key={`${id}-row-col-select`}
                                 className={`${namespace}-select`}
-                                width={40}
+                                width={30}
+                                style={{ padding: '0 8px' }}
                                 verticalAlign={ENUMS.VERTICAL_ALIGN.MIDDLE}>
                                 <input
                                     key={`${id}-checkbox-${i}`}
@@ -63,7 +80,7 @@ const Rows = ({
                                 </span>
                             </Column>
                         )}
-                        {Object.keys(columns).map((key, c) => {
+                        {Object.keys(columns).map(key => {
                             let value = itemTmp[key];
                             const col = { ...columns[key], field: key };
                             delete col.label;
@@ -82,5 +99,18 @@ const Rows = ({
         </div>
     );
 };
+
+const ReorderRows = props => (
+    <div className='dnd'>
+        <DefaultRows {...props} reorderable />
+    </div>
+);
+
+const Rows = ({ reorderable, ...props }) =>
+    reorderable === true ? (
+        <ReorderRows {...props} />
+    ) : (
+        <DefaultRows {...props} reorderable />
+    );
 
 export default Rows;

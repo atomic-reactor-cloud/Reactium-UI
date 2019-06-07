@@ -4,7 +4,6 @@ import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
-import { Feather } from 'components/common-ui/Icon';
 
 import Row from './Row';
 import Rows from './Rows';
@@ -28,6 +27,15 @@ import React, {
 
 const noop = () => {};
 
+const applyReorder = reorderable =>
+    reorderable !== true
+        ? {}
+        : {
+              rowsPerPage: -1,
+              sortable: false,
+              page: 1,
+          };
+
 /**
  * -----------------------------------------------------------------------------
  * Hook Component: DataTable
@@ -37,8 +45,9 @@ let DataTable = (props, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
-        page: props.page || 1,
+        page: props.page || 0,
         prevState: { page: 0 },
+        reorderable: props.reorderable,
         selection: [],
         search: props.search,
         sort: props.sort,
@@ -52,12 +61,18 @@ let DataTable = (props, ref) => {
     // Internal Interface
     const setState = newState => {
         const { prevState = {} } = stateRef.current;
+
+        if (op.get(newState, 'reorderable') === true) {
+            applyReorder(true);
+            return;
+        }
+
         stateRef.current = { ...stateRef.current, ...newState, prevState };
         setNewState(stateRef.current);
     };
 
     const defaultFilter = (item, i, data, search) => {
-        const { results, ids } = search;
+        const { ids } = search;
         const { id } = item;
         const valid = ids.includes(id);
         return valid;
@@ -132,7 +147,7 @@ let DataTable = (props, ref) => {
     };
 
     const getPages = () => {
-        const { rowsPerPage = -1 } = props;
+        const { rowsPerPage = -1 } = stateRef.current;
 
         if (rowsPerPage < 1) {
             return 1;
@@ -145,9 +160,7 @@ let DataTable = (props, ref) => {
     };
 
     const getSelection = () => {
-        const { page } = stateRef.current;
-        const { rowsPerPage } = props;
-
+        const { page, rowsPerPage } = stateRef.current;
         const limit = Math.max(0, rowsPerPage);
         const idx = page > 1 ? page * limit - limit : 0;
         const temp = getData();
@@ -254,7 +267,13 @@ let DataTable = (props, ref) => {
     }, [state]);
 
     const render = () => {
-        const { sort, sortBy } = stateRef.current;
+        const {
+            reorderable,
+            rowsPerPage,
+            sort,
+            sortable,
+            sortBy,
+        } = stateRef.current;
         const { children, className, id, namespace, style = {} } = props;
 
         return (
@@ -270,12 +289,15 @@ let DataTable = (props, ref) => {
                 <Headings
                     {...props}
                     onClick={applySort}
+                    sortable={sortable}
                     sortBy={sortBy}
                     sort={sort}
                 />
                 {children}
                 <Rows
                     {...props}
+                    reorderable={reorderable}
+                    rowsPerPage={rowsPerPage}
                     data={getData()}
                     selection={getSelection()}
                     state={stateRef.current}
@@ -308,6 +330,7 @@ DataTable.propTypes = {
     onSort: PropTypes.func,
     onUnSelect: PropTypes.func,
     page: PropTypes.number,
+    reorderable: PropTypes.bool,
     rowsPerPage: PropTypes.number,
     selectable: PropTypes.bool,
     sort: PropTypes.oneOf(_.uniq(Object.values(ENUMS.SORT))),
@@ -326,6 +349,7 @@ DataTable.defaultProps = {
     onSort: noop,
     onUnSelect: noop,
     page: 1,
+    reorderable: false,
     rowsPerPage: -1,
     selectable: false,
     sort: ENUMS.SORT.ASC,

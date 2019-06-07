@@ -9,6 +9,7 @@ $ar-table-color-border: $color-grey-light !default;
 $ar-table-color-checkbox: $color-white !default;
 $ar-table-color-text: $color-gray !default;
 $ar-table-color-text-heading: $color-gray !default;
+$ar-table-color-drag-handle: $color-gray !default;
 $ar-table-font: Helvetica, Arial, sans-serif !default;
 $ar-table-font-heading: 'Montserrat', Helvetica, Arial, sans-serif !default;
 $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
@@ -351,6 +352,27 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
                 &.right {
                     text-align: right;
                 }
+            }
+        }
+    }
+
+    &-handle {
+        display: flex;
+        align-items: stretch;
+
+        .drag-handle {
+            border: none;
+            background-color: transparent;
+            display: flex;
+            align-items: center;
+            padding: 0 0 0 16px;
+
+            &:hover {
+                cursor: grab;
+            }
+
+            svg {
+                fill: $ar-table-color-drag-handle;
             }
         }
     }
