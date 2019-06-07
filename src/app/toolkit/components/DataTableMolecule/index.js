@@ -25,7 +25,9 @@ const labelFunction = (key, value) => {
     switch (key) {
         case 'dob':
             const d = new Date(value);
-            return moment(d).format('L');
+            return moment(d)
+                .add(1, 'day')
+                .format('L');
 
         default:
             return value;
