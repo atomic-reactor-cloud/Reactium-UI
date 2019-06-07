@@ -33,7 +33,7 @@ const noop = () => {};
  * Hook Component: DataTable
  * -----------------------------------------------------------------------------
  */
-let DataTable = ({ onChange, ...props }, ref) => {
+let DataTable = (props, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -42,6 +42,7 @@ let DataTable = ({ onChange, ...props }, ref) => {
         selection: [],
         search: props.search,
         sort: props.sort,
+        sortable: props.sortable,
         sortBy: props.sortBy,
     });
 
@@ -64,7 +65,7 @@ let DataTable = ({ onChange, ...props }, ref) => {
 
     const getData = search => {
         let output;
-        const { sort, sortBy } = stateRef.current;
+        const { sort, sortable, sortBy } = stateRef.current;
         const { data = [], filter = defaultFilter } = props;
 
         search = search || op.get(stateRef, 'current.search');
@@ -119,10 +120,12 @@ let DataTable = ({ onChange, ...props }, ref) => {
         }
 
         // sort
-        output = _.sortBy(output, sortBy);
+        if (sortable === true) {
+            output = _.sortBy(output, sortBy);
 
-        if (sort === ENUMS.SORT.DESC) {
-            output.reverse();
+            if (sort === ENUMS.SORT.DESC) {
+                output.reverse();
+            }
         }
 
         return output;
@@ -173,10 +176,14 @@ let DataTable = ({ onChange, ...props }, ref) => {
     };
 
     const applySort = ({ sort, sortBy }) => {
+        const { onSort } = props;
+
         setState({
             sort,
             sortBy,
         });
+
+        onSort({ e: 'sort', sort, sortBy });
     };
 
     const onToggle = e => {
@@ -232,6 +239,7 @@ let DataTable = ({ onChange, ...props }, ref) => {
 
     // Side Effects
     useEffect(() => {
+        const { onChange } = props;
         const { page } = stateRef.current;
 
         if (page > getPages()) {
@@ -296,7 +304,6 @@ DataTable.propTypes = {
     multiselect: PropTypes.bool,
     namespace: PropTypes.string,
     onChange: PropTypes.func,
-    onFilter: PropTypes.func,
     onSelect: PropTypes.func,
     onSort: PropTypes.func,
     onUnSelect: PropTypes.func,
@@ -315,13 +322,12 @@ DataTable.defaultProps = {
     multiselect: false,
     namespace: 'ar-data-table',
     onChange: noop,
-    onFilter: noop,
     onSelect: noop,
     onSort: noop,
     onUnSelect: noop,
     page: 1,
     rowsPerPage: -1,
-    selectable: true,
+    selectable: false,
     sort: ENUMS.SORT.ASC,
     sortable: false,
     style: {},

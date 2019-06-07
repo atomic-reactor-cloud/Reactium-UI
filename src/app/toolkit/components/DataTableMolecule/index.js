@@ -120,12 +120,15 @@ class DataTableMolecule extends Component {
         return (
             <div style={{ minHeight: 380 }}>
                 <DataTable
+                    multiselect
+                    selectable
+                    sort={DataTable.ENUMS.SORT.DESC}
                     sortable
                     sortBy='name'
                     ref={elm => (this.table = elm)}
                     columns={columns}
                     data={data}
-                    rowsPerPage={rowsPerPage}
+                    rowsPerPage={4}
                     footer={this.renderFooter()}
                     header={this.renderHeader({ search, tableData })}
                     onChange={this.onChange}
@@ -199,8 +202,6 @@ DataTableMolecule.defaultProps = {
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
         },
     ],
-    page: 1,
-    rowsPerPage: 4,
 };
 
 export default DataTableMolecule;

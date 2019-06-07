@@ -232,9 +232,6 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         &:hover,
         &.sort-active-asc,
         &.sort-active-desc {
-            user-select: none;
-            cursor: pointer;
-
             svg {
                 fill: $ar-table-color-background-checkbox;
             }
