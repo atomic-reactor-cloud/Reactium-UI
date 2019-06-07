@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import op from 'object-path';
 import React from 'react';
 import ENUMS from '../enums';
 
@@ -15,7 +16,7 @@ const Column = ({
     sortable = false,
     style = {},
     title,
-    ...props
+    provided = {},
 }) => {
     const colProps = {
         onClick,
@@ -42,7 +43,7 @@ const Column = ({
             {labelFunction ? labelFunction(field, children) : children}
         </button>
     ) : (
-        <div {...colProps}>
+        <div {...colProps} {...op.get(provided, 'dragHandleProps', {})}>
             {labelFunction ? labelFunction(field, children) : children}
         </div>
     );

@@ -1,15 +1,19 @@
 import cn from 'classnames';
-import React from 'react';
+import React, { forwardRef } from 'react';
 
-const Row = ({
-    children,
-    className,
-    namespace = 'ar-data-table-row',
-    selectable = false,
-    ...props
-}) =>
+const Row = (
+    {
+        children,
+        className,
+        namespace = 'ar-data-table-row',
+        selectable = false,
+        ...props
+    },
+    ref,
+) =>
     selectable ? (
         <label
+            ref={ref}
             className={cn({
                 [namespace]: !!namespace,
                 [className]: !!className,
@@ -19,6 +23,7 @@ const Row = ({
         </label>
     ) : (
         <div
+            ref={ref}
             className={cn({
                 [namespace]: !!namespace,
                 [className]: !!className,
@@ -28,4 +33,4 @@ const Row = ({
         </div>
     );
 
-export default Row;
+export default forwardRef(Row);

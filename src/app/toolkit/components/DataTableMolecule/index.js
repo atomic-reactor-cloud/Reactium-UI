@@ -119,9 +119,9 @@ class DataTableMolecule extends Component {
         const search = op.get(this, 'table.search');
 
         return (
-            <div style={{ minHeight: 380 }}>
+            <div style={{ minHeight: 480 }}>
                 <DataTable
-                    reorderable={false}
+                    reorderable={true}
                     multiselect
                     selectable
                     sort={DataTable.ENUMS.SORT.DESC}
@@ -167,41 +167,49 @@ DataTableMolecule.defaultProps = {
             name: 'Cam Tullos',
             dob: '1978-04-22',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'ct422',
         },
         {
             name: 'Lisa Tullos',
             dob: '1977-05-26',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'lt526',
         },
         {
             name: 'Lauren Tullos',
             dob: '2000-12-14',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'lt1214',
         },
         {
             name: 'Allie Tullos',
             dob: '2008-03-14',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'at314',
         },
         {
             name: 'Veronica Tullos',
             dob: '1951-10-19',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'vt1019',
         },
         {
             name: 'Ramona Tullos',
             dob: '1969-06-20',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'rt520',
         },
         {
             name: 'Justin Tullos',
             dob: '1998-11-19',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'jt1119',
         },
         {
             name: 'Paris Brown',
             dob: '1990-06-11',
             actions: <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>,
+            id: 'pb611',
         },
     ],
 };

@@ -27,7 +27,7 @@ import React, {
 
 const noop = () => {};
 
-const applyReorder = reorderable =>
+const applyReorderProp = reorderable =>
     reorderable !== true
         ? {}
         : {
@@ -45,14 +45,17 @@ let DataTable = (props, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
+        data: props.data || [],
         page: props.page || 0,
         prevState: { page: 0 },
         reorderable: props.reorderable,
+        rowsPerPage: props.rowsPerPage,
         selection: [],
         search: props.search,
         sort: props.sort,
         sortable: props.sortable,
         sortBy: props.sortBy,
+        ...applyReorderProp(props.reorderable),
     });
 
     // State
@@ -80,8 +83,8 @@ let DataTable = (props, ref) => {
 
     const getData = search => {
         let output;
-        const { sort, sortable, sortBy } = stateRef.current;
-        const { data = [], filter = defaultFilter } = props;
+        const { data, sort, sortable, sortBy } = stateRef.current;
+        const { filter = defaultFilter } = props;
 
         search = search || op.get(stateRef, 'current.search');
 
@@ -164,7 +167,6 @@ let DataTable = (props, ref) => {
         const limit = Math.max(0, rowsPerPage);
         const idx = page > 1 ? page * limit - limit : 0;
         const temp = getData();
-
         const selection = limit < 1 ? temp : temp.splice(idx, limit);
 
         return selection;
@@ -185,6 +187,30 @@ let DataTable = (props, ref) => {
 
         if (currPage !== page) {
             setState({ page });
+        }
+    };
+
+    const applyReorder = e => {
+        const { onDrop, onDropOut } = props;
+        const { data } = stateRef.current;
+
+        const startIndex = op.get(e, 'source.index');
+        const endIndex = op.get(e, 'destination.index');
+        const list = Array.from(data);
+        const [item] = list.splice(startIndex, 1);
+
+        if (typeof endIndex === 'undefined') {
+            onDropOut({ type: 'dropout', startIndex, item: item, data });
+        } else {
+            list.splice(endIndex, 0, item);
+            setState({ data: list });
+            onDrop({
+                type: 'drop',
+                startIndex,
+                endIndex,
+                item: item,
+                data: list,
+            });
         }
     };
 
@@ -296,6 +322,7 @@ let DataTable = (props, ref) => {
                 {children}
                 <Rows
                     {...props}
+                    onReorder={applyReorder}
                     reorderable={reorderable}
                     rowsPerPage={rowsPerPage}
                     data={getData()}
@@ -326,6 +353,8 @@ DataTable.propTypes = {
     multiselect: PropTypes.bool,
     namespace: PropTypes.string,
     onChange: PropTypes.func,
+    onDrop: PropTypes.func,
+    onDropOut: PropTypes.func,
     onSelect: PropTypes.func,
     onSort: PropTypes.func,
     onUnSelect: PropTypes.func,
@@ -345,6 +374,8 @@ DataTable.defaultProps = {
     multiselect: false,
     namespace: 'ar-data-table',
     onChange: noop,
+    onDrop: noop,
+    onDropOut: noop,
     onSelect: noop,
     onSort: noop,
     onUnSelect: noop,

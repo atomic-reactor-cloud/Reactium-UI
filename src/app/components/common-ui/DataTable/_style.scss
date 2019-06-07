@@ -3,8 +3,10 @@ $ar-table-color-background-checkbox: $color-blue !default;
 $ar-table-color-background-footer: darken($color-white, 1%) !default;
 $ar-table-color-background-header: $color-white !default;
 $ar-table-color-background-heading: $color-white !default;
+$ar-table-color-background-row: $color-white !default;
 $ar-table-color-background-row-hover: darken($color-white, 0.5%) !default;
 $ar-table-color-background-search: $color-white-dark !default;
+$ar-table-color-background-drop: $color-white-dark !default;
 $ar-table-color-border: $color-grey-light !default;
 $ar-table-color-checkbox: $color-white !default;
 $ar-table-color-text: $color-gray !default;
@@ -141,6 +143,8 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
 
     &-row {
         flex-wrap: nowrap;
+        border-bottom: 1px solid $ar-table-color-border;
+        margin-bottom: -1px;
     }
 
     &-rows {
@@ -150,9 +154,8 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
 
     label.ar-data-table-row {
         user-select: none;
-        cursor: pointer;
         outline: none;
-        background-color: transparent;
+        background-color: $ar-table-color-background-row;
         transition: background-color 0.2s ease-in-out;
         position: relative;
 
@@ -216,6 +219,8 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         font-size: 14px;
         align-items: center;
         border: none;
+        border-bottom: 1px solid $ar-table-color-border;
+        margin-bottom: -1px;
 
         svg {
             fill: $ar-table-color-text-heading;
@@ -374,6 +379,16 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
             svg {
                 fill: $ar-table-color-drag-handle;
             }
+        }
+    }
+
+    &-dnd {
+        &.dropping {
+            background-color: $ar-table-color-background-drop;
+        }
+
+        .dragging {
+            border: 1px solid $ar-table-color-border;
         }
     }
 }
