@@ -121,8 +121,8 @@ let DataTable = (props, ref) => {
             const results = rankings
                 .filter(item => item.score >= ranker)
                 .map(item => {
-                    const id = isNaN(item.ref) ? id : Number(item.ref);
-                    return data[id];
+                    const id = isNaN(item.ref) ? item.ref : Number(item.ref);
+                    return data[id] || _.findWhere(data, { id });
                 });
             const ids = _.pluck(results, 'id').map(id => {
                 return isNaN(id) ? id : Number(id);
@@ -191,7 +191,7 @@ let DataTable = (props, ref) => {
     };
 
     const applyReorder = e => {
-        const { onDrop, onDropOut } = props;
+        const { deleteOnDropOut, onDrop, onDropOut } = props;
         const { data } = stateRef.current;
 
         const startIndex = op.get(e, 'source.index');
@@ -200,6 +200,10 @@ let DataTable = (props, ref) => {
         const [item] = list.splice(startIndex, 1);
 
         if (typeof endIndex === 'undefined') {
+            if (deleteOnDropOut === true) {
+                setState({ data: list });
+            }
+
             onDropOut({ type: 'dropout', startIndex, item: item, data });
         } else {
             list.splice(endIndex, 0, item);
@@ -346,6 +350,7 @@ DataTable.propTypes = {
     className: PropTypes.string,
     columns: PropTypes.object.isRequired,
     data: PropTypes.array.isRequired,
+    deleteOnDropOut: PropTypes.bool,
     filter: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     footer: PropTypes.node,
     header: PropTypes.node,
@@ -370,6 +375,7 @@ DataTable.propTypes = {
 
 DataTable.defaultProps = {
     data: [],
+    deleteOnDropOut: true,
     id: uuid(),
     multiselect: false,
     namespace: 'ar-data-table',
