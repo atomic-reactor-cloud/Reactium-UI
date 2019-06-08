@@ -375,7 +375,7 @@ DataTable.propTypes = {
 
 DataTable.defaultProps = {
     data: [],
-    deleteOnDropOut: true,
+    deleteOnDropOut: false,
     id: uuid(),
     multiselect: false,
     namespace: 'ar-data-table',

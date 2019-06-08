@@ -172,7 +172,7 @@ let Collapsible = (props, ref) => {
         container: containerRef.current,
         expand,
         setState,
-        state,
+        state: stateRef.current,
         toggle,
     }));
 

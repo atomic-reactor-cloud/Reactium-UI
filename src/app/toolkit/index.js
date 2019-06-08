@@ -381,6 +381,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'dialog-molecule': {
+                    type: 'molecule',
+                    label: 'Dialog',
+                    route: '/toolkit/components/dialog-molecule',
+                    dna: '/toolkit/components/DialogMolecule',
+                    component: require('appdir/toolkit/components/DialogMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/DialogMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'data-table-molecule': {
                     type: 'molecule',
                     label: 'Data Table',
