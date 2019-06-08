@@ -11,7 +11,6 @@ import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
     useRef,
     useState,
 } from 'react';
@@ -25,7 +24,7 @@ const ENUMS = {};
  * Hook Component: Dialog
  * -----------------------------------------------------------------------------
  */
-let Dialog = (props, ref) => {
+let Dialog = ({ children, ...props }, ref) => {
     // Refs
     const contentRef = useRef();
     const stateRef = useRef({
@@ -115,7 +114,6 @@ let Dialog = (props, ref) => {
     };
 
     const renderContent = () => {
-        const { children } = props;
         const { expanded, namespace } = stateRef.current;
 
         return (
