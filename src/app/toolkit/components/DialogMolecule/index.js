@@ -32,18 +32,22 @@ class DialogMolecule extends Component {
     };
 
     footerElements = () => [
+        <span>Are you sure?</span>,
         <Button
+            outline
+            className='ml-xs-12'
             color={Button.ENUMS.COLOR.DANGER}
             onClick={() => this.dialog.hide()}>
             Cancel
         </Button>,
+        <Button className='ml-xs-8'>Yes</Button>,
     ];
 
     render() {
         const { visible } = this.state;
 
         return (
-            <div style={{ minHeight: 500 }}>
+            <div style={{ minHeight: 400 }}>
                 <div className='flex-center pb-32'>
                     <Button
                         onClick={() => this.dialog.toggle.visible()}
@@ -58,7 +62,6 @@ class DialogMolecule extends Component {
                     onShow={this.onToggle}
                     visible={visible}
                     footer={{
-                        align: Dialog.ENUMS.ALIGN.CENTER,
                         elements: this.footerElements(),
                     }}>
                     <p className='p-xs-16'>

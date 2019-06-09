@@ -105,6 +105,7 @@ Button.ENUMS = ENUMS;
 Button.propTypes = {
     appearance: PropTypes.oneOf(Object.values(ENUMS.APPEARANCE)),
     color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
+    outline: PropTypes.bool,
     size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),
     tabIndex: PropTypes.number,
     type: PropTypes.oneOf(Object.values(ENUMS.TYPE)),
@@ -113,6 +114,7 @@ Button.propTypes = {
 Button.defaultProps = {
     appearance: null,
     color: ENUMS.COLOR.PRIMARY,
+    outline: false,
     size: ENUMS.SIZE.SM,
     tabIndex: 0,
     type: ENUMS.TYPE.BUTTON,

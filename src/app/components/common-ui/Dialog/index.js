@@ -26,7 +26,7 @@ const noop = () => {};
  * Hook Component: Dialog
  * -----------------------------------------------------------------------------
  */
-let Dialog = ({ children, pref, ...props }, ref) => {
+let Dialog = ({ children, id, pref, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const contentRef = useRef();
@@ -153,7 +153,6 @@ let Dialog = ({ children, pref, ...props }, ref) => {
             dismissable,
             expanded = true,
             header = {},
-            id,
             namespace,
         } = stateRef.current;
         const { elements = [], title } = header;
@@ -218,8 +217,11 @@ let Dialog = ({ children, pref, ...props }, ref) => {
     };
 
     const renderFooter = () => {
-        const { footer = {}, namespace } = stateRef.current;
-        const { elements = [], align } = footer;
+        let { footer = {}, namespace } = stateRef.current;
+        const { elements = [], align } = {
+            ...Dialog.defaultProps.footer,
+            ...footer,
+        };
 
         const cname = cn({
             [`${namespace}-footer`]: true,
@@ -237,6 +239,7 @@ let Dialog = ({ children, pref, ...props }, ref) => {
         const { className, dismissable, namespace, visible } = stateRef.current;
         const Content = () => (
             <div
+                id={id}
                 ref={!dismissable ? containerRef : null}
                 className={cn({
                     [className]: !!className,
@@ -305,7 +308,7 @@ Dialog.defaultProps = {
         title: 'Dialog Title',
         elements: [],
     },
-    id: uuid(),
+    id: `ar-${uuid()}`,
     namespace: 'ar-dialog',
     onCollapse: noop,
     onExpand: noop,

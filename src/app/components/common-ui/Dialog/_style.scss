@@ -2,6 +2,7 @@ $ar-dialog-color-background: $color-white !default;
 $ar-dialog-color-background-footer: darken($color-white, 1%) !default;
 $ar-dialog-color-background-header: $color-white-dark !default;
 $ar-dialog-color-border: $color-grey-light !default;
+$ar-dialog-color-footer: $color-gray !default;
 $ar-dialog-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
 $ar-dialog-botton-shadow: 0 0 0 2px rgba(lighten(nth($color-blue, 1), 5%), 0.25);
 $ar-dialog-transition: 0.25s ease-in-out;
@@ -88,11 +89,15 @@ $ar-dialog-transition: 0.25s ease-in-out;
 
     &-footer {
         background-color: $ar-dialog-color-background-footer;
-        padding: 8px 16px;
+        padding: 8px;
         display: flex;
         align-items: center;
         border-radius: 0 0 2px 2px;
         line-height: 1;
+        font-weight: 400;
+        font-size: 16px;
+        font-family: Arial;
+        color: $ar-dialog-color-footer;
 
         &:empty {
             display: none;
