@@ -7,6 +7,7 @@ import React, { Component, Fragment } from 'react';
 import Dialog from 'components/common-ui/Dialog';
 import { Feather } from 'components/common-ui/Icon';
 import Button from 'components/common-ui/Button';
+import op from 'object-path';
 
 /**
  * -----------------------------------------------------------------------------
@@ -21,13 +22,45 @@ class DialogMolecule extends Component {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = { visible: true };
+        this.dialog = null;
     }
 
+    onToggle = e => {
+        const { visible } = e.target.state;
+        this.setState({ visible });
+    };
+
+    footerElements = () => [
+        <Button
+            color={Button.ENUMS.COLOR.DANGER}
+            onClick={() => this.dialog.hide()}>
+            Cancel
+        </Button>,
+    ];
+
     render() {
+        const { visible } = this.state;
+
         return (
             <div style={{ minHeight: 500 }}>
-                <Dialog>
+                <div className='flex-center pb-32'>
+                    <Button
+                        onClick={() => this.dialog.toggle.visible()}
+                        style={{ width: 140 }}>
+                        {visible === true ? 'Hide Dialog' : 'Show Dialog'}
+                    </Button>
+                </div>
+                <Dialog
+                    ref={elm => (this.dialog = elm)}
+                    pref='toolkit.dialog-1'
+                    onHide={this.onToggle}
+                    onShow={this.onToggle}
+                    visible={visible}
+                    footer={{
+                        align: Dialog.ENUMS.ALIGN.CENTER,
+                        elements: this.footerElements(),
+                    }}>
                     <p className='p-xs-16'>
                         At vero eos et accusamus et iusto odio dignissimos
                         ducimus qui blanditiis praesentium voluptatum deleniti

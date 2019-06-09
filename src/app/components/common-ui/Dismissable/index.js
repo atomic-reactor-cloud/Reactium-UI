@@ -11,10 +11,10 @@ import React, {
 
 const ENUMS = {
     EVENT: {
-        BEFORE_COLLAPSE: 'beforeCollapse',
-        BEFORE_EXPAND: 'beforeExpand',
-        COLLAPSE: 'collapse',
-        EXPAND: 'expand',
+        BEFORE_HIDE: 'beforeHide',
+        BEFORE_SHOW: 'beforeShow',
+        HIDE: 'hide',
+        SHOW: 'show',
     },
 };
 
@@ -22,10 +22,10 @@ const noop = () => {};
 
 /**
  * -----------------------------------------------------------------------------
- * Hook Component: Collapsible
+ * Hook Component: Dismissable
  * -----------------------------------------------------------------------------
  */
-let Collapsible = (props, ref) => {
+let Dismissable = ({ children, ...props }, ref) => {
     // Refs
     const stateRef = useRef({
         prevState: {},
@@ -53,10 +53,10 @@ let Collapsible = (props, ref) => {
         setNewState(stateRef.current);
     };
 
-    const collapse = () => {
-        const { animation, expanded } = stateRef.current;
+    const hide = () => {
+        const { animation, visible } = stateRef.current;
 
-        if (expanded !== true) {
+        if (visible !== true) {
             setState({ animation: null });
             return Promise.resolve();
         }
@@ -68,35 +68,32 @@ let Collapsible = (props, ref) => {
         const {
             animationEase,
             animationSpeed,
-            onBeforeCollapse,
-            onCollapse,
+            onBeforeHide,
+            onHide,
         } = stateRef.current;
 
         const container = containerRef.current;
 
-        container.style.height = 'auto';
         container.style.display = 'block';
-        container.style.overflow = 'hidden';
-        container.classList.remove('expanded');
 
-        onBeforeCollapse({
+        onBeforeHide({
             target: container,
-            type: ENUMS.EVENT.BEFORE_COLLAPSE,
+            type: ENUMS.EVENT.BEFORE_HIDE,
         });
 
         const tween = new Promise(resolve =>
             TweenMax.to(container, animationSpeed, {
                 ease: animationEase,
-                height: 0,
+                opacity: 0,
                 onComplete: () => {
                     const evt = {
                         target: container,
-                        type: ENUMS.EVENT.COLLAPSE,
+                        type: ENUMS.EVENT.HIDE,
                     };
 
                     container.removeAttribute('style');
-                    setState({ animation: null, expanded: false });
-                    onCollapse(evt);
+                    setState({ animation: null, visible: false });
+                    onHide(evt);
                     resolve();
                 },
             }),
@@ -107,10 +104,10 @@ let Collapsible = (props, ref) => {
         return tween;
     };
 
-    const expand = () => {
-        const { expanded, animation } = stateRef.current;
+    const show = () => {
+        const { visible, animation } = stateRef.current;
 
-        if (expanded === true) {
+        if (visible === true) {
             setState({ animation: null });
             return Promise.resolve();
         }
@@ -122,35 +119,33 @@ let Collapsible = (props, ref) => {
         const {
             animationEase,
             animationSpeed,
-            onBeforeExpand,
-            onExpand,
+            onBeforeShow,
+            onShow,
         } = stateRef.current;
 
         const container = containerRef.current;
 
-        container.style.height = 'auto';
         container.style.display = 'block';
-        container.style.overflow = 'hidden';
-        container.classList.remove('expanded');
+        container.classList.remove('visible');
 
-        onBeforeExpand({
+        onBeforeShow({
             target: container,
-            type: ENUMS.EVENT.BEFORE_EXPAND,
+            type: ENUMS.EVENT.BEFORE_SHOW,
         });
 
         const tween = new Promise(resolve =>
-            TweenMax.from(container, animationSpeed, {
+            TweenMax.to(container, animationSpeed, {
                 ease: animationEase,
-                height: 0,
+                opacity: 1,
                 onComplete: () => {
                     const evt = {
                         target: container,
-                        type: ENUMS.EVENT.EXPAND,
+                        type: ENUMS.EVENT.SHOW,
                     };
 
                     container.removeAttribute('style');
-                    setState({ expanded: true, animation: null });
-                    onExpand(evt);
+                    setState({ visible: true, animation: null });
+                    onShow(evt);
                     resolve();
                 },
             }),
@@ -162,15 +157,15 @@ let Collapsible = (props, ref) => {
     };
 
     const toggle = e => {
-        const { expanded } = stateRef.current;
-        return expanded !== true ? expand(e) : collapse(e);
+        const { visible } = stateRef.current;
+        return visible !== true ? show(e) : hide(e);
     };
 
     // External Interface
     useImperativeHandle(ref, () => ({
-        collapse,
+        hide,
         container: containerRef.current,
-        expand,
+        show,
         setState,
         state: stateRef.current,
         toggle,
@@ -179,13 +174,12 @@ let Collapsible = (props, ref) => {
     useEffect(() => setState(props), Object.values(props));
 
     const render = () => {
-        const { children } = props;
-        let { className, expanded, namespace } = stateRef.current;
+        let { className, visible, namespace } = stateRef.current;
 
         className = cn({
             [className]: !!className,
             [namespace]: true,
-            expanded,
+            visible,
         });
 
         return (
@@ -198,32 +192,32 @@ let Collapsible = (props, ref) => {
     return render();
 };
 
-Collapsible = forwardRef(Collapsible);
+Dismissable = forwardRef(Dismissable);
 
-Collapsible.ENUMS = ENUMS;
+Dismissable.ENUMS = ENUMS;
 
-Collapsible.propTypes = {
+Dismissable.propTypes = {
     animationEase: PropTypes.object,
     animationSpeed: PropTypes.number,
     className: PropTypes.string,
-    expanded: PropTypes.bool,
     namespace: PropTypes.string,
-    onBeforeCollapse: PropTypes.func,
-    onBeforeExpand: PropTypes.func,
-    onCollapse: PropTypes.func,
-    onExpand: PropTypes.func,
+    onBeforeHide: PropTypes.func,
+    onBeforeShow: PropTypes.func,
+    onHide: PropTypes.func,
+    onShow: PropTypes.func,
+    visible: PropTypes.bool,
 };
 
-Collapsible.defaultProps = {
+Dismissable.defaultProps = {
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
     className: null,
-    expanded: true,
-    namespace: 'ar-collapsible',
-    onBeforeCollapse: noop,
-    onBeforeExpand: noop,
-    onCollapse: noop,
-    onExpand: noop,
+    namespace: 'ar-dismissable',
+    onBeforeHide: noop,
+    onBeforeShow: noop,
+    onHide: noop,
+    onShow: noop,
+    visible: false,
 };
 
-export { Collapsible as default };
+export { Dismissable as default };

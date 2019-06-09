@@ -1,5 +1,6 @@
 import React, {
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useRef,
     useState,
@@ -15,21 +16,51 @@ import PropTypes from 'prop-types';
  * Functional Component: Button
  * -----------------------------------------------------------------------------
  */
-let Button = (props, ref) => {
-    const [state, setNewState] = useState(props);
+let Button = ({ children, ...props }, ref) => {
+    // Refs
+    const containerRef = useRef();
+    const stateRef = useRef({
+        prevState: {},
+        ...props,
+    });
 
-    const setState = newState => setNewState({ ...state, ...newState });
+    // State
+    const [state, setNewState] = useState(stateRef.current);
 
-    const elementRef = useRef();
+    // Internal Interface
+    const setState = newState => {
+        // Get the previous state
+        const prevState = { ...stateRef.current };
 
+        // Update the stateRef
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+            prevState,
+        };
+
+        // Trigger useEffect()
+        setNewState(stateRef.current);
+    };
+
+    // External Interface
     useImperativeHandle(ref, () => ({
-        element: elementRef.current,
+        element: containerRef.current,
         setState,
         state,
     }));
 
+    // Side Effects
+    useEffect(() => setState(props), Object.values(props));
+
     const cname = () => {
-        const { appearance, className, color, outline, size } = state;
+        const {
+            appearance,
+            className,
+            color,
+            outline,
+            size,
+        } = stateRef.current;
         const c = _.compact([
             'btn',
             color,
@@ -42,23 +73,23 @@ let Button = (props, ref) => {
     };
 
     const render = () => {
-        const { children } = state;
         const exclude = [
             'appearance',
             'children',
             'className',
             'color',
             'outline',
+            'prevState',
             'size',
         ];
 
-        const elementProps = { ...state };
+        const elementProps = { ...stateRef.current };
         exclude.forEach(key => {
             delete elementProps[key];
         });
 
         return (
-            <button className={cname()} {...elementProps} ref={elementRef}>
+            <button className={cname()} {...elementProps} ref={containerRef}>
                 {children}
             </button>
         );

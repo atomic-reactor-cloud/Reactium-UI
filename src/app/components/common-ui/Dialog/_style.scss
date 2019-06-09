@@ -10,11 +10,6 @@ $ar-dialog-transition: 0.25s ease-in-out;
     width: 100%;
     box-shadow: $ar-dialog-shadow;
     border-radius: 2px;
-    display: none;
-
-    &.visible {
-        display: block;
-    }
 
     &-header {
         background-color: $ar-dialog-color-background-header;
@@ -66,6 +61,7 @@ $ar-dialog-transition: 0.25s ease-in-out;
             svg {
                 width: 18px;
                 height: 18px;
+                transition: transform $ar-dialog-transition;
             }
 
             &:hover {
@@ -80,7 +76,7 @@ $ar-dialog-transition: 0.25s ease-in-out;
 
         &.expanded button.toggle {
             svg {
-                transform: rotateZ(180deg);
+                transform: rotateX(180deg);
             }
         }
     }

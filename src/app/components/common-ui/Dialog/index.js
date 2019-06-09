@@ -3,9 +3,13 @@ import uuid from 'uuid/v4';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
+import Prefs from 'components/common-ui/Prefs';
 import Button from 'components/common-ui/Button';
 import { Feather } from 'components/common-ui/Icon';
 import Collapsible from 'components/common-ui/Collapsible';
+import Dismissable from 'components/common-ui/Dismissable';
+
+import ENUMS from './enums';
 
 import React, {
     forwardRef,
@@ -17,26 +21,19 @@ import React, {
 
 const noop = () => {};
 
-const ENUMS = {
-    ALIGN: {
-        LEFT: 'left',
-        RIGHT: 'right',
-        CENTER: 'center',
-    },
-};
-
 /**
  * -----------------------------------------------------------------------------
  * Hook Component: Dialog
  * -----------------------------------------------------------------------------
  */
-let Dialog = ({ children, ...props }, ref) => {
+let Dialog = ({ children, pref, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const contentRef = useRef();
     const stateRef = useRef({
         prevState: {},
         ...props,
+        ...Prefs.get(pref),
     });
 
     // State
@@ -56,15 +53,32 @@ let Dialog = ({ children, ...props }, ref) => {
 
         // Trigger useEffect()
         setNewState(stateRef.current);
+
+        // Update prefs
+        setPrefs();
+    };
+
+    const setPrefs = () => {
+        const { expanded } = stateRef.current;
+        if (pref) {
+            Prefs.set(pref, { expanded });
+        }
     };
 
     // External Interface
     useImperativeHandle(ref, () => ({
+        collapse: () => contentRef.current.collapse(),
         container: containerRef,
         content: contentRef,
+        expand: () => contentRef.current.expand(),
+        hide: () => containerRef.current.hide(),
+        show: () => containerRef.current.show(),
         setState,
         state,
-        toggle: () => contentRef.current.toggle(),
+        toggle: {
+            collapse: () => contentRef.current.toggle(),
+            visible: () => containerRef.current.toggle(),
+        },
     }));
 
     // Side Effects
@@ -80,8 +94,11 @@ let Dialog = ({ children, ...props }, ref) => {
         }
 
         if (dismiss) {
-            // Do hide
+            containerRef.current
+                .hide()
+                .then(() => setState({ visible: false }));
         }
+
         callback(e);
     };
 
@@ -97,6 +114,20 @@ let Dialog = ({ children, ...props }, ref) => {
         const { onExpand } = stateRef.current;
         setState({ expanded: true });
         onExpand(e);
+    };
+
+    const _onHide = e => {
+        e.target = containerRef.current;
+        const { onHide } = stateRef.current;
+        setState({ visible: false });
+        onHide(e);
+    };
+
+    const _onShow = e => {
+        e.target = containerRef.current;
+        const { onShow } = stateRef.current;
+        setState({ visible: true });
+        onShow(e);
     };
 
     const _clone = elements =>
@@ -120,7 +151,7 @@ let Dialog = ({ children, ...props }, ref) => {
         const {
             collapsible,
             dismissable,
-            expanded,
+            expanded = true,
             header = {},
             id,
             namespace,
@@ -203,11 +234,10 @@ let Dialog = ({ children, ...props }, ref) => {
     };
 
     const render = () => {
-        const { className, namespace, visible = false } = stateRef.current;
-
-        return (
+        const { className, dismissable, namespace, visible } = stateRef.current;
+        const Content = () => (
             <div
-                ref={containerRef}
+                ref={!dismissable ? containerRef : null}
                 className={cn({
                     [className]: !!className,
                     [namespace]: !!namespace,
@@ -216,6 +246,18 @@ let Dialog = ({ children, ...props }, ref) => {
                 {renderHeader()}
                 {renderContent()}
             </div>
+        );
+
+        return dismissable === true ? (
+            <Dismissable
+                visible={visible}
+                ref={containerRef}
+                onHide={_onHide}
+                onShow={_onShow}>
+                <Content />
+            </Dismissable>
+        ) : (
+            <Content />
         );
     };
 
@@ -244,6 +286,9 @@ Dialog.propTypes = {
     namespace: PropTypes.string,
     onCollapse: PropTypes.func,
     onExpand: PropTypes.func,
+    onHide: PropTypes.func,
+    onShow: PropTypes.func,
+    pref: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     style: PropTypes.object,
     visible: PropTypes.bool,
 };
@@ -252,7 +297,6 @@ Dialog.defaultProps = {
     collapsible: true,
     debug: false,
     dismissable: true,
-    expanded: true,
     footer: {
         align: ENUMS.ALIGN.RIGHT,
         elements: [],
@@ -265,8 +309,10 @@ Dialog.defaultProps = {
     namespace: 'ar-dialog',
     onCollapse: noop,
     onExpand: noop,
+    onHide: noop,
+    onShow: noop,
     style: {},
-    visible: true,
+    visible: false,
 };
 
 export { Dialog as default };
