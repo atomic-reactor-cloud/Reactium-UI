@@ -3,11 +3,18 @@ $ar-dialog-color-background-footer: darken($color-white, 1%) !default;
 $ar-dialog-color-background-header: $color-white-dark !default;
 $ar-dialog-color-border: $color-grey-light !default;
 $ar-dialog-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
+$ar-dialog-botton-shadow: 0 0 0 2px rgba(lighten(nth($color-blue, 1), 5%), 0.25);
+$ar-dialog-transition: 0.25s ease-in-out;
 
 .ar-dialog {
     width: 100%;
     box-shadow: $ar-dialog-shadow;
     border-radius: 2px;
+    display: none;
+
+    &.visible {
+        display: block;
+    }
 
     &-header {
         background-color: $ar-dialog-color-background-header;
@@ -17,6 +24,7 @@ $ar-dialog-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         align-items: stretch;
         border-radius: 2px 2px 0 0;
         flex-wrap: nowrap;
+        min-height: 42px;
 
         > * {
             flex-grow: 0;
@@ -38,16 +46,42 @@ $ar-dialog-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
             display: flex;
             justify-content: flex-end;
             align-items: stretch;
-        }
 
-        &.expanded {
-            .ar-dialog-toggle {
-                transform: rotateZ(180deg);
+            &:empty {
+                display: none;
             }
         }
 
         &:empty {
             display: none;
+        }
+
+        &-btn {
+            width: 42px;
+            padding: 0;
+            border-left: 1px solid $ar-dialog-color-border;
+            transition: opacity $ar-dialog-transition,
+                box-shadow $ar-dialog-transition;
+
+            svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            &:hover {
+                opacity: 0.7;
+            }
+
+            &:focus {
+                box-shadow: $ar-dialog-botton-shadow;
+                z-index: 1000;
+            }
+        }
+
+        &.expanded button.toggle {
+            svg {
+                transform: rotateZ(180deg);
+            }
         }
     }
 
@@ -62,6 +96,7 @@ $ar-dialog-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         display: flex;
         align-items: center;
         border-radius: 0 0 2px 2px;
+        line-height: 1;
 
         &:empty {
             display: none;

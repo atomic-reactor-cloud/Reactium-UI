@@ -17,7 +17,13 @@ import React, {
 
 const noop = () => {};
 
-const ENUMS = {};
+const ENUMS = {
+    ALIGN: {
+        LEFT: 'left',
+        RIGHT: 'right',
+        CENTER: 'center',
+    },
+};
 
 /**
  * -----------------------------------------------------------------------------
@@ -26,6 +32,7 @@ const ENUMS = {};
  */
 let Dialog = ({ children, ...props }, ref) => {
     // Refs
+    const containerRef = useRef();
     const contentRef = useRef();
     const stateRef = useRef({
         prevState: {},
@@ -53,22 +60,29 @@ let Dialog = ({ children, ...props }, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
+        container: containerRef,
+        content: contentRef,
         setState,
         state,
+        toggle: () => contentRef.current.toggle(),
     }));
 
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
 
     // Handlers
-    const _onHeaderButtonClick = (e, callback) => {
-        const { toggle } = e.currentTarget.dataset;
+    const _onButtonClick = (e, callback = noop) => {
+        const { dismiss, toggle } = e.currentTarget.dataset;
 
         if (toggle) {
             contentRef.current.toggle();
-        } else {
-            callback(e);
+            return;
         }
+
+        if (dismiss) {
+            // Do hide
+        }
+        callback(e);
     };
 
     const _onCollapse = e => {
@@ -85,10 +99,33 @@ let Dialog = ({ children, ...props }, ref) => {
         onExpand(e);
     };
 
+    const _clone = elements =>
+        React.Children.map(elements, (element, i) => {
+            const { onClick } = element.props;
+            const key = `dialog-clone-${uuid()}`;
+            const newProps = {
+                ...element.props,
+                key,
+            };
+
+            if (onClick) {
+                newProps.onClick = e => _onButtonClick(e, onClick);
+            }
+
+            return React.cloneElement(element, newProps);
+        });
+
     // Renderers
     const renderHeader = () => {
-        const { header = {}, expanded, namespace } = stateRef.current;
-        const { buttons = [], title } = header;
+        const {
+            collapsible,
+            dismissable,
+            expanded,
+            header = {},
+            id,
+            namespace,
+        } = stateRef.current;
+        const { elements = [], title } = header;
 
         const cname = cn({
             [`${namespace}-header`]: true,
@@ -98,15 +135,29 @@ let Dialog = ({ children, ...props }, ref) => {
         return (
             <div className={cname}>
                 {title && <h2>{title}</h2>}
-                {buttons.length > 0 && (
+                {(elements.length > 0 || collapsible || dismissable) && (
                     <div className={`${namespace}-header-buttons`}>
-                        {React.Children.map(buttons, (element, i) => {
-                            const { onClick = noop } = element.props;
-                            return React.cloneElement(element, {
-                                ...element.props,
-                                onClick: e => _onHeaderButtonClick(e, onClick),
-                            });
-                        })}
+                        {elements.length > 0 && _clone(elements)}
+                        {collapsible === true && (
+                            <Button
+                                data-toggle
+                                onClick={_onButtonClick}
+                                size={Button.ENUMS.SIZE.XS}
+                                color={Button.ENUMS.COLOR.CLEAR}
+                                className='ar-dialog-header-btn toggle'>
+                                <Feather.ChevronDown />
+                            </Button>
+                        )}
+                        {dismissable === true && (
+                            <Button
+                                data-dismiss
+                                onClick={_onButtonClick}
+                                size={Button.ENUMS.SIZE.XS}
+                                color={Button.ENUMS.COLOR.CLEAR}
+                                className='ar-dialog-header-btn dismiss'>
+                                <Feather.X />
+                            </Button>
+                        )}
                     </div>
                 )}
             </div>
@@ -114,9 +165,9 @@ let Dialog = ({ children, ...props }, ref) => {
     };
 
     const renderContent = () => {
-        const { expanded, namespace } = stateRef.current;
+        const { collapsible, expanded, namespace } = stateRef.current;
 
-        return (
+        return collapsible ? (
             <Collapsible
                 ref={contentRef}
                 expanded={expanded}
@@ -125,22 +176,42 @@ let Dialog = ({ children, ...props }, ref) => {
                 <div className={`${namespace}-content`}>{children}</div>
                 {renderFooter()}
             </Collapsible>
+        ) : (
+            <>
+                <div ref={contentRef} className={`${namespace}-content`}>
+                    {children}
+                </div>
+                {renderFooter()}
+            </>
         );
     };
 
     const renderFooter = () => {
-        const { footer, namespace } = stateRef.current;
-        return <div className={`${namespace}-footer`}>{footer}</div>;
+        const { footer = {}, namespace } = stateRef.current;
+        const { elements = [], align } = footer;
+
+        const cname = cn({
+            [`${namespace}-footer`]: true,
+            [`flex-${align}`]: true,
+        });
+
+        return (
+            <div className={cname}>
+                {elements.length > 0 && _clone(elements)}
+            </div>
+        );
     };
 
     const render = () => {
-        const { className, namespace } = stateRef.current;
+        const { className, namespace, visible = false } = stateRef.current;
 
         return (
             <div
+                ref={containerRef}
                 className={cn({
                     [className]: !!className,
                     [namespace]: !!namespace,
+                    visible,
                 })}>
                 {renderHeader()}
                 {renderContent()}
@@ -157,42 +228,45 @@ Dialog.ENUMS = ENUMS;
 
 Dialog.propTypes = {
     className: PropTypes.string,
+    collapsible: PropTypes.bool,
     debug: PropTypes.bool,
+    dismissable: PropTypes.bool,
     expanded: PropTypes.bool,
-    footer: PropTypes.node,
+    footer: PropTypes.shape({
+        align: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
+        elements: PropTypes.arrayOf(PropTypes.element),
+    }),
     header: PropTypes.shape({
         title: PropTypes.node,
-        buttons: PropTypes.arrayOf(PropTypes.element),
+        elements: PropTypes.arrayOf(PropTypes.element),
     }),
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     namespace: PropTypes.string,
     onCollapse: PropTypes.func,
     onExpand: PropTypes.func,
     style: PropTypes.object,
+    visible: PropTypes.bool,
 };
 
 Dialog.defaultProps = {
+    collapsible: true,
     debug: false,
+    dismissable: true,
     expanded: true,
+    footer: {
+        align: ENUMS.ALIGN.RIGHT,
+        elements: [],
+    },
     header: {
-        title: 'Dialog',
-        buttons: [
-            <Button
-                type='button'
-                data-toggle={true}
-                size={Button.ENUMS.SIZE.XS}
-                className='ar-dialog-toggle'
-                color={Button.ENUMS.COLOR.CLEAR}
-                key={`${uuid()}-ar-dialog-toggle`}>
-                <Feather.ChevronDown width={16} height={16} />
-            </Button>,
-        ],
+        title: 'Dialog Title',
+        elements: [],
     },
     id: uuid(),
     namespace: 'ar-dialog',
     onCollapse: noop,
     onExpand: noop,
     style: {},
+    visible: true,
 };
 
 export { Dialog as default };
