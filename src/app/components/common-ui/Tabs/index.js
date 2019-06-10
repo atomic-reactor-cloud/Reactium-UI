@@ -3,7 +3,6 @@ import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
-import Button from 'components/common-ui/Button';
 import Dialog from 'components/common-ui/Dialog';
 
 import React, {
@@ -22,12 +21,11 @@ const noop = () => {};
  * Hook Component: Tabs
  * -----------------------------------------------------------------------------
  */
-let Tabs = ({ activeTab, data = {}, id, namespace, ...props }, ref) => {
+let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
-        prevState: {},
-        activeTab,
+        prevState: { activeTab: -1 },
         ...props,
     });
 
@@ -50,9 +48,19 @@ let Tabs = ({ activeTab, data = {}, id, namespace, ...props }, ref) => {
         setNewState(stateRef.current);
     };
 
+    const _onChange = e => {
+        const { activeTab, onChange, prevState } = stateRef.current;
+
+        if (activeTab === prevState.activeTab) {
+            return;
+        }
+
+        const evt = { type: 'change', activeTab, state: stateRef.current };
+        onChange(evt);
+    };
+
     const _onTabClick = (e, index, callback = noop) => {
         const { activeTab } = stateRef.current;
-
         if (activeTab !== index) {
             setState({ activeTab: index });
         }
@@ -67,24 +75,81 @@ let Tabs = ({ activeTab, data = {}, id, namespace, ...props }, ref) => {
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
 
+    useEffect(() => _onChange(), Object.values(state));
+
     const renderContent = () => {
-        return <div className={`${namespace}-panels`} id={`${id}-panels`} />;
+        const { activeTab = 0 } = stateRef.current;
+        return (
+            <div className={`${namespace}-panels`} id={`${id}-panels`}>
+                {data.map((item, i) => {
+                    const { content } = item;
+
+                    if (!content) {
+                        return null;
+                    }
+
+                    const active = activeTab === i;
+                    const key = `${id}-panel-${i}`;
+                    const cname = cn({
+                        [`${namespace}-panel`]: true,
+                        active,
+                    });
+
+                    return (
+                        <div key={key} className={cname}>
+                            {content}
+                        </div>
+                    );
+                })}
+            </div>
+        );
     };
 
     const renderTabs = () => {
+        const { activeTab = 0, disabled = false } = stateRef.current;
+
         return (
             <div className={`${namespace}-bar`} id={`${id}-bar`}>
-                {Object.entries(data).map(([index, { tab }], i) => {
+                {data.map((item, i) => {
+                    const { id: index = i, tab } = item;
+
+                    if (!tab) {
+                        return null;
+                    }
+
+                    const active = activeTab === i;
                     const key = `${id}-tab-${i}`;
+                    let cname = cn({
+                        [namespace]: true,
+                        active,
+                    });
 
                     if (typeof tab === 'string') {
+                        return (
+                            <button
+                                disabled={disabled}
+                                key={key}
+                                type='button'
+                                className={cname}
+                                onClick={e => _onTabClick(e, i)}>
+                                {tab}
+                            </button>
+                        );
                     } else {
-                        const { onClick } = tab.props;
+                        const { className, onClick } = tab.props;
+
+                        cname = cn({
+                            [className]: !!className,
+                            [namespace]: true,
+                            active,
+                        });
 
                         return React.cloneElement(tab, {
                             ...tab.props,
                             key,
-                            onClick: () => _onTabClick(e, index, onClick),
+                            disabled,
+                            className: cname,
+                            onClick: e => _onTabClick(e, i, onClick),
                         });
                     }
                 })}
@@ -95,7 +160,18 @@ let Tabs = ({ activeTab, data = {}, id, namespace, ...props }, ref) => {
     const render = () => {
         const { namespace } = stateRef.current;
 
-        return <Dialog {...props}>{renderContent()}</Dialog>;
+        const header = {
+            elements: [renderTabs()],
+        };
+        const dprops = { ...props };
+        delete dprops.disabled;
+        delete dprops.activeTab;
+
+        return (
+            <Dialog {...dprops} header={header}>
+                {renderContent()}
+            </Dialog>
+        );
     };
 
     return render();
@@ -105,34 +181,20 @@ Tabs = forwardRef(Tabs);
 
 Tabs.propTypes = {
     ...Dialog.propTypes,
-    activeTab: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    data: PropTypes.shape({
-        tab: PropTypes.node.isRequired,
-        content: PropTypes.node.isRequired,
-    }).isRequired,
+    activeTab: PropTypes.number,
+    data: PropTypes.array.isRequired,
     disabled: PropTypes.bool,
+    onChange: PropTypes.func,
 };
 
 Tabs.defaultProps = {
     ...Dialog.defaultProps,
-    activeTab: 'tab1',
-    data: {
-        tab1: {
-            tab: 'Tab 1',
-            content: 'Content 1',
-        },
-        tab2: {
-            tab: 'Tab 2',
-            content: 'Content 2',
-        },
-        tab3: {
-            tab: 'Tab 3',
-            content: 'Content 3',
-        },
-    },
+    activeTab: 0,
+    data: [],
     disabled: false,
     id: `ar-tab-${uuid()}`,
     namespace: 'ar-tab',
+    onChange: noop,
 };
 
 export { Tabs as default };

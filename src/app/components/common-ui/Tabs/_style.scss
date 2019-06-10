@@ -1,9 +1,76 @@
+$ar-tab-color: $color-gray-dark;
+$ar-tab-color-active: $color-white;
+$ar-tab-color-background: $color-white-dark;
+$ar-tab-color-border: $color-grey-light;
+$ar-tab-transition: 0.5s ease-in-out;
+
 .ar-tab {
+
+    border: none;
+    color: $ar-tab-color;
+    background-color: $ar-tab-color-background;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 24px;
+    position: relative;
+    transition: background-color $ar-tab-transition;
+    user-select: none;
+    font-size: 14px;
+
+    &.active {
+        z-index: 1;
+        background-color: $ar-tab-color-active;
+        pointer-events: none;
+
+        cursor: default;
+    }
+
+    @include breakpoint(sm) {
+        border-right: 1px solid $ar-tab-color-border;
+
+        &.active {
+            border-top: none;
+            padding: 10px 24px 11px 24px;
+            margin-bottom: -1px;
+        }
+    }
+
     &-bar {
         display: inline-flex;
         flex-grow: 1;
-        height: 43px;
-        margin-bottom: -1px;
+        flex-direction: column;
+        justify-content: flex-start;
         align-items: stretch;
+        border-bottom: 1px solid $ar-tab-color-border;
+        margin-bottom: -1px;
+
+        @include breakpoint(sm) {
+            flex-direction: row;
+        }
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &-panel {
+        display: none;
+
+        &.active {
+            display: block;
+        }
+
+        &:empty {
+            display: none;
+        }
+    }
+
+    &-panels {
+        display: block;
+
+        &:empty {
+            display: none;
+        }
     }
 }

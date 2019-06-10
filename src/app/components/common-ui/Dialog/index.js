@@ -156,12 +156,14 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
             namespace,
         } = stateRef.current;
 
-        const { elements = [], title } = header;
+        let { elements = [], title } = header;
 
         const cname = cn({
             [`${namespace}-header`]: true,
             expanded,
         });
+
+        title = typeof title === 'string' ? <h2>{title}</h2> : title;
 
         return (
             <div className={cname}>
@@ -275,7 +277,6 @@ Dialog.ENUMS = ENUMS;
 Dialog.propTypes = {
     className: PropTypes.string,
     collapsible: PropTypes.bool,
-    debug: PropTypes.bool,
     dismissable: PropTypes.bool,
     expanded: PropTypes.bool,
     footer: PropTypes.shape({
@@ -299,7 +300,6 @@ Dialog.propTypes = {
 
 Dialog.defaultProps = {
     collapsible: true,
-    debug: false,
     footer: {
         align: ENUMS.ALIGN.RIGHT,
         elements: [],

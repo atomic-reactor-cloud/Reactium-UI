@@ -15,19 +15,31 @@ import { Button, Collapsible, Icon, Tabs } from 'components/common-ui';
 export default class TabMolecule extends Component {
     static defaultProps = {
         expanded: true,
+        data: [
+            {
+                id: 'tab1',
+                tab: <button type='button'>Test</button>,
+                content: <div className='p-xs-16'>Content 1</div>,
+            },
+            {
+                id: 'tab2',
+                tab: 'Tab 2',
+                content: <div className='p-xs-16'>Content 2</div>,
+            },
+            {
+                id: 'tab3',
+                tab: 'Tab 3',
+                content: <div className='p-xs-16'>Content 3</div>,
+            },
+        ],
     };
 
     static dependencies() {
         return typeof module !== 'undefined' ? module.children : [];
     }
 
-    constructor(props) {
-        super(props);
-        this.tabs = null;
-        this.toggleButton = null;
-    }
-
     render() {
-        return <Tabs ref={elm => (this.tabs = elm)} />;
+        const { data } = this.props;
+        return <Tabs activeTab={0} data={data} />;
     }
 }

@@ -57,10 +57,12 @@ class DialogMolecule extends Component {
                 </div>
                 <Dialog
                     ref={elm => (this.dialog = elm)}
+                    dismissable
                     pref='toolkit.dialog-1'
                     onHide={this.onToggle}
                     onShow={this.onToggle}
                     visible={visible}
+                    header={{ title: 'Confirm Something' }}
                     footer={{
                         elements: this.footerElements(),
                     }}>
