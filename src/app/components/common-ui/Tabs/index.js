@@ -21,7 +21,7 @@ const noop = () => {};
  * Hook Component: Tabs
  * -----------------------------------------------------------------------------
  */
-let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
+let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
     // Refs
     const dialogRef = useRef();
     const stateRef = useRef({
@@ -154,6 +154,7 @@ let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
                         });
                     }
                 })}
+                {children}
             </div>
         );
     };
