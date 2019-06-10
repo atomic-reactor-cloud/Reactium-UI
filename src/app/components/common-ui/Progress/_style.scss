@@ -16,17 +16,13 @@ $ar-progress-shadow-inner: inset 0 0 5px 1px rgba($color-black, 0.05) !default;
     box-shadow: $ar-progress-shadow-inner;
     border-radius: $ar-progress-radius;
 
-    &-bar {
+    .bar {
         background-color: $ar-progress-color-bar;
         box-shadow: $ar-progress-shadow;
         display: flex;
         justify-content: flex-end;
         align-items: center;
         max-width: 100%;
-    }
-
-    &-pill {
-        border-radius: $ar-progress-radius-pill;
     }
 
     .label {
@@ -37,11 +33,16 @@ $ar-progress-shadow-inner: inset 0 0 5px 1px rgba($color-black, 0.05) !default;
         font-size: 12px;
         font-family: monospace;
         border: 2px solid transparent;
+        user-select: none;
+    }
+
+    &.pill {
+        border-radius: $ar-progress-radius-pill;
     }
 
     @each $clr-name, $clr-codes in $buttons {
-        &-bar {
-            &.#{$clr-name} {
+        &.#{$clr-name} {
+            .bar {
                 color: nth($clr-codes, 3);
                 box-shadow: 0 0 1px 1px rgba(nth($clr-codes, 2), 0.5);
                 @include h-gradient(nth($clr-codes, 1), nth($clr-codes, 2));

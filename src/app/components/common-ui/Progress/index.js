@@ -1,5 +1,3 @@
-import uuid from 'uuid/v4';
-import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
@@ -91,27 +89,25 @@ let Progress = ({ children, ...props }, ref) => {
 
         const cname = cn({
             [size]: !!size,
+            [color]: !!color,
             [namespace]: !!namespace,
             [className]: !!className,
-            [`${namespace}-${appearance}`]: !!appearance,
+            [appearance]: !!appearance,
         });
 
-        const barCname = cn({
-            [`${namespace}-bar`]: true,
-            [color]: !!color,
-        });
+        const width = Math.min(100, value * 100) + '%';
 
         return (
             <div ref={containerRef} className={cname}>
-                <input
-                    type='hidden'
-                    value={value}
-                    name={name}
-                    onChange={_onChange}
-                />
-                <div
-                    className={barCname}
-                    style={{ width: Math.min(100, value * 100) + '%' }}>
+                {name && (
+                    <input
+                        type='hidden'
+                        value={value}
+                        name={name}
+                        onChange={_onChange}
+                    />
+                )}
+                <div className='bar' style={{ width }}>
                     {children && <span className='label'>{children}</span>}
                 </div>
             </div>
@@ -139,7 +135,6 @@ Progress.propTypes = {
 
 Progress.defaultProps = {
     color: ENUMS.COLOR.PRIMARY,
-    name: uuid(),
     namespace: 'ar-progress',
     onChange: noop,
     onComplete: noop,

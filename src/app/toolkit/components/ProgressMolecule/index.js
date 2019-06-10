@@ -76,6 +76,30 @@ class ProgressMolecule extends Component {
                         50%
                     </Progress>
                 </div>
+
+                {Object.values(Progress.ENUMS.COLOR).map((color, i) => {
+                    if (i === 0) {
+                        return null;
+                    }
+
+                    const v =
+                        i / (Object.values(Progress.ENUMS.COLOR).length - 1);
+                    const p = Math.min(100, Math.ceil(v * 100));
+
+                    return (
+                        <div
+                            className='mb-xs-20'
+                            key={`progress-${color}-${i}`}>
+                            <Progress
+                                color={color}
+                                size={Progress.ENUMS.SIZE.XS}
+                                value={v}>
+                                {p}%
+                            </Progress>
+                        </div>
+                    );
+                })}
+
                 <div className='row'>
                     <div className='col-xs-12 col-sm-10 col-md-11'>
                         <Progress
