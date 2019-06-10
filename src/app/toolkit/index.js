@@ -374,6 +374,38 @@ module.exports = {
                     readme: require('appdir/toolkit/form/Select/readme')
                         .default,
                 },
+                'radio-atom': {
+                    type: 'atom',
+                    label: 'Radio',
+                    route: '/toolkit/form/radio-atom',
+                    dna: '/toolkit/form/RadioAtom',
+                    component: require('appdir/toolkit/form/RadioAtom').default,
+                    readme: require('appdir/toolkit/form/RadioAtom/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'checkbox-atom': {
+                    type: 'atom',
+                    label: 'Checkbox',
+                    route: '/toolkit/form/checkbox-atom',
+                    dna: '/toolkit/form/CheckboxAtom',
+                    component: require('appdir/toolkit/form/CheckboxAtom')
+                        .default,
+                    readme: require('appdir/toolkit/form/CheckboxAtom/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'toggle-molecule': {
+                    type: 'molecule',
+                    label: 'Toggle',
+                    route: '/toolkit/form/toggle-molecule',
+                    dna: '/toolkit/form/ToggleMolecule',
+                    component: require('appdir/toolkit/form/ToggleMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/form/ToggleMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
             },
         },
         components: {
@@ -381,6 +413,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'progress-molecule': {
+                    type: 'molecule',
+                    label: 'Progress',
+                    route: '/toolkit/components/progress-molecule',
+                    dna: '/toolkit/components/ProgressMolecule',
+                    component: require('appdir/toolkit/components/ProgressMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ProgressMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'dialog-molecule': {
                     type: 'molecule',
                     label: 'Dialog',
@@ -414,28 +457,6 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
-                'radio-atom': {
-                    type: 'atom',
-                    label: 'Radio',
-                    route: '/toolkit/components/radio-atom',
-                    dna: '/toolkit/components/RadioAtom',
-                    component: require('appdir/toolkit/components/RadioAtom')
-                        .default,
-                    readme: require('appdir/toolkit/components/RadioAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'checkbox-atom': {
-                    type: 'atom',
-                    label: 'Checkbox',
-                    route: '/toolkit/components/checkbox-atom',
-                    dna: '/toolkit/components/CheckboxAtom',
-                    component: require('appdir/toolkit/components/CheckboxAtom')
-                        .default,
-                    readme: require('appdir/toolkit/components/CheckboxAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
                 'tab-molecule': {
                     type: 'molecule',
                     label: 'Tabs',
@@ -447,14 +468,14 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
-                'toggle-molecule': {
+                'collapsible-molecule': {
                     type: 'molecule',
-                    label: 'Toggle',
-                    route: '/toolkit/components/toggle-molecule',
-                    dna: '/toolkit/components/ToggleMolecule',
-                    component: require('appdir/toolkit/components/ToggleMolecule')
+                    label: 'Collapsible',
+                    route: '/toolkit/components/collapsible-molecule',
+                    dna: '/toolkit/components/CollapsibleMolecule',
+                    component: require('appdir/toolkit/components/CollapsibleMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/ToggleMolecule/readme')
+                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
                         .default,
                     hideCode: true,
                 },
@@ -466,17 +487,6 @@ module.exports = {
                     component: require('appdir/toolkit/components/ButtonAtom')
                         .default,
                     readme: require('appdir/toolkit/components/ButtonAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'collapsible-molecule': {
-                    type: 'molecule',
-                    label: 'Collapsible',
-                    route: '/toolkit/components/collapsible-molecule',
-                    dna: '/toolkit/components/CollapsibleMolecule',
-                    component: require('appdir/toolkit/components/CollapsibleMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
                         .default,
                     hideCode: true,
                 },

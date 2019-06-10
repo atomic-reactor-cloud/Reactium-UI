@@ -3,7 +3,7 @@ import Markdown from 'reactium-core/components/Toolkit/Markdown';
 
 /**
  * -----------------------------------------------------------------------------
- * RadioAtom Readme
+ * ProgressMolecule Readme
  * -----------------------------------------------------------------------------
  */
 
@@ -15,11 +15,10 @@ Be sure to use [markdown ](https://github.com/adam-p/markdown-here/wiki/Markdown
 I suppose you could also use HTML but come on.. do you _REALLY_ need to?
 `;
 
-
 /**
  * -----------------------------------------------------------------------------
  * DO NOT EDIT BELOW HERE
  * -----------------------------------------------------------------------------
  */
-const readme = (props) => <Markdown {...props}>{content}</Markdown>;
+const readme = props => <Markdown {...props}>{content}</Markdown>;
 export default readme;

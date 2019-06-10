@@ -56,6 +56,7 @@ let Button = ({ children, ...props }, ref) => {
     const cname = () => {
         const {
             appearance,
+            block = false,
             className,
             color,
             outline,
@@ -69,12 +70,17 @@ let Button = ({ children, ...props }, ref) => {
             appearance,
         ]).join('-');
 
-        return cn({ [className]: !!className, [c]: true });
+        return cn({
+            [className]: !!className,
+            [c]: true,
+            ['btn-block']: block,
+        });
     };
 
     const render = () => {
         const exclude = [
             'appearance',
+            'block',
             'children',
             'className',
             'color',
@@ -104,6 +110,7 @@ Button.ENUMS = ENUMS;
 
 Button.propTypes = {
     appearance: PropTypes.oneOf(Object.values(ENUMS.APPEARANCE)),
+    block: PropTypes.bool,
     color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
     outline: PropTypes.bool,
     size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),

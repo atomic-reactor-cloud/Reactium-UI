@@ -1,23 +1,20 @@
-
 /**
  * -----------------------------------------------------------------------------
  * Imports
  * -----------------------------------------------------------------------------
  */
 import React, { Component, Fragment } from 'react';
-import Checkbox from 'components/common-ui/Checkbox';
-
+import Toggle from 'components/common-ui/Toggle';
 
 /**
  * -----------------------------------------------------------------------------
- * Toolkit Element: CheckboxAtom
+ * Toolkit Element: ToggleMolecule
  * -----------------------------------------------------------------------------
  */
 
-class CheckboxAtom extends Component {
-
+class ToggleMolecule extends Component {
     static dependencies() {
-        return (typeof module !== 'undefined') ? module.children : [];
+        return typeof module !== 'undefined' ? module.children : [];
     }
 
     constructor(props) {
@@ -28,13 +25,13 @@ class CheckboxAtom extends Component {
     render() {
         return (
             <Fragment>
-                <Checkbox label='Check Me' />
+                <Toggle label='Toggle Me' />
             </Fragment>
         );
     }
 }
 
 // Default properties
-CheckboxAtom.defaultProps = {};
+ToggleMolecule.defaultProps = {};
 
-export default CheckboxAtom;
+export default ToggleMolecule;

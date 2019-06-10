@@ -1,0 +1,149 @@
+import uuid from 'uuid/v4';
+import _ from 'underscore';
+import cn from 'classnames';
+import op from 'object-path';
+import PropTypes from 'prop-types';
+
+import ENUMS from './enums';
+
+import React, {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
+
+const noop = () => {};
+
+/**
+ * -----------------------------------------------------------------------------
+ * Hook Component: Progress
+ * -----------------------------------------------------------------------------
+ */
+let Progress = ({ children, ...props }, ref) => {
+    // Refs
+    const containerRef = useRef();
+    const stateRef = useRef({
+        prevState: { value: null },
+        ...props,
+    });
+
+    // State
+    const [state, setNewState] = useState(stateRef.current);
+
+    // Internal Interface
+    const setState = newState => {
+        const prevState = { ...stateRef.current };
+        stateRef.current = { ...stateRef.current, ...newState, prevState };
+        setNewState(stateRef.current);
+    };
+
+    const _onChange = e => {
+        const { onChange } = stateRef.current;
+        onChange(e);
+    };
+
+    const _onComplete = e => {
+        const { onComplete } = stateRef.current;
+        onComplete(e);
+    };
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        container: containerRef.current,
+        setState,
+        state,
+        value: op.get(stateRef.current, 'value'),
+    }));
+
+    // Side Effects
+    useEffect(() => setState(props), Object.values(props));
+
+    useEffect(() => {
+        const { prevState, value } = stateRef.current;
+        if (prevState.value !== value) {
+            const percent = Math.min(100, Math.ceil(value * 100));
+            const evt = {
+                type: ENUMS.EVENT.CHANGE,
+                value,
+                percent,
+                target: ref.current,
+            };
+            _onChange(evt);
+
+            if (percent === 100) {
+                _onComplete({ ...evt, type: ENUMS.EVENT.COMPLETE });
+            }
+        }
+    }, [state.value]);
+
+    const render = () => {
+        const {
+            appearance,
+            className,
+            color,
+            name,
+            namespace,
+            size,
+            value = 0,
+        } = stateRef.current;
+
+        const cname = cn({
+            [size]: !!size,
+            [namespace]: !!namespace,
+            [className]: !!className,
+            [`${namespace}-${appearance}`]: !!appearance,
+        });
+
+        const barCname = cn({
+            [`${namespace}-bar`]: true,
+            [color]: !!color,
+        });
+
+        return (
+            <div ref={containerRef} className={cname}>
+                <input
+                    type='hidden'
+                    value={value}
+                    name={name}
+                    onChange={_onChange}
+                />
+                <div
+                    className={barCname}
+                    style={{ width: Math.min(100, value * 100) + '%' }}>
+                    {children && <span className='label'>{children}</span>}
+                </div>
+            </div>
+        );
+    };
+
+    return render();
+};
+
+Progress = forwardRef(Progress);
+
+Progress.ENUMS = ENUMS;
+
+Progress.propTypes = {
+    appearance: PropTypes.oneOf(Object.values(ENUMS.APPEARANCE)),
+    className: PropTypes.string,
+    color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
+    name: PropTypes.string,
+    namespace: PropTypes.string,
+    onChange: PropTypes.func,
+    onComplete: PropTypes.func,
+    size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),
+    value: PropTypes.number,
+};
+
+Progress.defaultProps = {
+    color: ENUMS.COLOR.PRIMARY,
+    name: uuid(),
+    namespace: 'ar-progress',
+    onChange: noop,
+    onComplete: noop,
+    value: 0,
+};
+
+export { Progress as default };
