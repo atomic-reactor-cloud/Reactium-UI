@@ -4,7 +4,7 @@
  * -----------------------------------------------------------------------------
  */
 import React, { Component } from 'react';
-import { Button, Collapsible, Icon, Tabs } from 'components/common-ui';
+import { Tabs } from 'components/common-ui';
 
 /**
  * -----------------------------------------------------------------------------

@@ -1,6 +1,9 @@
 import cn from 'classnames';
 import PropTypes from 'prop-types';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
+
+import ENUMS from './enums';
+
 import React, {
     forwardRef,
     useImperativeHandle,
@@ -8,15 +11,6 @@ import React, {
     useState,
     useEffect,
 } from 'react';
-
-const ENUMS = {
-    EVENT: {
-        BEFORE_COLLAPSE: 'beforeCollapse',
-        BEFORE_EXPAND: 'beforeExpand',
-        COLLAPSE: 'collapse',
-        EXPAND: 'expand',
-    },
-};
 
 const noop = () => {};
 

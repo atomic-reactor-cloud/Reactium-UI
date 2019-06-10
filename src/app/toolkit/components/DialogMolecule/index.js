@@ -3,11 +3,9 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import Dialog from 'components/common-ui/Dialog';
-import { Feather } from 'components/common-ui/Icon';
 import Button from 'components/common-ui/Button';
-import op from 'object-path';
 
 /**
  * -----------------------------------------------------------------------------

@@ -1,7 +1,5 @@
 import uuid from 'uuid/v4';
-import _ from 'underscore';
 import cn from 'classnames';
-import op from 'object-path';
 import PropTypes from 'prop-types';
 import Dialog from 'components/common-ui/Dialog';
 
@@ -9,12 +7,13 @@ import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
     useRef,
     useState,
 } from 'react';
 
 const noop = () => {};
+
+const ENUMS = Dialog.ENUMS;
 
 /**
  * -----------------------------------------------------------------------------
@@ -48,14 +47,18 @@ let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
         setNewState(stateRef.current);
     };
 
-    const _onChange = e => {
+    const _onChange = () => {
         const { activeTab, onChange, prevState } = stateRef.current;
 
         if (activeTab === prevState.activeTab) {
             return;
         }
 
-        const evt = { type: 'change', activeTab, state: stateRef.current };
+        const evt = {
+            type: ENUMS.EVENT.CHANGE,
+            activeTab,
+            state: stateRef.current,
+        };
         onChange(evt);
     };
 
@@ -63,6 +66,7 @@ let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
         const { activeTab } = stateRef.current;
         if (activeTab !== index) {
             setState({ activeTab: index });
+            callback({ ...e, activeTab: index });
         }
     };
 
@@ -112,7 +116,7 @@ let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
         return (
             <div className={`${namespace}-bar`} id={`${id}-bar`}>
                 {data.map((item, i) => {
-                    const { id: index = i, tab } = item;
+                    const { tab } = item;
 
                     if (!tab) {
                         return null;
@@ -160,8 +164,6 @@ let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
     };
 
     const render = () => {
-        const { namespace } = stateRef.current;
-
         const header = {
             elements: [renderTabs()],
         };

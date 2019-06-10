@@ -1,7 +1,5 @@
-import _ from 'underscore';
 import uuid from 'uuid/v4';
 import cn from 'classnames';
-import op from 'object-path';
 import PropTypes from 'prop-types';
 import Prefs from 'components/common-ui/Prefs';
 import Button from 'components/common-ui/Button';
@@ -132,7 +130,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
     };
 
     const _clone = elements =>
-        React.Children.map(elements, (element, i) => {
+        React.Children.map(elements, element => {
             const { onClick } = element.props;
             const key = `dialog-clone-${uuid()}`;
             const newProps = {
