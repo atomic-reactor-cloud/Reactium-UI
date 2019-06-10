@@ -118,9 +118,10 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
 
     const _onHide = e => {
         e.target = containerRef.current;
-        const { onHide } = stateRef.current;
+        const { onDismiss, onHide } = stateRef.current;
         setState({ visible: false });
         onHide(e);
+        onDismiss({ ...e, type: 'dismiss' });
     };
 
     const _onShow = e => {
@@ -290,6 +291,7 @@ Dialog.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     namespace: PropTypes.string,
     onCollapse: PropTypes.func,
+    onDismiss: PropTypes.func,
     onExpand: PropTypes.func,
     onHide: PropTypes.func,
     onShow: PropTypes.func,
@@ -307,6 +309,7 @@ Dialog.defaultProps = {
     id: `ar-${uuid()}`,
     namespace: 'ar-dialog',
     onCollapse: noop,
+    onDismiss: noop,
     onExpand: noop,
     onHide: noop,
     onShow: noop,

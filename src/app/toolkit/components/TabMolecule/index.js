@@ -40,6 +40,6 @@ export default class TabMolecule extends Component {
 
     render() {
         const { data } = this.props;
-        return <Tabs activeTab={0} data={data} />;
+        return <Tabs activeTab={1} data={data} />;
     }
 }

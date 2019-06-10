@@ -13,6 +13,7 @@ const ENUMS = {
     EVENT: {
         BEFORE_HIDE: 'beforeHide',
         BEFORE_SHOW: 'beforeShow',
+        DISMISS: 'dismiss',
         HIDE: 'hide',
         SHOW: 'show',
     },
@@ -69,6 +70,7 @@ let Dismissable = ({ children, ...props }, ref) => {
             animationEase,
             animationSpeed,
             onBeforeHide,
+            onDismiss,
             onHide,
         } = stateRef.current;
 
@@ -89,11 +91,13 @@ let Dismissable = ({ children, ...props }, ref) => {
                     const evt = {
                         target: container,
                         type: ENUMS.EVENT.HIDE,
+                        state,
                     };
 
                     container.removeAttribute('style');
                     setState({ animation: null, visible: false });
                     onHide(evt);
+                    onDismiss({ ...evt, type: ENUMS.EVENT.DISMISS });
                     resolve();
                 },
             }),
@@ -203,6 +207,7 @@ Dismissable.propTypes = {
     namespace: PropTypes.string,
     onBeforeHide: PropTypes.func,
     onBeforeShow: PropTypes.func,
+    onDismiss: PropTypes.func,
     onHide: PropTypes.func,
     onShow: PropTypes.func,
     visible: PropTypes.bool,
@@ -215,6 +220,7 @@ Dismissable.defaultProps = {
     namespace: 'ar-dismissable',
     onBeforeHide: noop,
     onBeforeShow: noop,
+    onDismiss: noop,
     onHide: noop,
     onShow: noop,
     visible: false,

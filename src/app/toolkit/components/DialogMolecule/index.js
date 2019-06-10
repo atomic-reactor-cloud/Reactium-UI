@@ -32,15 +32,18 @@ class DialogMolecule extends Component {
     };
 
     footerElements = () => [
-        <span>Are you sure?</span>,
+        <span key={Date.now() + '-1'}>Are you sure?</span>,
         <Button
             outline
+            key={Date.now() + '-2'}
             className='ml-xs-12'
             color={Button.ENUMS.COLOR.DANGER}
             onClick={() => this.dialog.hide()}>
             Cancel
         </Button>,
-        <Button className='ml-xs-8'>Yes</Button>,
+        <Button className='ml-xs-8' key={Date.now() + '-3'}>
+            Yes
+        </Button>,
     ];
 
     render() {
