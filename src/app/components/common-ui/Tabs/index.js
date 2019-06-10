@@ -1,9 +1,14 @@
+import uuid from 'uuid/v4';
 import _ from 'underscore';
 import cn from 'classnames';
+import op from 'object-path';
 import PropTypes from 'prop-types';
+import Button from 'components/common-ui/Button';
+import Dialog from 'components/common-ui/Dialog';
 
 import React, {
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useLayoutEffect,
     useRef,
@@ -17,91 +22,80 @@ const noop = () => {};
  * Hook Component: Tabs
  * -----------------------------------------------------------------------------
  */
-let Tabs = (props, ref) => {
-    // State
-    const [state, setNewState] = useState(props);
-
+let Tabs = ({ activeTab, data = {}, id, namespace, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
+    const stateRef = useRef({
+        prevState: {},
+        activeTab,
+        ...props,
+    });
+
+    // State
+    const [state, setNewState] = useState(stateRef.current);
 
     // Internal Interface
-    const cname = suffix => _.compact([state.namespace, suffix]).join('-');
+    const setState = newState => {
+        // Get the previous state
+        const prevState = { ...stateRef.current };
 
-    const setState = newState => setNewState({ ...state, ...newState });
-
-    const _onTabClick = e => {
-        const { tab } = e.target.dataset;
-        const container = containerRef.current;
-        const { activeTab, onChange, tabSelector } = state;
-        const tabContainer = container.querySelector(tabSelector);
-        const tabs = Array.from(tabContainer.children);
-
-        const evt = {
-            activeTab: Number(tab),
-            previousTab: activeTab,
-            tabButton: e.target,
-            tabContainerr: tabs[tab],
-            type: 'change',
+        // Update the stateRef
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+            prevState,
         };
 
-        setState({ activeTab: Number(tab), update: Date.now() });
-        onChange(evt);
+        // Trigger useEffect()
+        setNewState(stateRef.current);
+    };
+
+    const _onTabClick = (e, index, callback = noop) => {
+        const { activeTab } = stateRef.current;
+
+        if (activeTab !== index) {
+            setState({ activeTab: index });
+        }
     };
 
     // External Interface
     useImperativeHandle(ref, () => ({
-        container: containerRef.current,
         setState,
         state,
     }));
 
-    // Side effects
-    useLayoutEffect(() => {
-        const container = containerRef.current;
-        const { activeTab, tabButtonSelect, tabSelector } = state;
-        const btnContainer = container.querySelector(tabButtonSelect);
-        const tabContainer = container.querySelector(tabSelector);
+    // Side Effects
+    useEffect(() => setState(props), Object.values(props));
 
-        const btns = Array.from(btnContainer.children);
-        const tabs = Array.from(tabContainer.children);
+    const renderContent = () => {
+        return <div className={`${namespace}-panels`} id={`${id}-panels`} />;
+    };
 
-        btnContainer.classList.add(cname('bar'));
-        tabContainer.classList.add(cname('container'));
-
-        let b = -1;
-        btns.forEach(btn => {
-            const tag = String(btn.tagName).toUpperCase();
-            if (tag === 'BUTTON') {
-                b += 1;
-
-                btn.onclick = _onTabClick;
-                btn.dataset.tab = b;
-                btn.classList.remove('active');
-                btn.classList.add('ar-tab-button');
-                if (activeTab === b) {
-                    btn.classList.add('active');
-                }
-            }
-        });
-
-        tabs.forEach((tab, i) => {
-            tab.classList.remove('active');
-            tab.classList.add(cname('tab'));
-            if (activeTab === i) {
-                tab.classList.add('active');
-            }
-        });
-    });
-
-    const render = () => {
-        let { children, className, namespace } = state;
-        className = cn({ [className]: !!className, [namespace]: true });
-
+    const renderTabs = () => {
         return (
-            <div ref={containerRef} className={className}>
-                {children}
+            <div className={`${namespace}-bar`} id={`${id}-bar`}>
+                {Object.entries(data).map(([index, { tab }], i) => {
+                    const key = `${id}-tab-${i}`;
+
+                    if (typeof tab === 'string') {
+                    } else {
+                        const { onClick } = tab.props;
+
+                        return React.cloneElement(tab, {
+                            ...tab.props,
+                            key,
+                            onClick: () => _onTabClick(e, index, onClick),
+                        });
+                    }
+                })}
             </div>
         );
+    };
+
+    const render = () => {
+        const { namespace } = stateRef.current;
+
+        return <Dialog {...props}>{renderContent()}</Dialog>;
     };
 
     return render();
@@ -110,21 +104,35 @@ let Tabs = (props, ref) => {
 Tabs = forwardRef(Tabs);
 
 Tabs.propTypes = {
-    activeTab: PropTypes.number,
-    className: PropTypes.string,
-    namespace: PropTypes.string,
-    tabButtonSelector: PropTypes.string,
-    tabSelector: PropTypes.string,
-    onChange: PropTypes.func,
+    ...Dialog.propTypes,
+    activeTab: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    data: PropTypes.shape({
+        tab: PropTypes.node.isRequired,
+        content: PropTypes.node.isRequired,
+    }).isRequired,
+    disabled: PropTypes.bool,
 };
 
 Tabs.defaultProps = {
-    activeTab: 0,
-    className: 'ar-tabs-default',
-    namespace: 'ar-tabs',
-    tabButtonSelect: '[data-tab-bar]',
-    tabSelector: '[data-tabs]',
-    onChange: noop,
+    ...Dialog.defaultProps,
+    activeTab: 'tab1',
+    data: {
+        tab1: {
+            tab: 'Tab 1',
+            content: 'Content 1',
+        },
+        tab2: {
+            tab: 'Tab 2',
+            content: 'Content 2',
+        },
+        tab3: {
+            tab: 'Tab 3',
+            content: 'Content 3',
+        },
+    },
+    disabled: false,
+    id: `ar-tab-${uuid()}`,
+    namespace: 'ar-tab',
 };
 
 export { Tabs as default };

@@ -8,6 +8,8 @@ import Icon from 'components/common-ui/Icon';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
 
+import ENUMS from './enums';
+
 import React, {
     forwardRef,
     useEffect,
@@ -17,39 +19,7 @@ import React, {
     useState,
 } from 'react';
 
-const ENUMS = {
-    EVENT: {
-        BEFORE_COLLAPSE: 'beforeCollapse',
-        BEFORE_EXPAND: 'beforeExpand',
-        BLUR: 'onblur',
-        CHANGE: 'change',
-        CLICK: 'onclick',
-        COLLAPSE: 'collapse',
-        EXPAND: 'expand',
-        FOCUS: 'onfocus',
-        ITEM_CLICK: 'itemClick',
-        ITEM_SELECT: 'itemSelect',
-        ITEM_UNSELECT: 'itemUnselect',
-        MOUSE_DOWN: 'onmousedown',
-        MOUSE_UP: 'onmouseup',
-    },
-};
-
 const noop = () => {};
-
-const mockData = [
-    { label: 'Test 1', value: 'test', icon: 'Feather.Search' },
-    { label: 'Item 1', value: 1, icon: 'Feather.User' },
-    { label: 'Item 2', value: 2, icon: 'Feather.User' },
-    { label: 'Item 3', value: 3, icon: 'Linear.Grumpy' },
-    { label: 'Item 4', value: 4, icon: 'Feather.User' },
-    { label: 'Item 5', value: 5, icon: 'Feather.User' },
-    { label: 'Item 6', value: 6, icon: 'Feather.User' },
-    { label: 'Item 7', value: 7, icon: 'Feather.User' },
-    { label: 'Item 8', value: 8, icon: 'Feather.User' },
-    { label: 'Item 9', value: 9, icon: 'Feather.User' },
-    { label: 'Item 10', value: 10, icon: 'Feather.User' },
-];
 
 /**
  * -----------------------------------------------------------------------------
@@ -63,7 +33,7 @@ let Dropdown = (props, ref) => {
     const id = uuid();
 
     // State
-    const [data] = useState(props.data || []);
+    const [data, setData] = useState(props.data || []);
     const [expanded, setExpanded] = useState(props.expanded);
     const [selection, setSelection] = useState(props.selection || []);
     const [tabIndex, setTabIndex] = useState(-1);
@@ -230,9 +200,11 @@ let Dropdown = (props, ref) => {
     }));
 
     // Before Render
+    useEffect(() => setData(props.data), [props.data]);
+
     useEffect(() => {
-        const win = op.get(props, 'iWindow', window);
-        const doc = op.get(props, 'iDocument', document);
+        const win = op.get(props, 'iWindow', window) || window;
+        const doc = op.get(props, 'iDocument', document) || document;
 
         doc.addEventListener('mousedown', dismiss);
         win.addEventListener('keydown', _onKeyDown);
@@ -553,7 +525,7 @@ Dropdown.defaultProps = {
     animationSpeed: 0.25,
     className: 'ar-dropdown',
     collapseEvent: null,
-    data: mockData,
+    data: [],
     dismissable: true,
     expanded: false,
     expandEvent: null,

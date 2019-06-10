@@ -155,6 +155,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
             header = {},
             namespace,
         } = stateRef.current;
+
         const { elements = [], title } = header;
 
         const cname = cn({
@@ -164,7 +165,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
 
         return (
             <div className={cname}>
-                {title && <h2>{title}</h2>}
+                {title}
                 {(elements.length > 0 || collapsible || dismissable) && (
                     <div className={`${namespace}-header-buttons`}>
                         {elements.length > 0 && _clone(elements)}
@@ -299,13 +300,8 @@ Dialog.propTypes = {
 Dialog.defaultProps = {
     collapsible: true,
     debug: false,
-    dismissable: true,
     footer: {
         align: ENUMS.ALIGN.RIGHT,
-        elements: [],
-    },
-    header: {
-        title: 'Dialog Title',
         elements: [],
     },
     id: `ar-${uuid()}`,
@@ -315,7 +311,6 @@ Dialog.defaultProps = {
     onHide: noop,
     onShow: noop,
     style: {},
-    visible: false,
 };
 
 export { Dialog as default };

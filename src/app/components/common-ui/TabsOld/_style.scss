@@ -1,0 +1,74 @@
+
+.ar-tabs {
+    display: block;
+    position: relative;
+
+    &-bar {
+        display: flex;
+        flex-direction: column;
+        flex-wrap: nowrap;
+        position: relative;
+        align-items: stretch;
+
+        @include breakpoint(sm) {
+            flex-direction: row;
+        }
+    }
+
+    &-container {
+        width: 100%;
+    }
+
+    &-tab {
+        display: none;
+        width: 100%;
+
+        &.active {
+            display: block;
+        }
+    }
+
+    &-default {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid $color-grey;
+
+        .ar-tabs-container {
+            padding: 20px;
+        }
+
+        .ar-tabs-bar {
+            border-bottom: 1px solid $color-grey;
+
+            button.ar-tab-button {
+                border: none;
+                color: $color-gray-dark;
+                background-color: $color-grey-light;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding: 10px 30px;
+                position: relative;
+                text-shadow: 0 1px 1px $color-white;
+                transition: background-color .25s ease-in-out;
+                user-select: none;
+
+                &.active {
+                    z-index: 1;
+                    background-color: $color-white;
+                    pointer-events: none;
+                    cursor: default;
+                }
+
+                @include breakpoint(sm) {
+                    border-right: 1px solid $color-grey;
+
+                    &.active {
+                        margin-bottom: -1px;
+                        padding: 10px 30px 11px 30px;
+                    }
+                }
+            }
+        }
+    }
+}

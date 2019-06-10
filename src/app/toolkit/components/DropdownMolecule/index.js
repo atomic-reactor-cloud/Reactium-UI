@@ -42,13 +42,14 @@ class DropdownMolecule extends Component {
     };
 
     render() {
-        const { iDocument, iWindow } = this.props;
+        const { data, iDocument, iWindow } = this.props;
         const { selection, typeahead } = this.state;
 
         return (
             <div className='row' style={{ minHeight: 450 }}>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
                     <Dropdown
+                        data={data}
                         expanded={true}
                         onChange={this.onSelect}
                         iWindow={iWindow}
@@ -69,6 +70,7 @@ class DropdownMolecule extends Component {
                 </div>
                 <div className='col-xs-12 col-sm-6 mb-xs-20 mb-sm-0'>
                     <Dropdown
+                        data={data}
                         multiSelect
                         expandEvent={[
                             Dropdown.ENUMS.EVENT.MOUSE_DOWN,
@@ -102,6 +104,20 @@ class DropdownMolecule extends Component {
 }
 
 // Default properties
-DropdownMolecule.defaultProps = {};
+DropdownMolecule.defaultProps = {
+    data: [
+        { label: 'Test 1', value: 'test', icon: 'Feather.Search' },
+        { label: 'Item 1', value: 1, icon: 'Feather.User' },
+        { label: 'Item 2', value: 2, icon: 'Feather.User' },
+        { label: 'Item 3', value: 3, icon: 'Linear.Grumpy' },
+        { label: 'Item 4', value: 4, icon: 'Feather.User' },
+        { label: 'Item 5', value: 5, icon: 'Feather.User' },
+        { label: 'Item 6', value: 6, icon: 'Feather.User' },
+        { label: 'Item 7', value: 7, icon: 'Feather.User' },
+        { label: 'Item 8', value: 8, icon: 'Feather.User' },
+        { label: 'Item 9', value: 9, icon: 'Feather.User' },
+        { label: 'Item 10', value: 10, icon: 'Feather.User' },
+    ],
+};
 
 export default DropdownMolecule;
