@@ -23,7 +23,7 @@ const noop = () => {};
  */
 let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
     // Refs
-    const containerRef = useRef();
+    const dialogRef = useRef();
     const stateRef = useRef({
         prevState: { activeTab: -1 },
         ...props,
@@ -68,6 +68,7 @@ let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
+        dialog: dialogRef.current,
         setState,
         state,
     }));
@@ -168,7 +169,7 @@ let Tabs = ({ data = {}, id, namespace, ...props }, ref) => {
         delete dprops.activeTab;
 
         return (
-            <Dialog {...dprops} header={header}>
+            <Dialog {...dprops} header={header} ref={dialogRef}>
                 {renderContent()}
             </Dialog>
         );
