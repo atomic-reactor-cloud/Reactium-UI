@@ -18,7 +18,7 @@ export default class TabMolecule extends Component {
         data: [
             {
                 id: 'tab1',
-                tab: <button type='button'>Test</button>,
+                tab: <button type='button'>Tab 1</button>,
                 content: <div className='p-xs-16'>Content 1</div>,
             },
             {
