@@ -3,25 +3,37 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component } from 'react';
+
 import Lipsum from 'toolkit/Lipsum';
+import React, { Component } from 'react';
+import { Alert } from 'components/common-ui';
 
 /**
  * -----------------------------------------------------------------------------
- * React Component: Paragraph
+ * Toolkit Element: AlertMolecule
  * -----------------------------------------------------------------------------
  */
 
-export default class Paragraph extends Component {
+class AlertMolecule extends Component {
     static dependencies() {
         return typeof module !== 'undefined' ? module.children : [];
     }
 
+    constructor(props) {
+        super(props);
+        this.state = {};
+    }
+
     render() {
         return (
-            <p>
+            <Alert>
                 <Lipsum />
-            </p>
+            </Alert>
         );
     }
 }
+
+// Default properties
+AlertMolecule.defaultProps = {};
+
+export default AlertMolecule;

@@ -413,6 +413,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'alert-molecule': {
+                    type: 'molecule',
+                    label: 'Alert',
+                    route: '/toolkit/components/alert-molecule',
+                    dna: '/toolkit/components/AlertMolecule',
+                    component: require('appdir/toolkit/components/AlertMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/AlertMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'progress-molecule': {
                     type: 'molecule',
                     label: 'Progress',

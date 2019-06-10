@@ -239,6 +239,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
 
     const render = () => {
         const { className, dismissable, namespace, visible } = stateRef.current;
+
         const Content = () => (
             <div
                 id={id}

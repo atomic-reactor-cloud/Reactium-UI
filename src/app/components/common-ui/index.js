@@ -1,3 +1,4 @@
+import Alert from './Alert';
 import Breakpoint from './Breakpoint';
 import Button from './Button';
 import Checkbox from './Checkbox';
@@ -14,6 +15,7 @@ import Tabs from './Tabs';
 import Toggle from './Toggle';
 
 export {
+    Alert,
     Breakpoint,
     Button,
     Checkbox,

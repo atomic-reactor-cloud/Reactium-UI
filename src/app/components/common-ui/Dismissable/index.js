@@ -209,7 +209,6 @@ Dismissable.propTypes = {
 Dismissable.defaultProps = {
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
-    className: null,
     namespace: 'ar-dismissable',
     onBeforeHide: noop,
     onBeforeShow: noop,
