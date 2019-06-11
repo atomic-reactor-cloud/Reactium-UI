@@ -336,6 +336,17 @@ module.exports = {
             label: 'Form Elements',
             route: '/toolkit/form',
             elements: {
+                'tags-input-molecule': {
+                    type: 'molecule',
+                    label: 'TagsInput',
+                    route: '/toolkit/form/tags-input-molecule',
+                    dna: '/toolkit/form/TagsInputMolecule',
+                    component: require('appdir/toolkit/form/TagsInputMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/form/TagsInputMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'input-group-molecule': {
                     type: 'molecule',
                     label: 'Input Group',
