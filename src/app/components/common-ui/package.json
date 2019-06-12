@@ -1,21 +1,23 @@
 {
-  "name": "reactium-ui",
-  "version": "0.0.1",
-  "main": "index.js",
-  "author": "Reactium LLC",
-  "dependencies": {
-    "classnames": "^2.2.6",
-    "gsap": "^2.1.0",
-    "lunr": "^2.3.6",
-    "moment": "^2.20.1",
-    "object-path": "^0.11.4",
-    "react": "^16.8.5",
-    "react-beautiful-dnd": "^11.0.3",
-    "react-custom-scrollbars": "^4.2.1",
-    "underscore": "*"
-  },
-  "repository": {
-    "url": "",
-    "type": "git"
-  }
+    "name": "reactium-ui",
+    "version": "0.0.1",
+    "main": "index.js",
+    "author": "Reactium LLC",
+    "dependencies": {
+        "classnames": "^2.2.6",
+        "dropzone": "^5.5.1",
+        "gsap": "^2.1.0",
+        "lunr": "^2.3.6",
+        "moment": "^2.20.1",
+        "object-path": "^0.11.4",
+        "react": "^16.8.5",
+        "react-beautiful-dnd": "^11.0.3",
+        "react-custom-scrollbars": "^4.2.1",
+        "underscore": "*",
+        "uuid": "^3.3.2"
+    },
+    "repository": {
+        "url": "",
+        "type": "git"
+    }
 }

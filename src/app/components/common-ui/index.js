@@ -7,6 +7,7 @@ import DataTable from './DataTable';
 import Dialog from './Dialog';
 import Dismissable from './Dismissable';
 import Dropdown from './Dropdown';
+import Dropzone from './Dropzone';
 import Icon from './Icon';
 import Modal from './Modal';
 import Prefs from './Prefs';
@@ -26,6 +27,7 @@ export {
     Dialog,
     Dismissable,
     Dropdown,
+    Dropzone,
     Icon,
     Modal,
     Prefs,
