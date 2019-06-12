@@ -175,7 +175,7 @@ let Dismissable = ({ children, ...props }, ref) => {
 
         className = cn({
             [className]: !!className,
-            [namespace]: true,
+            [namespace]: !!namespace,
             visible,
         });
 

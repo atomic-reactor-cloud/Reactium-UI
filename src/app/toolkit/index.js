@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'modal-molecule': {
+                    type: 'molecule',
+                    label: 'Modal',
+                    route: '/toolkit/components/modal-molecule',
+                    dna: '/toolkit/components/ModalMolecule',
+                    component: require('appdir/toolkit/components/ModalMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ModalMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'alert-molecule': {
                     type: 'molecule',
                     label: 'Alert',

@@ -1,0 +1,41 @@
+$ar-modal-color-background: rgba($color-black, 0.8) !default;
+
+.ar-modal {
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    display: none;
+    position: fixed;
+    z-index: 100000000;
+    opacity: 0;
+
+    &.visible {
+        opacity: 1;
+        display: block;
+    }
+
+    &-bg {
+        top: 0;
+        left: 0;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        border: none;
+        background-color: $ar-modal-color-background;
+    }
+
+    &-content {
+        z-index: 10;
+        padding: 0;
+        top: 25px;
+        left: 50%;
+        transform: translateX(-50%);
+        position: absolute;
+
+        @include breakpoint(sm) {
+            top: 40px;
+        }
+    }
+}

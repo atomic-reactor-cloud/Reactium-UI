@@ -8,6 +8,7 @@ import Dialog from './Dialog';
 import Dismissable from './Dismissable';
 import Dropdown from './Dropdown';
 import Icon from './Icon';
+import Modal from './Modal';
 import Prefs from './Prefs';
 import Progress from './Progress';
 import Radio from './Radio';
@@ -26,6 +27,7 @@ export {
     Dismissable,
     Dropdown,
     Icon,
+    Modal,
     Prefs,
     Progress,
     Radio,
