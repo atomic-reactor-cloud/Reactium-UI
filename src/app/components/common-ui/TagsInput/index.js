@@ -1,10 +1,10 @@
-import lunr from 'lunr';
 import uuid from 'uuid/v4';
 import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
 import { Feather } from 'components/common-ui/Icon';
+import { Scrollbars } from 'react-custom-scrollbars';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 import React, {
@@ -41,8 +41,11 @@ let TagsInput = (
         className,
         data,
         direction,
+        editable,
         formatter,
         id,
+        iDocument,
+        iWindow,
         name,
         namespace,
         onBlur,
@@ -64,14 +67,18 @@ let TagsInput = (
     const stateRef = useRef({
         prevState: {},
         data,
+        dismissable: true,
+        editable,
         focus: false,
         index: null,
         initialized: false,
         search: null,
         suggest: [],
+        suggestIndex: -1,
         value,
         ...props,
     });
+    const suggestRef = useRef();
     const valueRef = useRef();
 
     // State
@@ -84,37 +91,30 @@ let TagsInput = (
         setNewState(stateRef.current);
     };
 
-    const _value = value => {
-        value = value || op.get(stateRef.current, 'value', []) || [];
-        return Array.isArray(value) ? value : JSON.parse(value);
-    };
+    const _onArrowKey = e => {
+        if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 9) {
+            const { suggest = [], suggestIndex = -1 } = stateRef.current;
+            if (suggestIndex >= suggest.length - 1 && e.keyCode === 9) {
+                setState({ dismissable: true });
+                setTimeout(_suggestHide, 1);
+                return;
+            }
 
-    const _valueString = value => JSON.stringify(_value(value));
+            e.preventDefault();
+            setState({ dismissable: false });
 
-    const _addTag = val => {
-        val = isNaN(val) ? val : Number(val);
+            let inc = e.keyCode === 38 ? -1 : 1;
+            inc = e.shiftKey && e.keyCode === 9 ? -1 : inc;
 
-        const isValid = validator(val, { state, ref });
-
-        if (isValid !== true) {
-            const evt = {
-                type: ENUMS.EVENT.ERROR,
-                value: val,
-                error: isValid,
-                target: inputRef,
-            };
-
-            onError(evt);
-            return;
+            _suggestFocus(inc);
+            setTimeout(() => setState({ dismissable: true }), 100);
         }
 
-        val = formatter(val);
-
-        const value = _value();
-        value.push(val);
-
-        setState({ value, changed: Date.now() });
-        inputRef.current.value = '';
+        if (e.keyCode === 27) {
+            e.preventDefault();
+            setState({ dismissable: true });
+            setTimeout(_suggestHide, 1);
+        }
     };
 
     const _onChange = () => {
@@ -144,10 +144,12 @@ let TagsInput = (
         setState({ focus });
 
         if (type === ENUMS.EVENT.FOCUS) {
+            _suggestShow();
             onFocus(e);
         }
 
         if (type === ENUMS.EVENT.BLUR) {
+            setTimeout(_suggestHide, 1);
             onBlur(e);
         }
     };
@@ -158,15 +160,27 @@ let TagsInput = (
             _addTag(e.target.value);
         }
 
-        if (e.keyCode === 8 && e.target.value.length < 1 && e.shiftKey) {
+        if (
+            e.keyCode === 8 &&
+            e.target.value.length < 1 &&
+            e.shiftKey &&
+            editable === true
+        ) {
             _onRemove(_value().length - 1);
         }
 
-        onKeyDown(e);
-    };
+        if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 27) {
+            _onArrowKey(e);
+        }
 
-    const _onKeyUp = e => {
-        onKeyUp(e);
+        if (e.keyCode === 9) {
+            const { suggest = [] } = stateRef.current;
+            if (suggest.length > 0) {
+                _onArrowKey(e);
+            }
+        }
+
+        onKeyDown(e);
     };
 
     const _onRemove = index => {
@@ -199,22 +213,76 @@ let TagsInput = (
         setState({ value: list, changed: Date.now() });
     };
 
+    const _addTag = val => {
+        val = isNaN(val) ? val : Number(val);
+
+        const isValid = validator(val, { state, ref });
+
+        if (isValid !== true) {
+            const evt = {
+                type: ENUMS.EVENT.ERROR,
+                value: val,
+                error: isValid,
+                target: inputRef,
+            };
+
+            onError(evt);
+            return;
+        }
+
+        val = formatter(val);
+
+        const value = _value();
+        value.push(val);
+
+        setState({ value, changed: Date.now(), suggest: [], suggestIndex: -1 });
+        inputRef.current.value = '';
+        inputRef.current.focus();
+    };
+
     const _index = () => {
         const { data = [] } = stateRef.current;
 
         if (data.length > 0) {
-            const index = lunr(function() {
-                this.field('label');
-                this.field('value');
+            const index = data.map((item, i) => {
+                if (typeof item === 'string') {
+                    item = {
+                        search: String(item)
+                            .trim()
+                            .split(' '),
+                        value: item,
+                        label: item,
+                    };
+                } else {
+                    let sarr = item.value.split(' ');
+                    sarr = sarr.concat(item.label.split(' '));
+                    item.search = sarr.join(' ').split(' ');
+                }
 
-                data.forEach((item, i) => {
-                    item['id'] = i;
-                    this.add(item);
-                });
+                item['search'] = _.compact(_.uniq(item.search)).join(' ');
+                item['id'] = i;
+
+                return item;
             });
 
             setState({ index });
         }
+    };
+
+    const _isChild = child => {
+        if (!child) {
+            return true;
+        }
+
+        const parent = containerRef.current;
+        let node = child.parentNode;
+        while (node !== null) {
+            if (node == parent) {
+                return true;
+            }
+            node = node.parentNode;
+        }
+        return false;
     };
 
     const _search = search => {
@@ -226,26 +294,70 @@ let TagsInput = (
         const { index } = stateRef.current;
 
         if (!index) {
+            setState({ suggest: [] });
             return;
         }
 
-        search =
-            '+' +
-            String(search)
-                .trim()
-                .split(' ')
-                .join(' +');
-        const rankings = index.search(search);
-        const ranker = op.get(_.max(rankings, 'score'), 'score') || 0;
-        const results = rankings
-            .filter(item => item.score >= ranker)
-            .map(item => {
-                const id = isNaN(item.ref) ? item.ref : Number(item.ref);
-                return data[id] || _.findWhere(data, { value: id });
-            });
+        const exp = new RegExp(search, 'i');
+        const results = index.filter(
+            item => String(item.search).search(exp) > -1,
+        );
 
         setState({ suggest: results });
+        _suggestShow();
     };
+
+    const _suggestDismiss = e => {
+        if (!e) {
+            return;
+        }
+
+        if (_isChild(e.target)) {
+            return;
+        }
+
+        setTimeout(_suggestHide, 1);
+    };
+
+    const _suggestFocus = inc => {
+        _suggestShow();
+        let { suggest = [], suggestIndex = -1 } = stateRef.current;
+
+        const selector = `.${namespace}-suggest-btn`;
+        const btns = suggestRef.current.querySelectorAll(selector);
+
+        suggestIndex += inc;
+        suggestIndex = Math.max(-2, suggestIndex);
+        suggestIndex = Math.min(suggest.length, suggestIndex);
+        suggestIndex = suggestIndex === suggest.length ? -1 : suggestIndex;
+        suggestIndex = suggestIndex === -2 ? suggest.length - 1 : suggestIndex;
+
+        const elm = suggestIndex === -1 ? inputRef.current : btns[suggestIndex];
+
+        setState({ suggestIndex });
+
+        elm.focus();
+    };
+
+    const _suggestHide = () => {
+        const { dismissable = false } = stateRef.current;
+
+        if (dismissable === true) {
+            suggestRef.current.style.display = 'none';
+            setState({ suggestIndex: -1 });
+        }
+    };
+
+    const _suggestShow = () => {
+        suggestRef.current.style.display = 'block';
+    };
+
+    const _value = value => {
+        value = value || op.get(stateRef.current, 'value', []) || [];
+        return Array.isArray(value) ? value : JSON.parse(value);
+    };
+
+    const _valueString = value => JSON.stringify(_value(value));
 
     // External Interface
     useImperativeHandle(ref, () => ({
@@ -262,15 +374,28 @@ let TagsInput = (
 
     useEffect(() => setState(props), Object.values(props));
 
+    useEffect(() => {
+        const doc = iDocument || document;
+
+        doc.addEventListener('mouseup', _suggestDismiss);
+
+        return function cleanup() {
+            doc.removeEventListener('mouseup', _suggestDismiss);
+        };
+    });
+
+    // Renderers
     const renderTag = (label, index) => (
         <span
             key={`${namespace}-tag-${index}`}
             className={`${namespace}-tag`}
             data-value={value}>
             <span className='label'>{label}</span>
-            <button type='button' onClick={() => _onRemove(index)}>
-                <Feather.X />
-            </button>
+            {editable && !props.disabled && !props.readOnly && (
+                <button type='button' onClick={() => _onRemove(index)}>
+                    <Feather.X />
+                </button>
+            )}
         </span>
     );
 
@@ -289,18 +414,52 @@ let TagsInput = (
                         dragging: snapshot.isDragging,
                     })}>
                     <span className='label'>{label}</span>
-                    <button type='button' onClick={() => _onRemove(index)}>
-                        <Feather.X />
-                    </button>
+                    {editable && !props.disabled && !props.readOnly && (
+                        <button type='button' onClick={() => _onRemove(index)}>
+                            <Feather.X />
+                        </button>
+                    )}
                 </span>
             )}
         </Draggable>
     );
 
+    const renderSuggestions = () => {
+        const { suggest = [] } = stateRef.current;
+
+        return (
+            <div className={`${namespace}-suggest`} ref={suggestRef}>
+                {suggest.length > 0 && (
+                    <Scrollbars
+                        autoHeight
+                        autoHeightMin={0}
+                        autoHeightMax={245}
+                        thumbMinSize={5}>
+                        <ul>
+                            {suggest.map((item, i) => (
+                                <li key={`suggest-${i}`}>
+                                    <button
+                                        type='button'
+                                        onKeyDown={_onArrowKey}
+                                        className={`${namespace}-suggest-btn`}
+                                        onClick={() =>
+                                            _addTag(item.value || item)
+                                        }>
+                                        {item.label || item}
+                                    </button>
+                                </li>
+                            ))}
+                        </ul>
+                    </Scrollbars>
+                )}
+            </div>
+        );
+    };
+
     const renderTags = () => {
         const value = _value();
 
-        return sortable ? (
+        return sortable && editable && !props.disabled && !props.readOnly ? (
             <DragDropContext onDragEnd={_onReorder}>
                 <Droppable
                     droppableId={`${id}-${uuid()}`}
@@ -314,17 +473,19 @@ let TagsInput = (
                             {...provided.droppableProps}
                             ref={provided.innerRef}>
                             {value.map(renderDraggableTag)}
-                            <input
-                                type='text'
-                                autoComplete='off'
-                                {...props}
-                                ref={inputRef}
-                                onBlur={_onFocus}
-                                onFocus={_onFocus}
-                                onKeyDown={_onKeyDown}
-                                onChange={e => _search(e.target.value)}
-                            />
-                            {renderSuggestions()}
+                            <span className='flex-grow'>
+                                <input
+                                    type='text'
+                                    autoComplete='off'
+                                    {...props}
+                                    ref={inputRef}
+                                    onBlur={_onFocus}
+                                    onFocus={_onFocus}
+                                    onKeyDown={_onKeyDown}
+                                    onChange={e => _search(e.target.value)}
+                                />
+                                {renderSuggestions()}
+                            </span>
                             {provided.placeholder}
                         </div>
                     )}
@@ -333,26 +494,21 @@ let TagsInput = (
         ) : (
             <div className={`${namespace}-tags`}>
                 {value.map(renderTag)}
-                <input
-                    type='text'
-                    autoComplete='off'
-                    {...props}
-                    ref={inputRef}
-                    onBlur={_onFocus}
-                    onFocus={_onFocus}
-                    onKeyDown={_onKeyDown}
-                    onChange={e => _search(e.target.value)}
-                />
-                {renderSuggestions()}
+                <span className='flex-grow'>
+                    <input
+                        type='text'
+                        autoComplete='off'
+                        {...props}
+                        ref={inputRef}
+                        onBlur={_onFocus}
+                        onFocus={_onFocus}
+                        onKeyDown={_onKeyDown}
+                        onChange={e => _search(e.target.value)}
+                    />
+                    {renderSuggestions()}
+                </span>
             </div>
         );
-    };
-
-    const renderSuggestions = () => {
-        const { suggest } = stateRef.current;
-        console.log(suggest);
-
-        return null;
     };
 
     const render = () => {
@@ -387,6 +543,7 @@ TagsInput = forwardRef(TagsInput);
 
 TagsInput.propTypes = {
     className: PropTypes.string,
+    editable: PropTypes.bool,
     formatter: PropTypes.func,
     namespace: PropTypes.string,
     sortable: PropTypes.bool,
@@ -401,6 +558,7 @@ TagsInput.propTypes = {
 
 TagsInput.defaultProps = {
     direction: ENUMS.DIRECTION.HORIZONTAL,
+    editable: true,
     id: uuid(),
     formatter: value => value,
     namespace: 'ar-tags-input',

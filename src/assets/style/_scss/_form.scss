@@ -42,7 +42,7 @@
 
             &:focus,
             &.focus {
-                box-shadow: 0 0 0 5px rgba(lighten(nth($color-blue, 1), 5%), 0.25);
+                box-shadow: 0 0 0 2px rgba(lighten($color-blue, 5%), 0.25);
                 border: 1px solid $color-blue;
             }
 
@@ -97,7 +97,7 @@
         input,
         textarea,
         select {
-            box-shadow: 0 0 0 5px rgba(lighten(nth($color-red, 1), 5%), 0.25);
+            box-shadow: 0 0 0 2px rgba(lighten($color-red, 5%), 0.25);
             border: 1px solid $color-red !important;
 
             &:focus,
