@@ -1,33 +1,61 @@
-@mixin flex-factory() {
+@mixin flex() {
     display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: row;
+}
+
+@mixin flex-factory() {
+    @include flex();
+
+    &-grow {
+        flex-grow: 1;
+    }
+
+    &-shrink {
+        flex-shrink: 1;
+    }
 
     &-top {
-        display: flex;
-        align-items: flex-start;
+        @include flex();
     }
 
     &-middle {
-        display: flex;
+        @include flex();
         align-items: center;
     }
 
     &-bottom {
-        display: flex;
+        @include flex();
         align-items: flex-end;
     }
 
     &-left {
-        display: flex;
-        justify-content: flex-start;
+        @include flex();
     }
 
     &-center {
-        display: flex;
+        @include flex();
         justify-content: center;
     }
 
     &-right {
-        display: flex;
+        @include flex();
         justify-content: flex-end;
+    }
+
+    &.start {
+        justify-content: flex-start
+    }
+    &.end {
+        justify-content: flex-end;
+    }
+
+    &.middle {
+        align-items: center
+    }
+
+    &.center {
+        justify-content: center;
     }
 }

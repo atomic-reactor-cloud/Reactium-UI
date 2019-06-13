@@ -16,6 +16,7 @@ import Radio from './Radio';
 import Tabs from './Tabs';
 import TagsInput from './TagsInput';
 import Toggle from './Toggle';
+import Tooltip from './Tooltip';
 
 export {
     Alert,
@@ -36,4 +37,5 @@ export {
     Tabs,
     TagsInput,
     Toggle,
+    Tooltip,
 };

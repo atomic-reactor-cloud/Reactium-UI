@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'tooltip-molecule': {
+                    type: 'molecule',
+                    label: 'Tooltip',
+                    route: '/toolkit/components/tooltip-molecule',
+                    dna: '/toolkit/components/TooltipMolecule',
+                    component: require('appdir/toolkit/components/TooltipMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/TooltipMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'modal-molecule': {
                     type: 'molecule',
                     label: 'Modal',
