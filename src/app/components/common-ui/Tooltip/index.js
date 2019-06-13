@@ -93,7 +93,7 @@ let Tooltip = (props, ref) => {
         const { tooltip } = element.dataset;
 
         if (tooltip) {
-            let { timer } = stateRef.current;
+            let { onHide, timer } = stateRef.current;
 
             if (timer) {
                 clearTimeout(timer);
@@ -112,7 +112,7 @@ let Tooltip = (props, ref) => {
                 element.removeEventListener('mouseleave', hide);
             }
 
-            onShow({ event: ENUMS.EVENT.HIDE, target: e.target, ref });
+            onHide({ event: ENUMS.EVENT.HIDE, target: e.target, ref });
         }
     };
 
@@ -126,6 +126,7 @@ let Tooltip = (props, ref) => {
             let {
                 align: defaultAlign,
                 autohide: defaultAutohide,
+                onShow,
                 timer,
                 verticalAlign: defaultVerticalAlign,
             } = stateRef.current;
