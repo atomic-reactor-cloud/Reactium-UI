@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'toast-molecule': {
+                    type: 'molecule',
+                    label: 'Toast',
+                    route: '/toolkit/components/toast-molecule',
+                    dna: '/toolkit/components/ToastMolecule',
+                    component: require('appdir/toolkit/components/ToastMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ToastMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'tooltip-molecule': {
                     type: 'molecule',
                     label: 'Tooltip',

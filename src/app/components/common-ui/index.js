@@ -15,6 +15,7 @@ import Progress from './Progress';
 import Radio from './Radio';
 import Tabs from './Tabs';
 import TagsInput from './TagsInput';
+import Toast from './Toast';
 import Toggle from './Toggle';
 import Tooltip from './Tooltip';
 
@@ -36,6 +37,7 @@ export {
     Radio,
     Tabs,
     TagsInput,
+    Toast,
     Toggle,
     Tooltip,
 };

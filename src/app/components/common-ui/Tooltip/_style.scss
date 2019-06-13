@@ -1,7 +1,7 @@
 $ar-tooltip-color: $color-white !default;
 $ar-tooltip-color-background: lighten($color-black, 5%) !default;
 $ar-tooltip-color-pointer: lighten($color-black, 5%) !default;
-$ar-tooltip-shadow: 0 0 5px 0 rgba($color-black, 0.8) !default;
+$ar-tooltip-shadow: none !default;
 
 $ar-tooltip-z: 10000000;
 
@@ -28,6 +28,7 @@ $ar-tooltip-z: 10000000;
         box-shadow: $ar-tooltip-shadow;
         max-width: 200px;
         text-align: center;
+        opacity: 0.8;
     }
 
     &.visible {

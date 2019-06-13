@@ -103,8 +103,9 @@ let Tooltip = (props, ref) => {
             setState({
                 visible: false,
                 timer,
-                align: Tooltip.defaultProps.align,
-                verticalAlign: Tooltip.defaultProps.verticalAlign,
+                align: props.align || Tooltip.defaultProps.align,
+                verticalAlign:
+                    props.verticalAlign || Tooltip.defaultProps.verticalAlign,
             });
 
             if (!autohide) {

@@ -25,9 +25,7 @@ class TooltipMolecule extends Component {
     render() {
         return (
             <div className='flex center middle' style={{ minHeight: 400 }}>
-                <Tooltip iWindow={this.props.iWindow}>
-                    Lorem Ipsum Dolor Sit
-                </Tooltip>
+                <Tooltip iWindow={this.props.iWindow} />
                 <div>
                     <div>
                         <div

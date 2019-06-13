@@ -24,16 +24,40 @@ $buttons: (
         $color-white,
         rgba($color-white, 0),
     ),
+    'clear': (
+        rgba($color-white, 0),
+        rgba($color-white, 0),
+        $color-gray-dark,
+        rgba($color-white, 0),
+    ),
+    'info': (
+        lighten($color-blue, 5%),
+        $color-blue,
+        $color-white,
+        rgba($color-white, 0),
+    ),
     'success': (
         lighten($color-green, 5%),
         $color-green,
         $color-white,
         rgba($color-white, 0),
     ),
-    'clear': (
+    'warning': (
+        lighten($color-orange, 15%),
+        $color-orange,
+        $color-white,
         rgba($color-white, 0),
+    ),
+    'default': (
+        darken($color-white, 2%),
+        darken($color-white, 2%),
+        $color-grey,
         rgba($color-white, 0),
-        $color-gray-dark,
+    ),
+    'error': (
+        lighten($color-red, 5%),
+        $color-red,
+        $color-white,
         rgba($color-white, 0),
     )
 ) !default;
@@ -113,6 +137,7 @@ $button-sizes: (
             &:focus,
             &.focus {
                 box-shadow: 0 0 1px 2px rgba(nth($clr-codes, 1), 0.25);
+                z-index: 10000;
             }
 
             &:hover,
@@ -314,7 +339,7 @@ button {
 
     > * {
         flex-grow: 1;
-        
+
         &:first-child {
             border-radius: 2px 0 0 2px;
         }

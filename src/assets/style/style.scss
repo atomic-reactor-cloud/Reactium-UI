@@ -1,5 +1,3 @@
-
-
 // Variables
 @import './_scss/variables';
 
@@ -17,7 +15,6 @@
 @import './_scss/mixins/text-align';
 @import './_scss/mixins/headings';
 @import './_scss/mixins/colors';
-
 
 // Global
 @import './_scss/grid/grid';
@@ -41,3 +38,4 @@
 @import '../../app/components/common-ui/TagsInput/style';
 @import '../../app/components/common-ui/Modal/style';
 @import '../../app/components/common-ui/Tooltip/style';
+@import '../../app/components/common-ui/Toast/style';
