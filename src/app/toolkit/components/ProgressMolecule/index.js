@@ -27,11 +27,28 @@ class ProgressMolecule extends Component {
 
         this.bar = React.createRef();
         this.ival = null;
+        this.timeout = null;
     }
 
     componentDidMount() {
         this.reset();
     }
+
+    componentWillUnount() {
+        this.cleanUp();
+    }
+
+    cleanUp = () => {
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
+
+        if (this.ival) {
+            clearInterval(this.ival);
+            this.ival = null;
+        }
+    };
 
     onChange = e => {
         const { percent } = e;
@@ -43,23 +60,35 @@ class ProgressMolecule extends Component {
     };
 
     reset = () => {
-        clearInterval(this.ival);
-        this.ival = null;
+        if (this.timeout) {
+            clearTimeout(this.timeout);
+            this.timeout = null;
+        }
+
+        if (this.ival) {
+            clearInterval(this.ival);
+            this.ival = null;
+        }
+
         this.setState({ percent: 0, val: 0 });
-        setTimeout(() => {
+
+        this.timeout = setTimeout(() => {
             this.ival = setInterval(() => {
                 let { val } = this.state;
 
                 if (val === 1) {
-                    clearInterval(this.ival);
-                    this.ival = null;
+                    this.cleanUp();
                     return;
                 }
 
-                val += 0.001;
-                val = Math.min(1, val);
-                this.bar.current.setState({ value: val });
-                this.setState({ val });
+                try {
+                    val += 0.001;
+                    val = Math.min(1, val);
+                    this.bar.current.setState({ value: val });
+                    this.setState({ val });
+                } catch (err) {
+                    this.cleanUp();
+                }
             }, 10);
         });
     };
