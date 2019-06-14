@@ -171,16 +171,16 @@ let Dismissable = ({ children, ...props }, ref) => {
     useEffect(() => setState(props), Object.values(props));
 
     const render = () => {
-        let { className, visible, namespace } = stateRef.current;
+        const { className, visible, namespace } = stateRef.current;
 
-        className = cn({
+        const cname = cn({
             [className]: !!className,
             [namespace]: !!namespace,
             visible,
         });
 
         return (
-            <div ref={containerRef} className={className}>
+            <div ref={containerRef} className={cname}>
                 {children}
             </div>
         );

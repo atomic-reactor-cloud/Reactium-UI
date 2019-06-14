@@ -578,5 +578,21 @@ module.exports = {
                 },
             },
         },
+        picker: {
+            label: 'Picker',
+            route: '/toolkit/picker',
+            elements: {
+                picker: {
+                    type: 'molecule',
+                    label: 'Picker Primitive',
+                    route: '/toolkit/picker/picker',
+                    dna: '/toolkit/picker/Picker',
+                    component: require('appdir/toolkit/picker/Picker').default,
+                    readme: require('appdir/toolkit/picker/Picker/readme')
+                        .default,
+                    hideCode: true,
+                },
+            },
+        },
     },
 };

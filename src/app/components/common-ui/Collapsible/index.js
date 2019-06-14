@@ -19,7 +19,7 @@ const noop = () => {};
  * Hook Component: Collapsible
  * -----------------------------------------------------------------------------
  */
-let Collapsible = (props, ref) => {
+let Collapsible = ({ children, ...props }, ref) => {
     // Refs
     const stateRef = useRef({
         prevState: {},
@@ -166,14 +166,13 @@ let Collapsible = (props, ref) => {
         container: containerRef.current,
         expand,
         setState,
-        state: stateRef.current,
+        state,
         toggle,
     }));
 
     useEffect(() => setState(props), Object.values(props));
 
     const render = () => {
-        const { children } = props;
         let { className, expanded, namespace } = stateRef.current;
 
         className = cn({

@@ -114,7 +114,7 @@ let Dropdown = (props, ref) => {
         if (dismissable === true && !isChild(e.target)) {
             return collapse(e);
         } else {
-            return Promise.resolve();
+            return Promise.resolve(e);
         }
     };
 
@@ -206,13 +206,15 @@ let Dropdown = (props, ref) => {
         const win = op.get(props, 'iWindow', window) || window;
         const doc = op.get(props, 'iDocument', document) || document;
 
-        doc.addEventListener('mousedown', dismiss);
-        win.addEventListener('keydown', _onKeyDown);
+        if (win && doc) {
+            doc.addEventListener('mousedown', dismiss);
+            win.addEventListener('keydown', _onKeyDown);
 
-        return function cleanup() {
-            doc.removeEventListener('mousedown', dismiss);
-            win.removeEventListener('keydown', _onKeyDown);
-        };
+            return function cleanup() {
+                doc.removeEventListener('mousedown', dismiss);
+                win.removeEventListener('keydown', _onKeyDown);
+            };
+        }
     });
 
     // After Render

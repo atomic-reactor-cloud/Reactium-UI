@@ -10,6 +10,7 @@ import Dropdown from './Dropdown';
 import Dropzone from './Dropzone';
 import Icon from './Icon';
 import Modal from './Modal';
+import Picker from './Picker';
 import Prefs from './Prefs';
 import Progress from './Progress';
 import Radio from './Radio';
@@ -32,6 +33,7 @@ export {
     Dropzone,
     Icon,
     Modal,
+    Picker,
     Prefs,
     Progress,
     Radio,

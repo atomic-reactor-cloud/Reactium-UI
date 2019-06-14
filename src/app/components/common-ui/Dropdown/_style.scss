@@ -27,9 +27,9 @@ $ar-dropdown-border-color: $color-grey-light !default;
         transform: translateY(100%);
         display: none;
         overflow: hidden;
-        height: 0;
         box-shadow: $ar-dropdown-shadow;
         border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+        height: 0;
 
         &.expanded {
             display: block;
@@ -109,7 +109,7 @@ $ar-dropdown-border-color: $color-grey-light !default;
                     svg {
                         fill: $ar-dropdown-item-hover;
                     }
-                }                
+                }
             }
         }
     }
