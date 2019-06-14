@@ -12,29 +12,26 @@ import { Picker } from 'components/common-ui';
  * -----------------------------------------------------------------------------
  */
 
-class PickerMolecule extends Component {
+export default class PickerMolecule extends Component {
     static dependencies() {
         return typeof module !== 'undefined' ? module.children : [];
-    }
-
-    constructor(props) {
-        super(props);
-        this.state = {};
     }
 
     render() {
         return (
             <div style={{ minHeight: 400 }}>
                 <Picker
-                    visible={true}
+                    readOnly
                     placeholder='Select something'
                     iDocument={this.props.iDocument}
                     iWindow={this.props.iWindow}>
-                    {(provided, snapshot) => 'Your UI Hear'}
+                    {(provided, snapshot) => (
+                        <div className='p-20' style={{ width: '100%' }}>
+                            Your UI Hear
+                        </div>
+                    )}
                 </Picker>
             </div>
         );
     }
 }
-
-export default PickerMolecule;

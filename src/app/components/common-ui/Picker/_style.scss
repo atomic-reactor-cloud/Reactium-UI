@@ -1,6 +1,8 @@
-$ns: 'ar-picker' !default;
+$ar-picker-z-button: 100 !default;
+$ar-picker-z-input: 10 !default;
+$ar-picker-z-select: 1 !default;
 
-.#{$ns} {
+.ar-picker {
     position: relative;
     display: inline-flex;
     flex-direction: column;
@@ -8,14 +10,18 @@ $ns: 'ar-picker' !default;
     input {
         @include inputStyle();
 
-        z-index: 10;
-        padding: 10px 40px 10px 10px;
+        z-index: $ar-picker-z-input;
         margin: 0;
+        padding-right: 40px;
+
+        &:read-only {
+            cursor: pointer;
+        }
     }
 
     &.focus {
         input {
-            @include inputStyleFocus($form-color-focus);
+            @include inputStyleFocus();
         }
     }
 
@@ -23,25 +29,26 @@ $ns: 'ar-picker' !default;
         @extend .btn-clear;
 
         background-color: transparent;
-        z-index: 100;
+        z-index: $ar-picker-z-button;
         position: absolute;
-        transform: translateY(-50%);
-        right: 2px;
-        top: 50%;
+        top: 0;
+        right: 0;
         width: 40px;
-        height: 100%;
-        max-height: 36px;
+        height: 41px;
         padding: 0;
     }
 
     &-select {
-        z-index: 1;
-        position: absolute;
-        max-width: 100%;
-        bottom: 0;
-        right: 0;
-        transform: translateY(100%);
-        overflow: hidden;
-        box-shadow: $ar-dropdown-shadow;
+        div:first-child {
+            &:last-child {
+                z-index: $ar-picker-z-select;
+                position: absolute;
+                bottom: 0;
+                right: 0;
+                transform: translateY(100%);
+                overflow: hidden;
+                box-shadow: $ar-dropdown-shadow;
+            }
+        }
     }
 }

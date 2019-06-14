@@ -49,7 +49,6 @@ let Picker = (
     const selectRef = useRef();
     const stateRef = useRef({
         prevState: {},
-        focus: false,
         selected,
         value: defaultValue,
         visible: defaultVisible,
@@ -102,37 +101,51 @@ let Picker = (
     };
 
     const hide = e => {
-        const select = selectRef.current;
+        const { disabled } = stateRef.current;
+        if (disabled === true) {
+            return;
+        }
 
-        setState({ focus: false });
+        const select = selectRef.current;
         return select.hide().then(() => {
-            setState({ focus: false, visible: false });
+            setState({ visible: false });
             return e;
         });
     };
 
     const show = e => {
+        const { disabled } = stateRef.current;
+        if (disabled === true) {
+            return;
+        }
+
         const evt = { ...e, ref };
         const select = selectRef.current;
-        setState({ focus: true });
-
         return select.show().then(() => {
-            setState({ focus: true, visible: true });
+            setState({ visible: true });
             return evt;
         });
     };
 
-    // External Interface
-    useImperativeHandle(ref, () => ({
+    const toggle = e => {
+        const { visible } = stateRef.current;
+        return visible ? hide(e) : show(e);
+    };
+
+    const handler = () => ({
         ...ref,
-        ...selectRef,
+        dismissable: selectRef.current,
         dismiss,
         hide,
         isChild,
         show,
         setState,
         state,
-    }));
+        toggle,
+    });
+
+    // External Interface
+    useImperativeHandle(ref, handler);
 
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
@@ -176,12 +189,14 @@ let Picker = (
 
     // Renderers
     const render = () => {
-        const { focus, value, visible } = stateRef.current;
+        let { disabled, focus, value, visible } = stateRef.current;
+
+        visible = disabled === true ? false : visible;
 
         const cname = cn({
             [className]: !!className,
             [namespace]: !!namespace,
-            focus,
+            focus: visible,
         });
 
         const scname = cn({
@@ -199,6 +214,8 @@ let Picker = (
             visible,
         };
 
+        const Icon = icon ? () => (visible ? icon.opened : icon.closed) : null;
+
         return (
             <span ref={containerRef} className={cname}>
                 <input
@@ -208,11 +225,11 @@ let Picker = (
                     onFocus={_onFocus}
                     onKeyDown={_onKeyDown}
                 />
-                <button type='button' onClick={show}>
-                    {icon}
+                <button type='button' onClick={toggle} disabled={disabled}>
+                    {Icon && <Icon />}
                 </button>
                 <Dismissable {...dismissProps}>
-                    {children(ref, stateRef.current)}
+                    {children(handler(), stateRef.current)}
                 </Dismissable>
             </span>
         );
@@ -226,8 +243,12 @@ Picker = forwardRef(Picker);
 Picker.propTypes = {
     children: PropTypes.func.isRequired,
     className: PropTypes.string,
+    disabled: PropTypes.bool,
     formatter: PropTypes.func,
-    icon: PropTypes.node,
+    icon: PropTypes.shape({
+        closed: PropTypes.node,
+        opened: PropTypes.node,
+    }),
     namespace: PropTypes.string,
     onBeforeHide: PropTypes.func,
     onBeforeShow: PropTypes.func,
@@ -249,7 +270,10 @@ Picker.propTypes = {
 
 Picker.defaultProps = {
     formatter: val => val,
-    icon: <Feather.ChevronDown />,
+    icon: {
+        closed: <Feather.ChevronDown />,
+        opened: <Feather.ChevronUp />,
+    },
     namespace: 'ar-picker',
     onBeforeHide: noop,
     onBeforeShow: noop,

@@ -1,25 +1,35 @@
-$form-color-focus: $color-blue;
+$input-color-focus: $color-blue !default;
+$input-color-border: $color-grey !default;
+$input-color-error: $color-red !default;
+$input-radius: 2px !default;
+$select-arrow: url('data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiB2aWV3Qm94PSIwIDAgMjQgMjQiPgo8cGF0aCBmaWxsPSIjNjY2NjY1IiBkPSJNNS4yOTMgOS43MDdsNiA2YzAuMzkxIDAuMzkxIDEuMDI0IDAuMzkxIDEuNDE0IDBsNi02YzAuMzkxLTAuMzkxIDAuMzkxLTEuMDI0IDAtMS40MTRzLTEuMDI0LTAuMzkxLTEuNDE0IDBsLTUuMjkzIDUuMjkzLTUuMjkzLTUuMjkzYy0wLjM5MS0wLjM5MS0xLjAyNC0wLjM5MS0xLjQxNCAwcy0wLjM5MSAxLjAyNCAwIDEuNDE0eiI+PC9wYXRoPgo8L3N2Zz4K') !default;
+$select-color-bg: $color-white !default;
 
-@mixin inputStyleFocus($clr) {
-    box-shadow: 0 0 0 2px rgba(lighten($color-blue, 5%), 0.25);
+@mixin inputStyleFocus($clr: $input-color-focus) {
+    box-shadow: 0 0 0 2px rgba(lighten($clr, 5%), 0.25);
     border: 1px solid $clr;
+    transition: box-shadow 0.125s;
 }
 
-@mixin inputStyle {
+@mixin inputStyle(
+    $clr: $input-color-focus,
+    $clr-border: $input-color-border,
+    $radius: $input-radius
+) {
     flex-grow: 1;
     font-family: inherit;
     font-size: inherit;
     font-weight: 200;
     outline: none;
-    border: 1px solid $color-grey;
-    border-radius: $input-radius;
+    border: 1px solid $clr-border;
+    border-radius: $radius;
     line-height: 1;
     margin-top: 6px;
     padding: 10px;
 
     &:focus,
     &.focus {
-        @include inputStyleFocus($form-color-focus);
+        @include inputStyleFocus($clr);
     }
 
     &:disabled {
@@ -107,18 +117,18 @@ $form-color-focus: $color-blue;
         input,
         textarea,
         select {
-            box-shadow: 0 0 0 2px rgba(lighten($color-red, 5%), 0.25);
-            border: 1px solid $color-red !important;
+            @include inputStyleFocus($input-color-error);
 
             &:focus,
             &.focus {
-                box-shadow: none;
+                border: 1px solid $input-color-error;
+                box-shadow: none !important;
             }
         }
 
         .small,
         small {
-            color: $color-red;
+            color: $input-color-error;
         }
     }
 }
@@ -160,12 +170,12 @@ $form-color-focus: $color-blue;
     textarea {
         z-index: 1;
         background-color: none;
-        border-top: 1px solid $color-grey;
-        border-bottom: 1px solid $color-grey;
-        border-left: 1px solid $color-grey;
+        border-top: 1px solid $input-color-border;
+        border-bottom: 1px solid $input-color-border;
+        border-left: 1px solid $input-color-border;
 
         &:last-child {
-            border-right: 1px solid $color-grey;
+            border-right: 1px solid $input-color-border;
         }
     }
 
@@ -207,12 +217,11 @@ select:not([multiple]) {
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
-    background-color: $color-white;
-    background-image: $ar-select-arrow,
-        linear-gradient(to bottom, $color-white 0%, $color-white 100%);
+    background-color: $select-color-bg;
+    background-image: $select-arrow;
     background-repeat: no-repeat, repeat;
-    background-position: right 0.7em top 50%, 0 0;
-    background-size: 0.65em auto, 100%;
+    background-position: right 10px top 50%, 0 0;
+    background-size: 24px 24px, 100%;
 
     option {
         font-weight: normal;
