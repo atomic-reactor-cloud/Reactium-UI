@@ -38,7 +38,6 @@ let Picker = (
         onKeyDown = noop,
         onShow = noop,
         selected,
-        value: defaultValue,
         visible: defaultVisible,
         ...props
     },
@@ -46,11 +45,11 @@ let Picker = (
 ) => {
     // Refs
     const containerRef = useRef();
+    const inputRef = useRef();
     const selectRef = useRef();
     const stateRef = useRef({
         prevState: {},
         selected,
-        value: defaultValue,
         visible: defaultVisible,
         ...props,
     });
@@ -134,9 +133,11 @@ let Picker = (
 
     const handler = () => ({
         ...ref,
+        container: containerRef.current,
         dismissable: selectRef.current,
         dismiss,
         hide,
+        input: inputRef.current,
         isChild,
         show,
         setState,
@@ -170,7 +171,7 @@ let Picker = (
     const _onInputChange = e => {
         const value = formatter(e.target.value);
         setState({ value });
-        onChange(e);
+        onChange({ ...e, value });
     };
 
     const _onKeyDown = e => {
@@ -220,6 +221,7 @@ let Picker = (
             <span ref={containerRef} className={cname}>
                 <input
                     {...props}
+                    ref={inputRef}
                     value={value || ''}
                     onChange={_onInputChange}
                     onFocus={_onFocus}
