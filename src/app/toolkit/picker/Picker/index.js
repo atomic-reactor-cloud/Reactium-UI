@@ -26,7 +26,9 @@ export default class PickerMolecule extends Component {
                     iDocument={this.props.iDocument}
                     iWindow={this.props.iWindow}>
                     {(provided, snapshot) => (
-                        <div className='p-20' style={{ width: '100%' }}>
+                        <div
+                            className='p-20 ar-picker-wrapper'
+                            style={{ width: '100%' }}>
                             Your UI Hear
                         </div>
                     )}

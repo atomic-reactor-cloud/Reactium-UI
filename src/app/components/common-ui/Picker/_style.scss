@@ -7,7 +7,7 @@ $ar-picker-z-select: 1 !default;
     display: inline-flex;
     flex-direction: column;
 
-    input {
+    > input {
         @include inputStyle();
 
         z-index: $ar-picker-z-input;
@@ -20,12 +20,12 @@ $ar-picker-z-select: 1 !default;
     }
 
     &.focus {
-        input {
+        > input {
             @include inputStyleFocus();
         }
     }
 
-    button {
+    > button {
         @extend .btn-clear;
 
         background-color: transparent;
@@ -36,19 +36,21 @@ $ar-picker-z-select: 1 !default;
         width: 40px;
         height: 41px;
         padding: 0;
+
+        svg {
+            width: 18px;
+            height: 18px;
+        }
     }
 
-    &-select {
-        div:first-child {
-            &:last-child {
-                z-index: $ar-picker-z-select;
-                position: absolute;
-                bottom: 0;
-                right: 0;
-                transform: translateY(100%);
-                overflow: hidden;
-                box-shadow: $ar-dropdown-shadow;
-            }
+    &-wrapper:first-child {
+        &:last-child {
+            z-index: $ar-picker-z-select;
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transform: translateY(100%);
+            box-shadow: $ar-dropdown-shadow;
         }
     }
 }

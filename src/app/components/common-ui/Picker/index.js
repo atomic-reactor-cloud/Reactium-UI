@@ -241,7 +241,7 @@ let Picker = (
 Picker = forwardRef(Picker);
 
 Picker.propTypes = {
-    children: PropTypes.func.isRequired,
+    children: PropTypes.func,
     className: PropTypes.string,
     disabled: PropTypes.bool,
     formatter: PropTypes.func,

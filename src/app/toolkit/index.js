@@ -582,6 +582,28 @@ module.exports = {
             label: 'Picker',
             route: '/toolkit/picker',
             elements: {
+                'time-picker-molecule': {
+                    type: 'molecule',
+                    label: 'TimePicker',
+                    route: '/toolkit/picker/time-picker-molecule',
+                    dna: '/toolkit/picker/TimePickerMolecule',
+                    component: require('appdir/toolkit/picker/TimePickerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/picker/TimePickerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'date-picker-molecule': {
+                    type: 'molecule',
+                    label: 'DatePicker',
+                    route: '/toolkit/picker/date-picker-molecule',
+                    dna: '/toolkit/picker/DatePickerMolecule',
+                    component: require('appdir/toolkit/picker/DatePickerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/picker/DatePickerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 picker: {
                     type: 'molecule',
                     label: 'Picker Primitive',
