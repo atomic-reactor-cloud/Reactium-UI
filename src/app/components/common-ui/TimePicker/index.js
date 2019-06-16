@@ -152,7 +152,9 @@ let TimePicker = ({ iDocument, iWindow, ...props }, ref) => {
 
             pickerRef.current.show();
             const inc = e.keyCode === 38 ? 1 : -1;
-            _onTimeSet(inc);
+            try {
+                _onTimeSet(inc);
+            } catch (err) {}
         }
     };
 
@@ -172,7 +174,8 @@ let TimePicker = ({ iDocument, iWindow, ...props }, ref) => {
             return;
         }
 
-        let { selection, value, values = [] } = active;
+        let { selection = null, value, values = [] } = active;
+
         value = isNaN(value) ? value : Number(value);
 
         inc = Number(inc);
@@ -223,14 +226,9 @@ let TimePicker = ({ iDocument, iWindow, ...props }, ref) => {
 
     // Renderers
     const renderUI = (provided, snapshot) => {
-        let {
-            active,
-            namespace,
-            selected = moment()
-                .format('hh:mm:ss:A')
-                .split(':'),
-            value,
-        } = stateRef.current;
+        let { active, namespace, selected = [], value } = stateRef.current;
+
+        value = !value ? moment().format('LT') : value;
 
         if (typeof value === 'string') {
             value = String(value)
@@ -239,6 +237,10 @@ let TimePicker = ({ iDocument, iWindow, ...props }, ref) => {
 
             selected = _.compact(value.split(':'));
             stateRef.current.selected = selected;
+        }
+
+        if (selected.length < 2) {
+            return null;
         }
 
         const cname = cn({
@@ -382,7 +384,6 @@ TimePicker.propTypes = {
     onChange: PropTypes.func,
     picker: PropTypes.shape(Picker.propTypes),
     readOnly: PropTypes.bool,
-    selected: PropTypes.array,
     style: PropTypes.object,
     value: PropTypes.string,
     width: PropTypes.number,
@@ -391,9 +392,6 @@ TimePicker.propTypes = {
 TimePicker.defaultProps = {
     namespace: 'ar-timepicker',
     onChange: noop,
-    selected: moment()
-        .format('hh:mm:A')
-        .split(':'),
     style: {},
     width: 180,
     icon: {
