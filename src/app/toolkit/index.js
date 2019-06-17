@@ -424,6 +424,16 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'image-molecule': {
+                    type: 'molecule',
+                    label: 'Image',
+                    route: '/toolkit/components/image-molecule',
+                    dna: '/toolkit/components/ImageMolecule',
+                    component: require('appdir/toolkit/components/ImageMolecule')
+                        .default,
+                    hideCode: true,
+                    hideDocs: true,
+                },
                 'toast-molecule': {
                     type: 'molecule',
                     label: 'Toast',

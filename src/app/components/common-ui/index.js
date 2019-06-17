@@ -10,6 +10,7 @@ import Dismissable from './Dismissable';
 import Dropdown from './Dropdown';
 import Dropzone from './Dropzone';
 import Icon from './Icon';
+import Image from './Image';
 import Modal from './Modal';
 import Picker from './Picker';
 import Prefs from './Prefs';
@@ -35,6 +36,7 @@ export {
     Dropdown,
     Dropzone,
     Icon,
+    Image,
     Modal,
     Picker,
     Prefs,

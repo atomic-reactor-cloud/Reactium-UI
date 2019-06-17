@@ -1,16 +1,20 @@
-import React, { Component, Fragment } from 'react';
-import op from 'object-path';
+import PropTypes from 'prop-types';
 
-/**
- * -----------------------------------------------------------------------------
- * React Component: Breakpoint
- * -----------------------------------------------------------------------------
- */
+import React, {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react';
 
-const Empty = () => <Fragment />;
+const noop = () => {};
 
-export const getBreakpoints = function(win = window, doc = window.document) {
-    return new Promise(resolve => {
+const DEBUG = false;
+
+const getBreakpoints = (win = window, doc = window.document) =>
+    new Promise(resolve => {
         let bps = {};
         const queries = String(
             win
@@ -37,77 +41,130 @@ export const getBreakpoints = function(win = window, doc = window.document) {
             }, {}),
         );
     });
-};
 
-export default class Breakpoint extends Component {
-    constructor(props) {
-        super(props);
-        this.breaks = op.get(props, 'breaks', ['xs', 'sm', 'md', 'lg', 'xl']);
+/**
+ * -----------------------------------------------------------------------------
+ * Hook Component: Breakpoint
+ * -----------------------------------------------------------------------------
+ */
+let Breakpoint = ({ iDocument, iWindow, ...props }, ref) => {
+    // Refs
+    const containerRef = useRef();
+    const stateRef = useRef({
+        active: 'xs',
+        mounted: false,
+        prevState: {},
+        ...props,
+    });
 
-        this.state = {
-            active: 'xs',
+    // State
+    const [state, setNewState] = useState(stateRef.current);
+
+    // Internal Interface
+    const setState = (newState, caller) => {
+        // Get the previous state
+        const prevState = { ...stateRef.current };
+
+        // Update the stateRef
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+            prevState,
         };
 
-        this.onResize = this.onResize.bind(this);
-        this.mounted = false;
-
-        // Not SSR safe
-        this.window = props.iWindow ? props.iWindow : window;
-        this.document = props.iWindow ? props.iDocument : window.document;
-    }
-
-    componentDidMount() {
-        this.mounted = true;
-        this.window.addEventListener('resize', this.onResize);
-        this.window.addEventListener('load', this.onResize);
-        this.onResize();
-    }
-
-    componentWillUnmount() {
-        this.mounted = false;
-        if (typeof this.window !== 'undefined') {
-            this.window.removeEventListener('resize', this.onResize);
-            this.window.removeEventListener('load', this.onResize);
+        if (DEBUG === true && caller) {
+            console.log('setState() ->', caller, stateRef.current);
         }
-    }
 
-    onResize() {
-        getBreakpoints(this.window, this.document).then(bps => {
-            if (this.mounted !== true) {
-                return;
+        // Trigger useEffect()
+        setNewState(stateRef.current);
+    };
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        setState,
+        state,
+    }));
+
+    // Side Effects
+    useEffect(() => setState(props), Object.values(props));
+
+    useEffect(() => {
+        const { mounted } = stateRef.current;
+        if (mounted === true) {
+            return;
+        }
+        const win = iWindow || window;
+        win.addEventListener('resize', _onResize);
+        setState({ mounted: true });
+    });
+
+    useLayoutEffect(() => {
+        _onResize();
+    });
+
+    const _onResize = async e => {
+        const doc = iDocument || document;
+        const win = iWindow || window;
+
+        if (!win || !doc) {
+            return;
+        }
+
+        let {
+            active = 'xs',
+            breaks = Breakpoint.defaultProps,
+            onResize,
+        } = stateRef.current;
+
+        const breakpoints = await getBreakpoints(win, doc);
+
+        if (!breakpoints) {
+            return;
+        }
+
+        let newActive = breaks.reduce((act, bp) => {
+            if (
+                act === null &&
+                breakpoints[bp] &&
+                typeof props[bp] !== 'undefined'
+            ) {
+                act = bp;
             }
+            return act;
+        }, null);
 
-            let active = 'xs';
+        if (active !== newActive) {
+            setState({ active: newActive }, '_onResize()');
+            e = e || { type: 'resize' };
+            onResize({ ...e, breakpoint: newActive });
+        }
+    };
 
-            this.breaks.forEach(bp => {
-                active =
-                    bps[bp] && typeof this.props[bp] !== 'undefined'
-                        ? bp
-                        : active;
-            });
+    const render = () => {
+        const { active } = stateRef.current;
 
-            if (active !== this.state.active) {
-                this.setState({ active });
-            }
-        });
-    }
+        if (props[active]) {
+            return props[active];
+        } else {
+            return null;
+        }
+    };
 
-    render() {
-        let { ...componentProps } = this.props;
-        const { active } = this.state;
-        const Content = op.get(this.props, active, Empty);
+    return render();
+};
 
-        componentProps = Object.keys(Breakpoint.defaultProps).reduce(
-            (obj, key) => {
-                delete componentProps[key];
-                return componentProps;
-            },
-            componentProps,
-        );
+Breakpoint = forwardRef(Breakpoint);
 
-        return <Content {...componentProps} breakpoint={active} />;
-    }
-}
+Breakpoint.propTypes = {
+    xs: PropTypes.node,
+    sm: PropTypes.node,
+    md: PropTypes.node,
+    lg: PropTypes.node,
+    xl: PropTypes.node,
+    breaks: PropTypes.array,
+    onResize: PropTypes.func,
+};
 
 Breakpoint.defaultProps = {
     xs: undefined,
@@ -115,5 +172,10 @@ Breakpoint.defaultProps = {
     md: undefined,
     lg: undefined,
     xl: undefined,
-    breaks: ['xs', 'sm', 'md', 'lg', 'xl'],
+    breaks: ['xl', 'lg', 'md', 'sm', 'xs'],
+    onResize: noop,
 };
+
+Breakpoint.getBreakpoints = getBreakpoints;
+
+export { Breakpoint as default, getBreakpoints };
