@@ -29,7 +29,9 @@ class SliderMolecule extends Component {
                     <div className='col-xs-12 col-sm-6'>
                         <Slider
                             onChange={console.log}
-                            value={25}
+                            min={-50}
+                            max={50}
+                            value={0}
                             name='ar-slider-demo-1'
                             iWindow={this.props.iWindow}
                             iDocument={this.props.iDocument}

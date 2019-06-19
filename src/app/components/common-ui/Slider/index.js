@@ -267,8 +267,8 @@ Slider.propTypes = {
 
 Slider.defaultProps = {
     direction: ENUMS.DIRECTION.HORIZONTAL,
-    min: -50,
-    max: 50,
+    min: 0,
+    max: 100,
     namespace: 'ar-slider',
     onChange: noop,
     range: false,
