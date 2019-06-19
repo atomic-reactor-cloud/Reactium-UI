@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'slider-molecule': {
+                    type: 'molecule',
+                    label: 'Slider',
+                    route: '/toolkit/components/slider-molecule',
+                    dna: '/toolkit/components/SliderMolecule',
+                    component: require('appdir/toolkit/components/SliderMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SliderMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'image-molecule': {
                     type: 'molecule',
                     label: 'Image',

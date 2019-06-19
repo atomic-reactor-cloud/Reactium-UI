@@ -16,6 +16,7 @@ import Picker from './Picker';
 import Prefs from './Prefs';
 import Progress from './Progress';
 import Radio from './Radio';
+import Slider from './Slider';
 import Tabs from './Tabs';
 import TagsInput from './TagsInput';
 import TimePicker from './TimePicker';
@@ -42,6 +43,7 @@ export {
     Prefs,
     Progress,
     Radio,
+    Slider,
     Tabs,
     TagsInput,
     TimePicker,

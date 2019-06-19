@@ -1,0 +1,100 @@
+$ar-slider-color-bar: $color-grey-light !default;
+$ar-slider-color-range: $color-blue !default;
+$ar-slider-color-handle: $color-white !default;
+$ar-slider-height: 20px !default;
+$ar-slider-height-bar: 5px !default;
+$ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
+
+@mixin ar-slider-handle() {
+    height: $ar-slider-height;
+    width: $ar-slider-height;
+    position: absolute;
+    left: 0;
+    top: 0;
+    box-shadow: $ar-slider-shadow;
+    border-radius: 100%;
+    background-color: $ar-slider-color-handle;
+    border: none;
+    user-select: none;
+    z-index: 10;
+    padding: 0;
+    margin: 0;
+
+    * {
+        pointer-events: none;
+    }
+
+    &:hover {
+        cursor: grab;
+    }
+
+    &.dragging {
+        cursor: grabbing;
+        z-index: 100;
+    }
+}
+
+.ar-slider {
+    display: inline;
+    position: relative;
+    width: 100%;
+    min-height: $ar-slider-height;
+
+    .ar-slider-bar {
+        position: relative;
+        width: 100%;
+        height: $ar-slider-height;
+
+        &:before {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: $ar-slider-height-bar;
+            transform: translateY(-50%);
+            content: '';
+            background-color: $ar-slider-color-bar;
+        }
+    }
+
+    &-ticks {
+        width: 100%;
+    }
+
+    .ar-slider-handle {
+        @include ar-slider-handle();
+        transform: translateX(-50%);
+    }
+}
+
+.vertical {
+    &.ar-slider {
+        display: inline;
+        position: relative;
+        width: auto;
+        min-height: 200px;
+        height: 200px;
+
+        .ar-slider-bar {
+            position: relative;
+            width: $ar-slider-height;
+            height: 200px;
+
+            &:before {
+                position: absolute;
+                left: 50%;
+                top: 0;
+                height: 100%;
+                width: $ar-slider-height-bar;
+                transform: translateX(-50%);
+                content: '';
+                background-color: $ar-slider-color-bar;
+            }
+        }
+
+        .ar-slider-handle {
+            @include ar-slider-handle();
+            transform: translateY(-50%);
+        }
+    }
+}
