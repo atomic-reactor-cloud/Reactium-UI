@@ -19,6 +19,9 @@ const ENUMS = {
         HORIZONTAL: 'horizontal',
         VERTICAL: 'vertical',
     },
+    EVENT: {
+        CHANGE: 'change',
+    },
     MAX: 'max',
     MIN: 'min',
 };
@@ -35,7 +38,8 @@ let Slider = ({ iDocument, iWindow, ...props }, ref) => {
     const handleMaxRef = useRef();
     const handleMinRef = useRef();
     const stateRef = useRef({
-        max: op.get(props, ENUMS.MAX, 100),
+        max: Math.ceil(op.get(props, ENUMS.MAX, 100)),
+        min: Math.floor(op.get(props, ENUMS.MIN, 0)),
         prevState: {},
         range: typeof op.get(props, 'value') !== 'number',
         ...props,
@@ -69,11 +73,12 @@ let Slider = ({ iDocument, iWindow, ...props }, ref) => {
     };
 
     const _drag = e => {
-        const {
+        let {
             handle,
             direction,
             dragging = false,
             max = 100,
+            min = 0,
             range,
         } = stateRef.current;
 
@@ -110,15 +115,13 @@ let Slider = ({ iDocument, iWindow, ...props }, ref) => {
                 ? Math.min(Math.max(0, e.clientY - h), maxY)
                 : 0;
 
+        const vals = _.range(min, max + 1);
         const px = Math.floor((x / barW) * 100);
         const py = Math.floor((y / barH) * 100);
 
-        let v =
-            direction === ENUMS.DIRECTION.HORIZONTAL
-                ? (px / 100) * max
-                : (py / 100) * max;
-        v = Math.floor(v);
-
+        let pv = direction === ENUMS.DIRECTION.HORIZONTAL ? px : py;
+        pv = Math.ceil((pv / vals.length) * 100);
+        const v = Math.min(vals[pv], max);
         const value = range ? { [dragging]: v } : v;
 
         setState({ value });
@@ -137,28 +140,44 @@ let Slider = ({ iDocument, iWindow, ...props }, ref) => {
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
 
+    const positionFromValue = ({
+        direction,
+        dragging = ENUMS.MIN,
+        handle = handleMinRef.current,
+        max = 100,
+        min = 0,
+        range,
+        value,
+    }) => {
+        const vals = _.range(min, max + 1);
+        const v = range ? value[dragging] : value;
+        const i = vals.indexOf(v);
+        const p = Math.floor((i / vals.length) * 100);
+
+        return direction === ENUMS.DIRECTION.HORIZONTAL
+            ? { top: 0, left: `${p}%` }
+            : { left: 0, top: `${p}%` };
+    };
+
     useEffect(() => {
         const {
-            direction,
-            dragging = ENUMS.MIN,
+            dragging,
             handle = handleMinRef.current,
-            max = 100,
-            range,
+            onChange,
             value,
         } = state;
+        const pos = positionFromValue(state);
 
-        const v = range ? value[dragging] : value;
-        const p = Math.floor((v / max) * 100);
+        handle.style.left = pos.left;
+        handle.style.top = pos.top;
 
-        if (direction === ENUMS.DIRECTION.HORIZONTAL) {
-            handle.style.left = `${p}%`;
-            handle.style.top = 0;
-        } else {
-            handle.style.top = `${p}%`;
-            handle.style.left = 0;
-        }
-
-        // console.log({ pos: state.pos, value: state.value });
+        onChange({
+            type: ENUMS.EVENT.CHANGE,
+            target: handle,
+            value,
+            position: pos,
+            dragging,
+        });
     }, [state.value]);
 
     useLayoutEffect(() => {
@@ -248,8 +267,8 @@ Slider.propTypes = {
 
 Slider.defaultProps = {
     direction: ENUMS.DIRECTION.HORIZONTAL,
-    min: 0,
-    max: 100,
+    min: -50,
+    max: 50,
     namespace: 'ar-slider',
     onChange: noop,
     range: false,
