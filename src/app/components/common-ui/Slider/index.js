@@ -49,6 +49,11 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         ...props,
     });
 
+    const [handles] = useState({
+        [ENUMS.MIN]: handleMinRef,
+        [ENUMS.MAX]: handleMaxRef,
+    });
+
     // State
     const [state, setNewState] = useState(stateRef.current);
 
@@ -69,7 +74,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const _dragStart = e => {
-        setState({ dragging: e.target.dataset.handle, handle: e.target });
+        setState({ dragging: e.target.dataset.handle, focus: e.target });
 
         const doc = iDocument || document;
         doc.addEventListener('mousemove', _drag);
@@ -79,7 +84,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     const _drag = e => {
         let {
             buffer,
-            handle,
             direction,
             dragging,
             max,
@@ -91,6 +95,8 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         if (!dragging) {
             return;
         }
+
+        const handle = handles[dragging].current;
 
         const hpos = {
             x: handle.offsetLeft,
@@ -150,7 +156,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const _dragEnd = () => {
-        setState({ dragging: null, handle: null });
+        setState({ dragging: null });
     };
 
     const _positionFromValue = ({ value }) => {
@@ -181,13 +187,9 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             value,
         } = stateRef.current;
         const v = range === true ? value : { min: value };
-        const handles = {
-            [ENUMS.MIN]: handleMinRef.current,
-            [ENUMS.MAX]: handleMaxRef.current,
-        };
 
         Object.entries(v).forEach(([key, value]) => {
-            const handle = handles[key];
+            const handle = handles[key].current;
             const pos = _positionFromValue({ handle, value });
             handle.style.left = pos.left;
             handle.style.top = pos.top;
@@ -196,25 +198,25 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         if (range === true) {
             if (direction === ENUMS.DIRECTION.HORIZONTAL) {
                 const left = Number(
-                    handles[ENUMS.MIN].style.left.split('%').join(''),
+                    handles[ENUMS.MIN].current.style.left.split('%').join(''),
                 );
                 const right = Number(
-                    handles[ENUMS.MAX].style.left.split('%').join(''),
+                    handles[ENUMS.MAX].current.style.left.split('%').join(''),
                 );
                 const barW = right - left;
 
-                sel.style.left = handles[ENUMS.MIN].style.left;
+                sel.style.left = handles[ENUMS.MIN].current.style.left;
                 sel.style.width = `${barW}%`;
             } else {
                 const top = Number(
-                    handles[ENUMS.MAX].style.top.split('%').join(''),
+                    handles[ENUMS.MAX].current.style.top.split('%').join(''),
                 );
                 const bottom = Number(
-                    handles[ENUMS.MIN].style.top.split('%').join(''),
+                    handles[ENUMS.MIN].current.style.top.split('%').join(''),
                 );
                 const barH = bottom - top;
 
-                sel.style.top = handles[ENUMS.MAX].style.top;
+                sel.style.top = handles[ENUMS.MAX].current.style.top;
                 sel.style.height = `${barH}%`;
             }
         }
@@ -225,7 +227,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         });
 
         if (dragging) {
-            const handle = handles[dragging];
+            const handle = handles[dragging].current;
 
             if (direction === ENUMS.DIRECTION.HORIZONTAL) {
                 lbl.style.left = handle.style.left;
@@ -238,6 +240,37 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             }
 
             lbl.style.opacity = 1;
+        }
+    };
+
+    const _onKeyPress = e => {
+        const { keyCode } = e;
+        const { handle } = e.target.dataset;
+        let { max, min, range, value } = stateRef.current;
+
+        let inc;
+
+        switch (keyCode) {
+            case 38:
+            case 39:
+                inc = 1;
+                break;
+
+            case 37:
+            case 40:
+                inc = -1;
+                break;
+        }
+
+        if (keyCode >= 37 && keyCode <= 40) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            let v = range ? value[handle] + inc : value + inc;
+            v = Math.min(Math.max(min, v), max);
+
+            value = range ? { ...value, [handle]: v } : v;
+            setState({ value });
         }
     };
 
@@ -352,6 +385,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
                         onTouchStart={_dragStart}
                         onTouchEnd={_dragEnd}
                         onTouchMove={_drag}
+                        onKeyDown={_onKeyPress}
                         data-handle={ENUMS.MIN}
                     />
                     {range === true && op.has(value, 'max') && (
@@ -363,6 +397,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
                             onTouchStart={_dragStart}
                             onTouchEnd={_dragEnd}
                             onTouchMove={_drag}
+                            onKeyDown={_onKeyPress}
                             data-handle={ENUMS.MAX}
                         />
                     )}
