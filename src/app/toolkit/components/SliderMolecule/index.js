@@ -32,7 +32,7 @@ class SliderMolecule extends Component {
 
     render() {
         return (
-            <div className='p-xs-20' style={{ height: 320 }}>
+            <div className='p-xs-24' style={{ height: 320 }}>
                 <div className='row'>
                     <div className='col-xs-12 col-sm-6'>
                         <Slider

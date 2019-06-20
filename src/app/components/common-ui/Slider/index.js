@@ -79,6 +79,8 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         const doc = iDocument || document;
         doc.addEventListener('mousemove', _drag);
         doc.addEventListener('mouseup', _dragEnd);
+        doc.addEventListener('touchmove', _drag);
+        doc.addEventListener('touchend', _dragEnd);
     };
 
     const _drag = e => {
@@ -94,6 +96,11 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
         if (!dragging) {
             return;
+        }
+
+        if (e.type === 'touchmove') {
+            e.clientX = e.touches[0].clientX;
+            e.clientY = e.touches[0].clientY;
         }
 
         const handle = handles[dragging].current;
@@ -157,6 +164,11 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
     const _dragEnd = () => {
         setState({ dragging: null });
+        const doc = iDocument || document;
+        doc.removeEventListener('mousemove', _drag);
+        doc.removeEventListener('mouseup', _dragEnd);
+        doc.removeEventListener('touchmove', _drag);
+        doc.removeEventListener('touchend', _dragEnd);
     };
 
     const _positionFromValue = ({ value }) => {
@@ -383,8 +395,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
                         ref={handleMinRef}
                         onMouseDown={_dragStart}
                         onTouchStart={_dragStart}
-                        onTouchEnd={_dragEnd}
-                        onTouchMove={_drag}
                         onKeyDown={_onKeyPress}
                         data-handle={ENUMS.MIN}
                     />
@@ -395,8 +405,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
                             ref={handleMaxRef}
                             onMouseDown={_dragStart}
                             onTouchStart={_dragStart}
-                            onTouchEnd={_dragEnd}
-                            onTouchMove={_drag}
                             onKeyDown={_onKeyPress}
                             data-handle={ENUMS.MAX}
                         />
