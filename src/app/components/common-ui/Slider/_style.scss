@@ -3,7 +3,9 @@ $ar-slider-color-range: $color-blue !default;
 $ar-slider-color-handle: $color-white !default;
 $ar-slider-height: 20px !default;
 $ar-slider-height-bar: 5px !default;
-$ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
+$ar-slider-shadow: 0 0 3px 1px rgba($color-black, 0.125) !default;
+$ar-slider-shadow-highlight: 0 0 3px 1px rgba($color-blue, 0.5) !default;
+$ar-slider-shadow-inset: inset 0 0 3px 1px rgba($color-black, 0.125);
 
 @mixin ar-slider-handle() {
     height: $ar-slider-height;
@@ -19,6 +21,7 @@ $ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
     z-index: 10;
     padding: 0;
     margin: 0;
+    transition: box-shadow .5s ease-in-out;
 
     * {
         pointer-events: none;
@@ -28,21 +31,25 @@ $ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
         cursor: grab;
     }
 
+    &:focus,
     &.dragging {
         cursor: grabbing;
         z-index: 100;
+        box-shadow: $ar-slider-shadow-highlight;
     }
 }
 
 .ar-slider {
-    display: inline;
+    display: inline-block;
     position: relative;
     width: 100%;
     min-height: $ar-slider-height;
 
     .ar-slider-bar {
+        display: block;
         position: relative;
         width: 100%;
+        max-width: 100%;
         height: $ar-slider-height;
 
         &:before {
@@ -54,11 +61,17 @@ $ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
             transform: translateY(-50%);
             content: '';
             background-color: $ar-slider-color-bar;
+            box-shadow: $ar-slider-shadow-inset;
         }
     }
 
-    &-ticks {
-        width: 100%;
+    .ar-slider-range {
+        position: absolute;
+        height: $ar-slider-height-bar;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: $ar-slider-color-range;
+        z-index: 1;
     }
 
     .ar-slider-handle {
@@ -69,9 +82,8 @@ $ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
 
 .vertical {
     &.ar-slider {
-        display: inline;
+        display: inline-block;
         position: relative;
-        width: auto;
         min-height: 200px;
         height: 200px;
 
@@ -89,7 +101,18 @@ $ar-slider-shadow: 0 0 2px 1px rgba($color-black, 0.05) !default;
                 transform: translateX(-50%);
                 content: '';
                 background-color: $ar-slider-color-bar;
+                box-shadow: $ar-slider-shadow-inset;
             }
+        }
+
+        .ar-slider-range {
+            position: absolute;
+            width: $ar-slider-height-bar;
+            left: 50%;
+            bottom: 0;
+            top: auto;
+            transform: translateX(-50%);
+            background-color: $ar-slider-color-range;
         }
 
         .ar-slider-handle {

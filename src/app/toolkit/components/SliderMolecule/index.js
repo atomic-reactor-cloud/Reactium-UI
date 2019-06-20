@@ -22,19 +22,23 @@ class SliderMolecule extends Component {
         this.state = {};
     }
 
+    onChange = e => {
+        // console.log(JSON.stringify(e.value));
+    };
+
     render() {
         return (
             <div className='mb-xs-20' style={{ height: 250 }}>
                 <div className='row'>
                     <div className='col-xs-12 col-sm-6'>
                         <Slider
-                            onChange={console.log}
-                            min={-50}
                             max={50}
-                            value={0}
+                            min={-50}
                             name='ar-slider-demo-1'
-                            iWindow={this.props.iWindow}
+                            value={{ min: -25, max: 25 }}
+                            onChange={this.onChange}
                             iDocument={this.props.iDocument}
+                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
                         />
                     </div>
                 </div>
