@@ -22,23 +22,30 @@ class SliderMolecule extends Component {
         this.state = {};
     }
 
-    onChange = e => {
+    onChange = () => {
         // console.log(JSON.stringify(e.value));
+    };
+
+    labelFormat = label => {
+        return label !== undefined ? `${Number(label)}°` : null;
     };
 
     render() {
         return (
-            <div className='mb-xs-20' style={{ height: 250 }}>
+            <div className='p-xs-20' style={{ height: 320 }}>
                 <div className='row'>
                     <div className='col-xs-12 col-sm-6'>
                         <Slider
-                            max={50}
+                            max={25}
                             min={-50}
+                            ticks={[-50, -25, 0, 25]}
                             name='ar-slider-demo-1'
-                            value={{ min: -25, max: 25 }}
                             onChange={this.onChange}
+                            value={{ min: -25, max: 25 }}
                             iDocument={this.props.iDocument}
-                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
+                            labelFormat={this.labelFormat}
+                            tickFormat={this.labelFormat}
+                            direction={Slider.ENUMS.DIRECTION.VERTICAL}
                         />
                     </div>
                 </div>
