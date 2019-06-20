@@ -3,7 +3,7 @@ $ar-slider-color-range: $color-blue !default;
 $ar-slider-color-handle: $color-white !default;
 $ar-slider-color-tick: $color-gray !default;
 $ar-slider-height: 20px !default;
-$ar-slider-height-bar: 5px !default;
+$ar-slider-height-bar: 4px !default;
 $ar-slider-height-vertical: 280px !default;
 $ar-slider-shadow: 0 0 3px 1px rgba($color-black, 0.125) !default;
 $ar-slider-shadow-highlight: 0 0 3px 1px rgba($color-blue, 0.5) !default;
@@ -159,7 +159,7 @@ $ar-slider-shadow-inset: inset 0 0 3px 1px rgba($color-black, 0.125) !default;
         .ar-slider-bar {
             position: relative;
             width: $ar-slider-height;
-            min-height: $ar-slider-height-vertical;;
+            min-height: $ar-slider-height-vertical;
 
             &:before {
                 position: absolute;

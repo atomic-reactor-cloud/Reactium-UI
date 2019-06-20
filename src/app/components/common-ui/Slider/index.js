@@ -49,12 +49,12 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         ...props,
     });
 
+    // State
     const [handles] = useState({
         [ENUMS.MIN]: handleMinRef,
         [ENUMS.MAX]: handleMaxRef,
     });
 
-    // State
     const [state, setNewState] = useState(stateRef.current);
 
     // Internal Interface
@@ -71,16 +71,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
         // Trigger useEffect()
         setNewState(stateRef.current);
-    };
-
-    const _dragStart = e => {
-        setState({ dragging: e.target.dataset.handle, focus: e.target });
-
-        const doc = iDocument || document;
-        doc.addEventListener('mousemove', _drag);
-        doc.addEventListener('mouseup', _dragEnd);
-        doc.addEventListener('touchmove', _drag);
-        doc.addEventListener('touchend', _dragEnd);
     };
 
     const _drag = e => {
@@ -171,21 +161,14 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         doc.removeEventListener('touchend', _dragEnd);
     };
 
-    const _positionFromValue = ({ value }) => {
-        const { direction, max, min } = stateRef.current;
-        const vals = _.range(min, max + 1);
+    const _dragStart = e => {
+        setState({ dragging: e.target.dataset.handle, focus: e.target });
 
-        if (direction === ENUMS.DIRECTION.VERTICAL) {
-            vals.reverse();
-        }
-
-        const len = vals.length - 1;
-        const i = vals.indexOf(value);
-        const p = Math.ceil((i / len) * 100);
-
-        return direction === ENUMS.DIRECTION.HORIZONTAL
-            ? { top: 0, left: `${p}%` }
-            : { left: 0, top: `${p}%` };
+        const doc = iDocument || document;
+        doc.addEventListener('mousemove', _drag);
+        doc.addEventListener('mouseup', _dragEnd);
+        doc.addEventListener('touchmove', _drag);
+        doc.addEventListener('touchend', _dragEnd);
     };
 
     const _move = () => {
@@ -286,6 +269,23 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         }
     };
 
+    const _positionFromValue = ({ value }) => {
+        const { direction, max, min } = stateRef.current;
+        const vals = _.range(min, max + 1);
+
+        if (direction === ENUMS.DIRECTION.VERTICAL) {
+            vals.reverse();
+        }
+
+        const len = vals.length - 1;
+        const i = vals.indexOf(value);
+        const p = Math.ceil((i / len) * 100);
+
+        return direction === ENUMS.DIRECTION.HORIZONTAL
+            ? { top: 0, left: `${p}%` }
+            : { left: 0, top: `${p}%` };
+    };
+
     // External Interface
     useImperativeHandle(ref, () => ({
         setState,
@@ -295,8 +295,10 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
 
+    // Side Effect: movement
     useEffect(() => _move(), [stateRef.current.value]);
 
+    // Side Effect: cursor and label
     useEffect(() => {
         const { dragging } = stateRef.current;
         const doc = iDocument || document;
@@ -309,6 +311,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         }
     }, [stateRef.current.dragging]);
 
+    // Renderers
     const renderTicks = () => {
         let {
             direction,
@@ -324,6 +327,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         }
 
         ticks = ticks === true ? [min, max] : ticks;
+        ticks.sort();
 
         if (direction === ENUMS.DIRECTION.VERTICAL) {
             ticks.reverse();
@@ -433,6 +437,7 @@ Slider.propTypes = {
     labelFormat: PropTypes.func,
     max: PropTypes.number,
     min: PropTypes.number,
+    name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
     onChange: PropTypes.func,
     tickFormat: PropTypes.func,
@@ -459,7 +464,7 @@ Slider.defaultProps = {
     onChange: noop,
     tickFormat: tick => tick,
     ticks: [],
-    value: 100,
+    value: 0,
 };
 
 export { Slider as default };

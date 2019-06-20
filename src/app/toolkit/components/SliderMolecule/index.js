@@ -36,16 +36,15 @@ class SliderMolecule extends Component {
                 <div className='row'>
                     <div className='col-xs-12 col-sm-6'>
                         <Slider
-                            max={25}
-                            min={-50}
-                            ticks={[-50, -25, 0, 25]}
+                            max={20}
+                            min={0}
                             name='ar-slider-demo-1'
                             onChange={this.onChange}
-                            value={0}
+                            value={10}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
                             tickFormat={this.labelFormat}
-                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
+                            direction={Slider.ENUMS.DIRECTION.VERTICAL}
                         />
                     </div>
                 </div>
