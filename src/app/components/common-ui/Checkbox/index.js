@@ -3,7 +3,6 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Toggle from 'components/common-ui/Toggle';
 import { Feather } from 'components/common-ui/Icon';
@@ -32,7 +31,6 @@ const cn = ({ className, color = ENUMS.COLOR.PRIMARY, label, labelAlign }) => {
 let Checkbox = (
     {
         className,
-        htmlFor,
         id,
         label,
         labelAlign,

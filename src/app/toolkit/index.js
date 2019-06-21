@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'carousel-molecule': {
+                    type: 'molecule',
+                    label: 'Carousel',
+                    route: '/toolkit/components/carousel-molecule',
+                    dna: '/toolkit/components/CarouselMolecule',
+                    component: require('appdir/toolkit/components/CarouselMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CarouselMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'pagination-molecule': {
                     type: 'molecule',
                     label: 'Pagination',

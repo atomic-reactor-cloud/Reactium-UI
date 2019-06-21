@@ -94,7 +94,7 @@ let Button = ({ children, readOnly, style = {}, ...props }, ref) => {
 
         const elementProps = { ...stateRef.current };
         exclude.forEach(key => {
-            if (key === 'readOnly') {
+            if (key === 'readOnly' && readOnly === true) {
                 delete elementProps.onClick;
                 delete elementProps.type;
             } else {

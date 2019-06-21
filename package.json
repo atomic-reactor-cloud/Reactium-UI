@@ -85,6 +85,7 @@
         "react-router-dom": "^5.0.0",
         "react-syntax-highlighter": "^10.3.0",
         "react-toastify": "^5.2.1",
+        "react-touch-events": "^2.1.0",
         "redbox-react": "^1.6.0",
         "redux": "4.0.1",
         "redux-devtools": "^3.5.0",

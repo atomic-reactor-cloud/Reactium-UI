@@ -8,7 +8,6 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import React, { forwardRef, useImperativeHandle, useRef } from 'react';
 
-
 /**
  * -----------------------------------------------------------------------------
  * Functional Component: Toggle
@@ -26,19 +25,20 @@ const cn = ({ className, color = ENUMS.COLOR.PRIMARY, label, labelAlign }) => {
     });
 };
 
-let Toggle = ({
-    className,
-    htmlFor,
-    id,
-    label,
-    labelAlign,
-    labelStyle,
-    name,
-    style,
-    title,
-    ...props
-}, ref) => {
-
+let Toggle = (
+    {
+        className,
+        id,
+        label,
+        labelAlign,
+        labelStyle,
+        name,
+        style,
+        title,
+        ...props
+    },
+    ref,
+) => {
     const inputRef = useRef();
     const labelRef = useRef();
 
@@ -64,22 +64,23 @@ let Toggle = ({
     }));
 
     return (
-    <label
-        ref={labelRef}
-        aria-label={label}
-        aria-labelledby={!label && name}
-        className={cn({ labelAlign, label, className })}
-        style={style}
-        title={title}>
-        <span
-            className={classnames({ ['sr-only']: !label })}
-            style={labelStyle}>
-            {label || title || name}
-        </span>
-        <input ref={inputRef} {...props} id={id} name={name} />
-        <span />
-    </label>
-);}
+        <label
+            ref={labelRef}
+            aria-label={label}
+            aria-labelledby={!label && name}
+            className={cn({ labelAlign, label, className })}
+            style={style}
+            title={title}>
+            <span
+                className={classnames({ ['sr-only']: !label })}
+                style={labelStyle}>
+                {label || title || name}
+            </span>
+            <input ref={inputRef} {...props} id={id} name={name} />
+            <span />
+        </label>
+    );
+};
 
 Toggle = forwardRef(Toggle);
 
@@ -100,7 +101,4 @@ Toggle.defaultProps = {
     type: ENUMS.TYPE.CHECKBOX,
 };
 
-export {
-    Toggle as default,
-    ENUMS,
-};
+export { Toggle as default, ENUMS };

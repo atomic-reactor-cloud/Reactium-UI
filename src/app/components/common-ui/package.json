@@ -15,6 +15,7 @@
         "react-beautiful-dnd": "^11.0.3",
         "react-custom-scrollbars": "^4.2.1",
         "react-toastify": "^5.2.1",
+        "react-touch-events": "^2.1.0",
         "underscore": "*",
         "uuid": "^3.3.2"
     },

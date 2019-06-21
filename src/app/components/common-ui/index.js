@@ -1,6 +1,7 @@
 import Alert from './Alert';
 import Breakpoint from './Breakpoint';
 import Button from './Button';
+import Carousel, { Slide } from './Carousel';
 import Checkbox from './Checkbox';
 import Collapsible from './Collapsible';
 import Colors from './colors';
@@ -31,6 +32,7 @@ export {
     Alert,
     Breakpoint,
     Button,
+    Carousel,
     Checkbox,
     Collapsible,
     Colors,
@@ -48,6 +50,7 @@ export {
     Prefs,
     Progress,
     Radio,
+    Slide,
     Slider,
     Spinner,
     Tabs,
