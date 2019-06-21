@@ -1,3 +1,288 @@
-.ar-datepicker {
+$ar-datepicker-bg-color: rgba($color-white, 0.25) !default;
+$ar-datepicker-bg-color-active: rgba($color-white, 1) !default;
+$ar-datepicker-bg-color-today: #00aeef !default;
+$ar-datepicker-color: rgba(#ffffff, 0.8) !default;
+$ar-datepicker-day-color: #ffffff !default;
+$ar-datepicker-day-color-active: #003462 !default;
+$ar-datepicker-day-color-today: #ffffff !default;
+$ar-datepicker-column-width: 30px !default;
+$ar-datepicker-width: $ar-datepicker-column-width * 7 !default;
+$ar-datepicker-font-size: $ar-datepicker-column-width/3 !default;
+$ar-datepicker-height: 30px !default;
+$ar-datepicker-heading-font-size: 12px !default;
+$ar-datepicker-heading-color: #ffffff !default;
+$ar-datepicker-label-font-size: 8px !default;
+$ar-datepicker-nav-color: #ffffff !default;
+$ar-datepicker-nav-color-active: #00aeef !default;
+$ar-datepicker-transition: 0.5s ease-in-out !default;
 
+.ar-datepicker {
+    &,
+    &-preview {
+        display: inline-flex;
+        flex-wrap: nowrap;
+        position: relative;
+        padding-bottom: 15px;
+
+        &-nav {
+            position: absolute;
+            top: 50%;
+            border: none;
+            background-color: transparent;
+            padding: 10px;
+            margin-top: $ar-datepicker-height/1.3;
+
+            svg {
+                fill: $ar-datepicker-nav-color;
+                transition: fill $ar-datepicker-transition;
+            }
+
+            &.left {
+                left: 0;
+                transform: translateY(-50%) translateX(-100%);
+            }
+
+            &.right {
+                right: 0;
+                transform: translateY(-50%) translateX(100%);
+            }
+
+            &:hover {
+                svg {
+                    fill: $ar-datepicker-nav-color-active;
+                }
+            }
+        }
+
+        &-day {
+            border-radius: 100%;
+            background-color: $ar-datepicker-bg-color;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: $ar-datepicker-column-width;
+            height: $ar-datepicker-column-width;
+            overflow: hidden;
+        }
+
+        &-heading {
+            width: 100%;
+            padding: 4px;
+            margin-bottom: 10px;
+            text-align: center;
+            color: $ar-datepicker-heading-color;
+            font-size: $ar-datepicker-heading-font-size;
+            text-transform: uppercase;
+            transform: opacity 0.5s ease-in-out;
+            opacity: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            span {
+                flex-grow: 0;
+                padding: 0 10px;
+            }
+
+            button {
+                flex-grow: 1;
+                border: none;
+                background-color: transparent;
+                opacity: 0;
+                padding: 5px;
+                margin: -1px -5px 0 -5px;
+                transition: opacity $ar-datepicker-transition;
+
+                svg {
+                    fill: $ar-datepicker-nav-color;
+                    transition: fill $ar-datepicker-transition;
+                }
+
+                &.left {
+                    text-align: right;
+                }
+
+                &.right {
+                    text-align: left;
+                }
+
+                &:hover {
+                    svg {
+                        fill: $ar-datepicker-nav-color-active;
+                    }
+                }
+            }
+        }
+
+        &-week-headings {
+            width: 100%;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            > div {
+                max-width: $ar-datepicker-column-width;
+                flex-grow: 1;
+                text-align: center;
+                color: $ar-datepicker-color;
+                font-size: $ar-datepicker-label-font-size;
+                text-transform: uppercase;
+            }
+        }
+
+        &-week-days {
+            display: flex;
+            margin-bottom: 5px;
+            flex-wrap: wrap;
+            width: 100%;
+            overflow: hidden;
+            width: $ar-datepicker-width;
+            height: $ar-datepicker-height;
+        }
+
+        &-week-day {
+            max-width: $ar-datepicker-column-width;
+            width: $ar-datepicker-column-width;
+            height: $ar-datepicker-column-width;
+            padding: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border: none;
+            background-color: transparent;
+            font-size: $ar-datepicker-font-size;
+            overflow: hidden;
+            transition: opacity $ar-datepicker-transition;
+            flex-shrink: 0;
+            user-select: none;
+            color: $ar-datepicker-day-color;
+
+            input {
+                opacity: 0;
+                height: 1px;
+                width: 1px;
+                z-index: 0;
+                position: absolute;
+                left: -1000px;
+            }
+
+            span:nth-child(2) {
+                position: absolute;
+                border-radius: 100%;
+                content: '';
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+                width: calc(100% - 10px);
+                height: calc(100% - 10px);
+                background-color: $ar-datepicker-bg-color;
+                transition: background-color $ar-datepicker-transition;
+                z-index: 0;
+            }
+
+            span:nth-child(3) {
+                color: $ar-datepicker-day-color;
+                z-index: 1000;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translateX(-50%) translateY(-50%);
+                transition: color $ar-datepicker-transition;
+            }
+
+            input:checked ~ span:nth-child(2) {
+                background-color: $ar-datepicker-bg-color-active;
+                z-index: 0;
+            }
+
+            input:checked ~ span:nth-child(3) {
+                color: $ar-datepicker-day-color-active;
+            }
+
+            &:hover {
+                cursor: pointer;
+                opacity: 0.8;
+            }
+
+            &.today {
+                span:nth-child(2) {
+                    background-color: $ar-datepicker-bg-color-today;
+                }
+
+                span:nth-child(3) {
+                    color: $ar-datepicker-day-color-today;
+                }
+            }
+        }
+
+        span.ar-datepicker-week-day {
+            opacity: 0.125;
+
+            &:hover {
+                cursor: default;
+            }
+        }
+
+        &-toggle {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            width: 100%;
+            bottom: 0;
+            background-color: transparent;
+            border: 0;
+            cursor: pointer;
+            padding: 4px 0;
+
+            &:before,
+            &:after {
+                content: '';
+                width: 10px;
+                height: 1px;
+                margin: 1px;
+                background-color: $ar-datepicker-bg-color;
+                transition: background-color $ar-datepicker-transition;
+            }
+
+            &:hover {
+                &:before,
+                &:after {
+                    content: '';
+                    width: 10px;
+                    height: 1px;
+                    margin: 1px;
+                    background-color: $ar-datepicker-bg-color-active;
+                }
+            }
+        }
+    }
+
+    &-preview {
+        &-heading {
+            opacity: 0;
+        }
+
+        &-week-day {
+            > span {
+                opacity: 0;
+            }
+        }
+    }
+
+    &.expanded {
+        .ar-datepicker-week-days,
+        .ar-datepicker-preview-week-days {
+            height: auto;
+        }
+    }
+
+    &:hover {
+        button {
+            opacity: 1;
+        }
+    }
 }
