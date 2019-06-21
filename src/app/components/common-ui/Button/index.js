@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
  * Functional Component: Button
  * -----------------------------------------------------------------------------
  */
-let Button = ({ children, ...props }, ref) => {
+let Button = ({ children, readOnly, style = {}, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -62,6 +62,7 @@ let Button = ({ children, ...props }, ref) => {
             outline,
             size,
         } = stateRef.current;
+
         const c = _.compact([
             'btn',
             color,
@@ -86,16 +87,41 @@ let Button = ({ children, ...props }, ref) => {
             'color',
             'outline',
             'prevState',
+            'readOnly',
             'size',
+            'style',
         ];
 
         const elementProps = { ...stateRef.current };
         exclude.forEach(key => {
-            delete elementProps[key];
+            if (key === 'readOnly') {
+                delete elementProps.onClick;
+                delete elementProps.type;
+            } else {
+                delete elementProps[key];
+            }
         });
 
-        return (
-            <button className={cname()} {...elementProps} ref={containerRef}>
+        const s = { ...style };
+        if (readOnly) {
+            s['pointerEvents'] = 'none';
+            s['userSelect'] = 'none';
+        }
+
+        return readOnly ? (
+            <span
+                className={cname()}
+                {...elementProps}
+                style={s}
+                ref={containerRef}>
+                {children}
+            </span>
+        ) : (
+            <button
+                className={cname()}
+                style={s}
+                {...elementProps}
+                ref={containerRef}>
                 {children}
             </button>
         );
@@ -113,7 +139,9 @@ Button.propTypes = {
     block: PropTypes.bool,
     color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
     outline: PropTypes.bool,
+    readOnly: PropTypes.bool,
     size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),
+    style: PropTypes.object,
     tabIndex: PropTypes.number,
     type: PropTypes.oneOf(Object.values(ENUMS.TYPE)),
 };
@@ -122,7 +150,9 @@ Button.defaultProps = {
     appearance: null,
     color: ENUMS.COLOR.PRIMARY,
     outline: false,
+    readOnly: false,
     size: ENUMS.SIZE.SM,
+    style: {},
     tabIndex: 0,
     type: ENUMS.TYPE.BUTTON,
 };

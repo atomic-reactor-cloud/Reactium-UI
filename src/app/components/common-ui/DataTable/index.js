@@ -13,7 +13,6 @@ import Header from './Header';
 import Heading from './Heading';
 import Headings from './Headings';
 import SearchBar from './SearchBar';
-import Pagination from './Pagination';
 
 import ENUMS from './enums';
 
@@ -394,4 +393,4 @@ DataTable.defaultProps = {
     style: {},
 };
 
-export { DataTable as default, Row, Column, Heading, Pagination, SearchBar };
+export { DataTable as default, Row, Column, Heading, SearchBar };

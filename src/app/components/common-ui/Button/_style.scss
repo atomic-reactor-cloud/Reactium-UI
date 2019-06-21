@@ -150,6 +150,10 @@ $button-sizes: (
                 );
             }
 
+            &.active {
+                font-weight: bold;
+            }
+
             &:disabled,
             &.disabled {
                 opacity: 0.5;
@@ -346,6 +350,14 @@ button {
 
         &:last-child {
             border-radius: 0 2px 2px 0;
+
+            &:first-child {
+                border-radius: 2px;
+            }
         }
+    }
+
+    > span {
+        &:hover { cursor: default !important; }
     }
 }

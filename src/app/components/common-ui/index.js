@@ -13,6 +13,7 @@ import Dropzone from './Dropzone';
 import Icon from './Icon';
 import Image from './Image';
 import Modal from './Modal';
+import Pagination from './Pagination';
 import Picker from './Picker';
 import Prefs from './Prefs';
 import Progress from './Progress';
@@ -42,6 +43,7 @@ export {
     Icon,
     Image,
     Modal,
+    Pagination,
     Picker,
     Prefs,
     Progress,

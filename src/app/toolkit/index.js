@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'pagination-molecule': {
+                    type: 'molecule',
+                    label: 'Pagination',
+                    route: '/toolkit/components/pagination-molecule',
+                    dna: '/toolkit/components/PaginationMolecule',
+                    component: require('appdir/toolkit/components/PaginationMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/PaginationMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'spinner-molecule': {
                     type: 'molecule',
                     label: 'Spinner',

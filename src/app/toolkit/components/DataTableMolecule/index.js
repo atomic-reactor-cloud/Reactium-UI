@@ -7,9 +7,9 @@ import moment from 'moment';
 import op from 'object-path';
 import React, { Component } from 'react';
 import Button from 'components/common-ui/Button';
+import Pagination from 'components/common-ui/Pagination';
 import DataTable, {
     Column,
-    Pagination,
     Row,
     SearchBar,
 } from 'components/common-ui/DataTable';
