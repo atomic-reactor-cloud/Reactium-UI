@@ -3,6 +3,7 @@ import Breakpoint from './Breakpoint';
 import Button from './Button';
 import Checkbox from './Checkbox';
 import Collapsible from './Collapsible';
+import Colors from './colors';
 import DataTable from './DataTable';
 import DatePicker from './DatePicker';
 import Dialog from './Dialog';
@@ -17,6 +18,7 @@ import Prefs from './Prefs';
 import Progress from './Progress';
 import Radio from './Radio';
 import Slider from './Slider';
+import Spinner from './Spinner';
 import Tabs from './Tabs';
 import TagsInput from './TagsInput';
 import TimePicker from './TimePicker';
@@ -30,6 +32,7 @@ export {
     Button,
     Checkbox,
     Collapsible,
+    Colors,
     DataTable,
     DatePicker,
     Dialog,
@@ -44,6 +47,7 @@ export {
     Progress,
     Radio,
     Slider,
+    Spinner,
     Tabs,
     TagsInput,
     TimePicker,

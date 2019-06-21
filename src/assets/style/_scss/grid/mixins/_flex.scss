@@ -1,8 +1,5 @@
 @mixin flex() {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
-    flex-direction: row;
 }
 
 @mixin flex-factory() {
@@ -44,18 +41,35 @@
         justify-content: flex-end;
     }
 
-    &.start {
-        justify-content: flex-start
-    }
-    &.end {
-        justify-content: flex-end;
+    &.left {
+        justify-content: flex-start;
     }
 
-    &.middle {
-        align-items: center
+    &.right {
+        justify-content: flex-end;
     }
 
     &.center {
         justify-content: center;
+    }
+
+    &.top {
+        align-items: flex-start;
+    }
+
+    &.bottom {
+        align-items: flex-end;
+    }
+
+    &.middle {
+        align-items: center;
+    }
+
+    &.row {
+        flex-direction: row;
+    }
+
+    &.column {
+        flex-direction: column;
     }
 }

@@ -424,6 +424,17 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
+                'spinner-molecule': {
+                    type: 'molecule',
+                    label: 'Spinner',
+                    route: '/toolkit/components/spinner-molecule',
+                    dna: '/toolkit/components/Spinner',
+                    component: require('appdir/toolkit/components/SpinnerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'slider-molecule': {
                     type: 'molecule',
                     label: 'Slider',

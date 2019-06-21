@@ -3,8 +3,8 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component, Fragment } from 'react';
-import colorProfile from 'appdir/../assets/style/_scss/colors';
+import React, { Component } from 'react';
+import colorProfile from 'components/common-ui/colors';
 
 /**
  * -----------------------------------------------------------------------------
