@@ -8,7 +8,6 @@ import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
     useRef,
     useState,
 } from 'react';
@@ -37,7 +36,6 @@ let Img = (
     {
         highRes,
         lowRes,
-        namespace,
         onComplete,
         onLoad,
         onResize,
@@ -139,7 +137,7 @@ let Img = (
     useEffect(() => setState(props), Object.values(props));
 
     useEffect(() => {
-        const { images, status } = stateRef.current;
+        const { status } = stateRef.current;
 
         switch (status) {
             case ENUMS.STATUS.PENDING:

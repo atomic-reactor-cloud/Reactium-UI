@@ -1,8 +1,8 @@
-$ar-tab-color: $color-gray-dark;
-$ar-tab-color-active: $color-white;
-$ar-tab-color-background: $color-white-dark;
-$ar-tab-color-border: $color-grey-light;
-$ar-tab-transition: 0.5s ease-in-out;
+$ar-tab-color: $color-gray-dark !default;
+$ar-tab-color-active: $color-white !default;
+$ar-tab-color-background: $color-white-dark !default;
+$ar-tab-color-border: $color-grey-light !default;
+$ar-tab-transition: 0.5s ease-in-out !default;
 
 .ar-tab {
 

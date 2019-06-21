@@ -1,13 +1,19 @@
+$ar-tags-input-color: $color-white !default;
+$ar-tags-input-color-bg: $color-blue !default;
+$ar-tags-input-color-border: $color-grey !default;
+$ar-tags-input-color-border-focus: $color-blue !default;
+
 .ar-tags-input {
     display: block;
-    border: 1px solid $color-grey;
+    border: 1px solid $ar-tags-input-color-border;
     font-size: 14px;
     border-radius: $input-radius;
     position: relative;
 
     &.focus {
-        box-shadow: 0 0 0 2px rgba(lighten($color-blue, 5%), 0.25);
-        border: 1px solid $color-blue;
+        box-shadow: 0 0 0 2px
+            rgba(lighten($ar-tags-input-color-border-focus, 5%), 0.25);
+        border: 1px solid $ar-tags-input-color-border-focus;
     }
 
     .dropping {
@@ -44,8 +50,8 @@
     }
 
     &-tag {
-        color: $color-white;
-        background-color: $color-blue;
+        color: $ar-tags-input-color;
+        background-color: $ar-tags-input-color-bg;
         display: flex;
         align-items: center;
         border-radius: 2px;
@@ -84,7 +90,7 @@
         }
 
         .icon {
-            fill: $color-white;
+            fill: $ar-tags-input-color;
             width: 16px;
             height: 16px;
             flex-shrink: 0;
