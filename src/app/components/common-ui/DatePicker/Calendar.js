@@ -95,7 +95,7 @@ const Day = ({
  * Hook Component: Calendar
  * -----------------------------------------------------------------------------
  */
-let Calendar = ({ namespace, ...props }, ref) => {
+let Calendar = ({ namespace, ...props }, ref = {}) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -151,10 +151,36 @@ let Calendar = ({ namespace, ...props }, ref) => {
         setState({ selected }, '_onCheckToggle()');
     };
 
+    const _next = (duration = 'months') => {
+        let { date } = stateRef.current;
+        date = moment(date).add(1, duration);
+        setState({ date }, 'Calendar -> _next(' + duration + ')');
+
+        onNext({ type: 'next', ...stateRef.current });
+        onNav({ type: 'nav', ...stateRef.current });
+    };
+
+    const _prev = (duration = 'months') => {
+        let { date, onPrev } = stateRef.current;
+        date = moment(date).subtract(1, duration);
+        setState({ date }, 'Calendar -> _prev(' + duration + ')');
+
+        onPrev({ type: 'next', ...stateRef.current });
+        onNav({ type: 'nav', ...stateRef.current });
+    };
+
+    const _today = () => {
+        const date = moment();
+        setState({ date }, 'Calendar -> _today()');
+        onNav({ type: 'nav', ...stateRef.current });
+    };
+
     // External Interface
     useImperativeHandle(ref, () => ({
         setState,
         state,
+        next: _next,
+        prev: _prev,
     }));
 
     // Side Effects
@@ -242,16 +268,50 @@ let Calendar = ({ namespace, ...props }, ref) => {
         );
     };
 
-    const renderHeading = () => {
-        const { date, headingFormat } = stateRef.current;
+    const renderFooter = () => {
+        const { date } = stateRef.current;
         const color = Button.ENUMS.COLOR.CLEAR;
-        const heading = moment(date).format(headingFormat);
         const isize = 14;
         const size = Button.ENUMS.SIZE.XS;
 
         return (
-            <div className={_ns('heading')}>
-                <Button color={color} size={size}>
+            <div className={_ns('footer')}>
+                <Button
+                    color={color}
+                    size={size}
+                    onClick={() => _prev('months')}>
+                    <Feather.ChevronLeft width={isize} height={isize} />
+                </Button>
+                <Button
+                    size={size}
+                    color={color}
+                    onClick={() => _today()}
+                    className='flex-grow'>
+                    Today
+                </Button>
+                <Button
+                    color={color}
+                    size={size}
+                    onClick={() => _next('months')}>
+                    <Feather.ChevronRight width={isize} height={isize} />
+                </Button>
+            </div>
+        );
+    };
+
+    const renderHeader = () => {
+        const { date, headerFormat } = stateRef.current;
+        const color = Button.ENUMS.COLOR.CLEAR;
+        const header = moment(date).format(headerFormat);
+        const isize = 14;
+        const size = Button.ENUMS.SIZE.XS;
+
+        return (
+            <div className={_ns('header')}>
+                <Button
+                    color={color}
+                    size={size}
+                    onClick={() => _prev('years')}>
                     <Feather.ChevronLeft width={isize} height={isize} />
                 </Button>
                 <Button
@@ -259,9 +319,12 @@ let Calendar = ({ namespace, ...props }, ref) => {
                     size={size}
                     color={color}
                     className='flex-grow'>
-                    {heading}
+                    {header}
                 </Button>
-                <Button color={color} size={size}>
+                <Button
+                    color={color}
+                    size={size}
+                    onClick={() => _next('years')}>
                     <Feather.ChevronRight width={isize} height={isize} />
                 </Button>
             </div>
@@ -293,9 +356,10 @@ let Calendar = ({ namespace, ...props }, ref) => {
 
         return (
             <div ref={containerRef} className={cname}>
-                {renderHeading()}
+                {renderHeader()}
                 {renderLabels()}
                 {renderDays()}
+                {renderFooter()}
             </div>
         );
     };
@@ -309,7 +373,7 @@ Calendar.propTypes = {
     className: PropTypes.string,
     date: PropTypes.instanceOf(Date),
     dateFormat: PropTypes.string,
-    headingFormat: PropTypes.string,
+    headerFormat: PropTypes.string,
     labeFormat: PropTypes.func,
     labels: PropTypes.array,
     maxDate: PropTypes.instanceOf(Date),
@@ -318,6 +382,9 @@ Calendar.propTypes = {
     name: PropTypes.string,
     namespace: PropTypes.string,
     onChange: PropTypes.func,
+    onNav: PropTypes.func,
+    onNext: PropTypes.func,
+    onPrev: PropTypes.func,
     range: PropTypes.bool,
     selected: PropTypes.array,
 };
@@ -325,12 +392,15 @@ Calendar.propTypes = {
 Calendar.defaultProps = {
     date: new Date(),
     dateFormat: 'L',
-    headingFormat: 'MMMM YYYY',
+    headerFormat: 'MMMM YYYY',
     labelFormat: label => label,
     labels: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
     multiple: false,
     namespace: 'ar-datepicker-calendar',
     onChange: noop,
+    onNav: noop,
+    onNext: noop,
+    onPrev: noop,
     range: false,
     selected: ['06/15/2019'],
 };

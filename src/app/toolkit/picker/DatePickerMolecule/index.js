@@ -12,26 +12,26 @@ import { DatePicker } from 'components/common-ui';
  * -----------------------------------------------------------------------------
  */
 
-class DatePickerMolecule extends Component {
+export default class DatePickerMolecule extends Component {
     static dependencies() {
         return typeof module !== 'undefined' ? module.children : [];
     }
 
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            date: new Date(),
+            // minDate: new Date('06/10/2019'),
+            // maxDate: new Date(),
+            range: false,
+        };
     }
 
     render() {
         return (
             <div style={{ height: 400 }}>
-                <DatePicker {...this.props} />
+                <DatePicker {...this.state} {...this.props} />
             </div>
         );
     }
 }
-
-// Default properties
-DatePickerMolecule.defaultProps = {};
-
-export default DatePickerMolecule;

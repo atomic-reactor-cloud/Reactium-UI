@@ -110,9 +110,16 @@ let DatePicker = ({ iDocument, iWindow, ...props }, ref) => {
     );
 
     const renderUI = (provided, snapshot) => {
-        let { calendar: calProps = {}, multiple, range } = stateRef.current;
+        let {
+            calendar: calProps = {},
+            date,
+            maxDate,
+            minDate,
+            multiple,
+            range,
+        } = stateRef.current;
 
-        calProps = { multiple, range, ...calProps };
+        calProps = { date, maxDate, minDate, multiple, range, ...calProps };
 
         return <Calendar {...calProps} />;
     };
@@ -143,11 +150,14 @@ DatePicker = forwardRef(DatePicker);
 DatePicker.propTypes = {
     calendar: PropTypes.shape(Calendar.propTypes),
     className: PropTypes.string,
+    date: PropTypes.instanceOf(Date),
     icon: PropTypes.shape({
         closed: PropTypes.node,
         opened: PropTypes.node,
     }),
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    maxDate: PropTypes.instanceOf(Date),
+    minDate: PropTypes.instanceOf(Date),
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
     onChange: PropTypes.func,

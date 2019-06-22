@@ -1,11 +1,12 @@
 $ar-datepicker-color-bg-now: $color-white;
 $ar-datepicker-color-bg-selected: $color-grey-light;
 $ar-datepicker-color-border: $color-grey-light;
-$ar-datepicker-color-txt: $color-gray;
+$ar-datepicker-color-txt: $color-gray-dark;
 $ar-datepicker-color-txt-now: $color-blue;
 $ar-datepicker-color-txt-selected: $color-gray;
 $ar-datepicker-column-width: 40px;
 $ar-datepicker-width: 296px;
+$ar-datepicker-padding: 8px;
 
 .ar-datepicker {
 }
@@ -16,7 +17,8 @@ $ar-datepicker-width: 296px;
     right: auto;
     left: 0;
 
-    &-heading {
+    &-header,
+    &-footer {
         @extend .btn-group;
         width: 100%;
         padding: 8px 0;
@@ -36,11 +38,16 @@ $ar-datepicker-width: 296px;
         }
     }
 
+    &-footer {
+        padding: 0;
+        border-top: 1px solid $ar-datepicker-color-border;
+    }
+
     &-labels {
         display: flex;
         justify-content: center;
         align-items: stretch;
-        padding: 0 8px;
+        padding: 0 $ar-datepicker-padding;
         border-top: 1px solid $ar-datepicker-color-border;
         border-bottom: 1px solid $ar-datepicker-color-border;
     }
@@ -62,20 +69,20 @@ $ar-datepicker-width: 296px;
         display: flex;
         flex-wrap: wrap;
         position: relative;
-        padding: 8px;
+        padding: 8px $ar-datepicker-padding;
     }
 
     &-day {
-        width: $ar-datepicker-column-width;
+        min-width: $ar-datepicker-column-width;
         height: $ar-datepicker-column-width;
-        //overflow: hidden;
-        flex-grow: 0;
+        flex-grow: 1;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 12px;
         position: relative;
         cursor: pointer;
+        user-select: none;
 
         input {
             display: none;
@@ -96,7 +103,9 @@ $ar-datepicker-width: 296px;
         }
 
         &.disabled {
-            opacity: 0.7;
+            pointer-events: none;
+            user-select: none;
+            opacity: 0.25;
             cursor: default;
         }
 
@@ -160,7 +169,7 @@ $ar-datepicker-width: 296px;
                     position: absolute;
                     top: 50%;
                     right: 0;
-                    width: 8px;
+                    width: $ar-datepicker-padding;
                     height: 90%;
                     background-color: $ar-datepicker-color-bg-selected;
                     transform: translateX(100%) translateY(-50%);
@@ -173,10 +182,16 @@ $ar-datepicker-width: 296px;
                     position: absolute;
                     top: 50%;
                     left: 0;
-                    width: 8px;
+                    width: $ar-datepicker-padding;
                     height: 90%;
                     background-color: $ar-datepicker-color-bg-selected;
                     transform: translateX(-100%) translateY(-50%);
+                }
+            }
+
+            &.now {
+                > span.text {
+                    color: $ar-datepicker-color-txt-now;
                 }
             }
         }
