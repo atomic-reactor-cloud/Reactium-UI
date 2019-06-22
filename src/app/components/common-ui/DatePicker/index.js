@@ -110,9 +110,9 @@ let DatePicker = ({ iDocument, iWindow, ...props }, ref) => {
     );
 
     const renderUI = (provided, snapshot) => {
-        let { calendar: calProps = {}, range } = stateRef.current;
+        let { calendar: calProps = {}, multiple, range } = stateRef.current;
 
-        calProps = { range, ...calProps };
+        calProps = { multiple, range, ...calProps };
 
         return <Calendar {...calProps} />;
     };
@@ -170,7 +170,7 @@ DatePicker.defaultProps = {
     onChange: noop,
     picker: {},
     placeholder: 'Select Date',
-    range: true,
+    range: false,
     readOnly: true,
     selected: [moment().format('L')],
     style: {},
