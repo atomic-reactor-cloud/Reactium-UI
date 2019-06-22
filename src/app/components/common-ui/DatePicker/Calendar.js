@@ -5,6 +5,7 @@ import op from 'object-path';
 import PropTypes from 'prop-types';
 import Button from 'components/common-ui/Button';
 import { Feather } from 'components/common-ui/Icon';
+import ENUMS from './enums';
 
 import React, {
     forwardRef,
@@ -55,9 +56,11 @@ const Day = ({
     checked,
     date,
     dateFormat,
+    dayName,
     disabled,
     first,
     last,
+    name,
     now,
     onChange,
 }) =>
@@ -72,16 +75,18 @@ const Day = ({
                 checked,
                 'checked-first': first,
                 'checked-last': last,
+                [dayName]: !!dayName,
                 now,
             })}>
             <input
+                name={name}
                 type='checkbox'
                 value={date.format(dateFormat)}
                 checked={checked}
                 onChange={onChange}
             />
-            <span className='bg' />
             <span className='text'>{children}</span>
+            <span className='bg' />
         </label>
     );
 
@@ -102,7 +107,7 @@ let Calendar = ({ namespace, ...props }, ref) => {
     const [state, setNewState] = useState(stateRef.current);
 
     // Internal Interface
-    const setState = newState => {
+    const setState = (newState, caller) => {
         // Get the previous state
         const prevState = { ...stateRef.current };
 
@@ -113,6 +118,10 @@ let Calendar = ({ namespace, ...props }, ref) => {
             prevState,
         };
 
+        if (ENUMS.DEBUG) {
+            console.log('setstate()', caller, stateRef.current);
+        }
+
         // Trigger useEffect()
         setNewState(stateRef.current);
     };
@@ -120,10 +129,18 @@ let Calendar = ({ namespace, ...props }, ref) => {
     const _ns = str => `${namespace}-${str}`;
 
     const _onCheckToggle = e => {
-        let { dateFormat, selected = [] } = stateRef.current;
+        let { dateFormat, multiple, range, selected = [] } = stateRef.current;
         const { checked, value } = e.target;
 
-        if (checked === true) {
+        if (range && selected.length >= 2) {
+            selected = [];
+        }
+
+        if (checked && !range && !multiple) {
+            selected = [];
+        }
+
+        if (checked) {
             selected.push(value);
         } else {
             selected = _.without(selected, value);
@@ -141,7 +158,15 @@ let Calendar = ({ namespace, ...props }, ref) => {
     }));
 
     // Side Effects
-    useEffect(() => setState(props), Object.values(props));
+    useEffect(
+        () => setState(props, 'Calendar -> useEffect()'),
+        Object.values(props),
+    );
+
+    useEffect(() => {
+        const { onChange, selected } = state;
+        onChange({ type: 'change', selected });
+    }, [state.selected]);
 
     const renderDays = () => {
         const {
@@ -149,6 +174,9 @@ let Calendar = ({ namespace, ...props }, ref) => {
             dateFormat,
             maxDate,
             minDate,
+            multiple,
+            name,
+            range,
             selected = [],
         } = stateRef.current;
         const days = DaysInMonth(date, true);
@@ -163,22 +191,47 @@ let Calendar = ({ namespace, ...props }, ref) => {
                     disabled =
                         maxDate && day.isAfter(maxDate) ? true : disabled;
 
-                    const idx = selected.indexOf(day.format(dateFormat));
                     const k = `${_ns('day')}-${day.format('YYYY-MM-DD')}-${i}`;
-                    const checked = selected.includes(day.format(dateFormat));
                     const now = today === day.format('L');
-                    const first = idx === 0;
-                    const last = idx === selected.length - 1;
+                    const idx = selected.indexOf(day.format(dateFormat));
+                    const first = !multiple && idx === 0;
+                    const last = !multiple && idx === selected.length - 1;
+
+                    let checked = idx > -1;
+
+                    if (range) {
+                        if (!checked) {
+                            let min = _.first(selected);
+                            let max = _.last(selected);
+
+                            min = min && moment(new Date(min));
+                            max = max && moment(new Date(max));
+
+                            if (min && !max) {
+                                checked = day.isAfter(min);
+                            }
+
+                            if (!min && max) {
+                                checked = day.isBefore(max);
+                            }
+
+                            if (min && max) {
+                                checked = day.isAfter(min) && day.isBefore(max);
+                            }
+                        }
+                    }
 
                     const dayProps = {
                         date: day,
                         dateFormat,
+                        dayName: String(day.format('ddd')).toLowerCase(),
                         disabled,
                         checked,
                         className: _ns('day'),
                         children: day.format('D'),
                         first,
-                        last,
+                        last: last && idx > -1,
+                        name,
                         now,
                         onChange: _onCheckToggle,
                     };
@@ -261,7 +314,12 @@ Calendar.propTypes = {
     labels: PropTypes.array,
     maxDate: PropTypes.instanceOf(Date),
     minDate: PropTypes.instanceOf(Date),
+    multiple: PropTypes.bool,
+    name: PropTypes.string,
     namespace: PropTypes.string,
+    onChange: PropTypes.func,
+    range: PropTypes.bool,
+    selected: PropTypes.array,
 };
 
 Calendar.defaultProps = {
@@ -270,7 +328,10 @@ Calendar.defaultProps = {
     headingFormat: 'MMMM YYYY',
     labelFormat: label => label,
     labels: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    multiple: false,
     namespace: 'ar-datepicker-calendar',
+    onChange: noop,
+    range: false,
     selected: ['06/15/2019'],
 };
 

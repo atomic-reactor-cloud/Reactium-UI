@@ -104,10 +104,17 @@ let DatePicker = ({ iDocument, iWindow, ...props }, ref) => {
     }));
 
     // Side Effects
-    useEffect(() => setState(props, 'useEffect()'), Object.values(props));
+    useEffect(
+        () => setState(props, 'DatePicker -> useEffect()'),
+        Object.values(props),
+    );
 
     const renderUI = (provided, snapshot) => {
-        return <Calendar />;
+        let { calendar: calProps = {}, range } = stateRef.current;
+
+        calProps = { range, ...calProps };
+
+        return <Calendar {...calProps} />;
     };
 
     const render = () => {
@@ -134,6 +141,7 @@ let DatePicker = ({ iDocument, iWindow, ...props }, ref) => {
 DatePicker = forwardRef(DatePicker);
 
 DatePicker.propTypes = {
+    calendar: PropTypes.shape(Calendar.propTypes),
     className: PropTypes.string,
     icon: PropTypes.shape({
         closed: PropTypes.node,
@@ -152,15 +160,18 @@ DatePicker.propTypes = {
 };
 
 DatePicker.defaultProps = {
+    calendar: {},
     icon: {
         closed: <Feather.Calendar />,
         opened: <Feather.Calendar />,
     },
+    multiple: false,
     namespace: 'ar-datepicker',
     onChange: noop,
     picker: {},
     placeholder: 'Select Date',
-    readOnly: false,
+    range: true,
+    readOnly: true,
     selected: [moment().format('L')],
     style: {},
     value: moment().format('L'),

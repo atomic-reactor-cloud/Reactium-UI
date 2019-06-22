@@ -1,9 +1,9 @@
 $ar-datepicker-color-bg-now: $color-white;
-$ar-datepicker-color-bg-selected: $color-grey;
+$ar-datepicker-color-bg-selected: $color-grey-light;
 $ar-datepicker-color-border: $color-grey-light;
 $ar-datepicker-color-txt: $color-gray;
 $ar-datepicker-color-txt-now: $color-blue;
-$ar-datepicker-color-txt-selected: $color-white;
+$ar-datepicker-color-txt-selected: $color-gray;
 $ar-datepicker-column-width: 40px;
 $ar-datepicker-width: 296px;
 
@@ -62,13 +62,13 @@ $ar-datepicker-width: 296px;
         display: flex;
         flex-wrap: wrap;
         position: relative;
-        padding: 4px 8px;
+        padding: 8px;
     }
 
     &-day {
         width: $ar-datepicker-column-width;
         height: $ar-datepicker-column-width;
-        overflow: hidden;
+        //overflow: hidden;
         flex-grow: 0;
         display: flex;
         align-items: center;
@@ -118,19 +118,66 @@ $ar-datepicker-width: 296px;
                 left: 50%;
                 transform: translateX(-50%) translateY(-50%);
                 background-color: $ar-datepicker-color-bg-selected;
-                height: 80%;
+                height: 90%;
             }
 
             &-first {
-                border-radius: 100% 0 0 100%;
+                > span.bg {
+                    border-top-left-radius: 100%;
+                    border-bottom-left-radius: 100%;
+                }
+
+                &.sun {
+                    &:after {
+                        display: none !important;
+                    }
+                }
             }
 
             &-last {
-                border-radius: 0 100% 100% 0;
+                > span.bg {
+                    border-top-right-radius: 100%;
+                    border-bottom-right-radius: 100%;
+                }
 
-                    &.checked-first {
-                        border-radius: 100%;
+                &.sat {
+                    &:after {
+                        display: none !important;
                     }
+                }
+            }
+
+            &.checked-first.checked-last {
+                > span.bg {
+                    width: 90%;
+                    height: 90%;
+                }
+            }
+
+            &.sat {
+                &:after {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    right: 0;
+                    width: 8px;
+                    height: 90%;
+                    background-color: $ar-datepicker-color-bg-selected;
+                    transform: translateX(100%) translateY(-50%);
+                }
+            }
+
+            &.sun {
+                &:after {
+                    content: "";
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                    width: 8px;
+                    height: 90%;
+                    background-color: $ar-datepicker-color-bg-selected;
+                    transform: translateX(-100%) translateY(-50%);
+                }
             }
         }
     }
