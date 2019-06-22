@@ -23,7 +23,11 @@ class DatePickerMolecule extends Component {
     }
 
     render() {
-        return <DatePicker {...this.props} />;
+        return (
+            <div style={{ height: 400 }}>
+                <DatePicker {...this.props} />
+            </div>
+        );
     }
 }
 

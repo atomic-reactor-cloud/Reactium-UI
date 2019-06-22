@@ -1,14 +1,21 @@
 import _ from 'underscore';
-import React, { Component } from 'react';
-import moment from 'moment';
 import cn from 'classnames';
-import Icon from 'components/common-ui/Icon';
+import moment from 'moment';
+import op from 'object-path';
+import PropTypes from 'prop-types';
+import Button from 'components/common-ui/Button';
+import { Feather } from 'components/common-ui/Icon';
 
-/**
- * -----------------------------------------------------------------------------
- * Functional Component: Calendar
- * -----------------------------------------------------------------------------
- */
+import React, {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useLayoutEffect,
+    useRef,
+    useState,
+} from 'react';
+
+const noop = () => {};
 
 const DaysInMonth = (d, expanded) => {
     const startDay = !expanded
@@ -42,150 +49,229 @@ const DaysInMonth = (d, expanded) => {
     return _.flatten(calendar);
 };
 
-class Calendar extends Component {
-    state = {};
+const Day = ({
+    children,
+    className,
+    checked,
+    date,
+    dateFormat,
+    disabled,
+    first,
+    last,
+    now,
+    onChange,
+}) =>
+    disabled ? (
+        <div className={cn({ [className]: true, disabled, now })}>
+            <span className='text'>{children}</span>
+        </div>
+    ) : (
+        <label
+            className={cn({
+                [className]: true,
+                checked,
+                'checked-first': first,
+                'checked-last': last,
+                now,
+            })}>
+            <input
+                type='checkbox'
+                value={date.format(dateFormat)}
+                checked={checked}
+                onChange={onChange}
+            />
+            <span className='bg' />
+            <span className='text'>{children}</span>
+        </label>
+    );
 
-    componentDidMount() {
-        const { expanded } = this.props;
-        this.setState({ expanded });
-    }
+/**
+ * -----------------------------------------------------------------------------
+ * Hook Component: Calendar
+ * -----------------------------------------------------------------------------
+ */
+let Calendar = ({ namespace, ...props }, ref) => {
+    // Refs
+    const containerRef = useRef();
+    const stateRef = useRef({
+        prevState: {},
+        ...props,
+    });
 
-    componentDidUpdate(prevProps) {
-        const { expanded: prev } = prevProps;
-        const { expanded: curr } = this.props;
+    // State
+    const [state, setNewState] = useState(stateRef.current);
 
-        if (prev !== curr) {
-            this.setState({ expanded: curr });
-        }
-    }
+    // Internal Interface
+    const setState = newState => {
+        // Get the previous state
+        const prevState = { ...stateRef.current };
 
-    render() {
-        const {
-            className,
-            collapseable,
-            date,
-            minDate,
-            maxDate,
-            headingFormat,
-            labels,
-            multiple,
-            name = 'date',
-            onChange,
-            onNext,
-            onNextYear,
-            onPrev,
-            onPrevYear,
-            onToggle,
-        } = this.props;
-
-        const { expanded } = this.state;
-
-        const heading = moment(date).format(headingFormat);
-        const days = DaysInMonth(date, expanded);
-        const today = moment().format('L');
-        const cname = suffix => {
-            return `${className}-${suffix}`;
+        // Update the stateRef
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+            prevState,
         };
 
+        // Trigger useEffect()
+        setNewState(stateRef.current);
+    };
+
+    const _ns = str => `${namespace}-${str}`;
+
+    const _onCheckToggle = e => {
+        let { dateFormat, selected = [] } = stateRef.current;
+        const { checked, value } = e.target;
+
+        if (checked === true) {
+            selected.push(value);
+        } else {
+            selected = _.without(selected, value);
+        }
+
+        selected.sort();
+
+        setState({ selected }, '_onCheckToggle()');
+    };
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        setState,
+        state,
+    }));
+
+    // Side Effects
+    useEffect(() => setState(props), Object.values(props));
+
+    const renderDays = () => {
+        const {
+            date,
+            dateFormat,
+            maxDate,
+            minDate,
+            selected = [],
+        } = stateRef.current;
+        const days = DaysInMonth(date, true);
+        const today = moment().format('L');
+
         return (
-            <>
-                <div className={cname('container')}>
-                    <div className={cname('heading')}>
-                        <button
-                            type='button'
-                            className='left'
-                            onClick={onPrevYear}>
-                            <Icon.Feather.ChevronLeft width={10} height={10} />
-                        </button>
-                        <span>{heading}</span>
-                        <button
-                            type='button'
-                            className='right'
-                            onClick={onNextYear}>
-                            <Icon.Feather.ChevronRight width={10} height={10} />
-                        </button>
-                    </div>
-                    <div className={cname('week-headings')}>
-                        {labels.map(day => (
-                            <div key={cname(`week-headings-${day}`)}>{day}</div>
-                        ))}
-                    </div>
-                    <button
-                        type='button'
-                        className={`${cname('nav')} left`}
-                        onClick={onPrev}>
-                        <Icon.Feather.ChevronLeft width={14} height={14} />
-                    </button>
-                    <button
-                        type='button'
-                        className={`${cname('nav')} right`}
-                        onClick={onNext}>
-                        <Icon.Feather.ChevronRight width={14} height={14} />
-                    </button>
-                    <div className={cname('week-days')}>
-                        {days.map((day, i) => {
-                            let disabled = false;
-                            disabled =
-                                minDate && day.isBefore(minDate)
-                                    ? true
-                                    : disabled;
-                            disabled =
-                                maxDate && day.isAfter(maxDate)
-                                    ? true
-                                    : disabled;
+            <div className={_ns('days')}>
+                {days.map((day, i) => {
+                    let disabled = false;
+                    disabled =
+                        minDate && day.isBefore(minDate) ? true : disabled;
+                    disabled =
+                        maxDate && day.isAfter(maxDate) ? true : disabled;
 
-                            if (disabled) {
-                                return (
-                                    <span
-                                        key={cname(
-                                            `${className}-week-days-${i}`,
-                                        )}
-                                        className={cn({
-                                            [cname('week-day')]: true,
-                                            today: today === day.format('L'),
-                                        })}>
-                                        <span
-                                            className={cname('week-day-label')}>
-                                            {day.format('D')}
-                                        </span>
-                                    </span>
-                                );
-                            }
+                    const idx = selected.indexOf(day.format(dateFormat));
+                    const k = `${_ns('day')}-${day.format('YYYY-MM-DD')}-${i}`;
+                    const checked = selected.includes(day.format(dateFormat));
+                    const now = today === day.format('L');
+                    const first = idx === 0;
+                    const last = idx === selected.length - 1;
 
-                            return i >= 42 ? null : (
-                                <label
-                                    key={cname(
-                                        `${className}-week-days-${day.toISOString()}`,
-                                    )}
-                                    className={cn({
-                                        [cname('week-day')]: true,
-                                        today: today === day.format('L'),
-                                    })}>
-                                    <input
-                                        type={
-                                            multiple !== false
-                                                ? 'checkbox'
-                                                : 'radio'
-                                        }
-                                        value={day.toISOString()}
-                                        onChange={onChange}
-                                        name={name}
-                                    />
-                                    <span className={cname('week-day-bg')} />
-                                    <span className={cname('week-day-label')}>
-                                        {day.format('D')}
-                                    </span>
-                                </label>
-                            );
-                        })}
-                    </div>
-                </div>
-                {collapseable !== false && (
-                    <span className={cname('toggle')} onClick={onToggle} />
-                )}
-            </>
+                    const dayProps = {
+                        date: day,
+                        dateFormat,
+                        disabled,
+                        checked,
+                        className: _ns('day'),
+                        children: day.format('D'),
+                        first,
+                        last,
+                        now,
+                        onChange: _onCheckToggle,
+                    };
+
+                    return <Day key={k} {...dayProps} />;
+                })}
+            </div>
         );
-    }
-}
+    };
 
-export { Calendar as default, DaysInMonth };
+    const renderHeading = () => {
+        const { date, headingFormat } = stateRef.current;
+        const color = Button.ENUMS.COLOR.CLEAR;
+        const heading = moment(date).format(headingFormat);
+        const isize = 14;
+        const size = Button.ENUMS.SIZE.XS;
+
+        return (
+            <div className={_ns('heading')}>
+                <Button color={color} size={size}>
+                    <Feather.ChevronLeft width={isize} height={isize} />
+                </Button>
+                <Button
+                    readOnly
+                    size={size}
+                    color={color}
+                    className='flex-grow'>
+                    {heading}
+                </Button>
+                <Button color={color} size={size}>
+                    <Feather.ChevronRight width={isize} height={isize} />
+                </Button>
+            </div>
+        );
+    };
+
+    const renderLabels = () => {
+        const { labelFormat, labels } = stateRef.current;
+
+        return !Array.isArray(labels) ? null : (
+            <div className={_ns('labels')}>
+                {labels.map(label => (
+                    <div
+                        key={`${_ns('labels')}-label-${label}-${Date.now}`}
+                        className={_ns('label')}>
+                        {labelFormat(label)}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const render = () => {
+        const { className } = stateRef.current;
+        const cname = cn({
+            [namespace]: !!namespace,
+            [className]: !!className,
+        });
+
+        return (
+            <div ref={containerRef} className={cname}>
+                {renderHeading()}
+                {renderLabels()}
+                {renderDays()}
+            </div>
+        );
+    };
+
+    return render();
+};
+
+Calendar = forwardRef(Calendar);
+
+Calendar.propTypes = {
+    className: PropTypes.string,
+    date: PropTypes.instanceOf(Date),
+    dateFormat: PropTypes.string,
+    headingFormat: PropTypes.string,
+    labeFormat: PropTypes.func,
+    labels: PropTypes.array,
+    maxDate: PropTypes.instanceOf(Date),
+    minDate: PropTypes.instanceOf(Date),
+    namespace: PropTypes.string,
+};
+
+Calendar.defaultProps = {
+    date: new Date(),
+    dateFormat: 'L',
+    headingFormat: 'MMMM YYYY',
+    labelFormat: label => label,
+    labels: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    namespace: 'ar-datepicker-calendar',
+    selected: ['06/15/2019'],
+};
+
+export { Calendar as default };

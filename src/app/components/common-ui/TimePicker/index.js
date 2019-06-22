@@ -378,6 +378,10 @@ TimePicker.formatTime = formatTime;
 
 TimePicker.propTypes = {
     className: PropTypes.string,
+    icon: PropTypes.shape({
+        closed: PropTypes.node,
+        opened: PropTypes.node,
+    }),
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
