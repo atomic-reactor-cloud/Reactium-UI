@@ -1,5 +1,6 @@
 @mixin flex() {
     display: flex;
+    align-items: flex-start;
 }
 
 @mixin flex-factory() {

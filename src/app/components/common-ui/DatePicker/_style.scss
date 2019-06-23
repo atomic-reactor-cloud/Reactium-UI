@@ -14,19 +14,34 @@ $ar-datepicker-padding: 8px;
 .ar-datepicker-calendar {
     @extend .ar-picker-wrapper;
     width: $ar-datepicker-width;
-    right: auto;
-    left: 0;
+
+    &, &-left {
+        right: auto;
+        left: 0;
+    }
+
+    &-right {
+        right: 0;
+        left: auto;
+    }
+
+    &-center {
+        right: auto;
+        left: 50%;
+        transform: translateX(-50%) translateY(100%);
+    }
 
     &-header,
     &-footer {
         @extend .btn-group;
         width: 100%;
-        padding: 8px 0;
+        padding: 4px 0;
+        justify-content: center;
 
         > * {
             border-radius: 0 !important;
             padding: 8px 12px;
-            font-size: 12px;
+            font-size: 14px;
         }
 
         > *:first-child {
@@ -41,6 +56,11 @@ $ar-datepicker-padding: 8px;
     &-footer {
         padding: 0;
         border-top: 1px solid $ar-datepicker-color-border;
+
+        > * {
+            font-size: 10px;
+            padding: 4px 12px;
+        }
     }
 
     &-labels {

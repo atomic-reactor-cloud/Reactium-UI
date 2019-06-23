@@ -95,27 +95,54 @@ const Day = ({
  * Hook Component: Calendar
  * -----------------------------------------------------------------------------
  */
-let Calendar = ({ namespace, ...props }, ref = {}) => {
+let Calendar = ({ namespace, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
+    const prevStateRef = useRef({ updated: Date.now() });
     const stateRef = useRef({
-        prevState: {},
         ...props,
+        init: false,
     });
 
     // State
     const [state, setNewState] = useState(stateRef.current);
+    const [prevState, setPrevState] = useState(prevStateRef.current);
 
     // Internal Interface
     const setState = (newState, caller) => {
-        // Get the previous state
-        const prevState = { ...stateRef.current };
+        if (op.has(newState, 'value')) {
+            const { dateFormat, multiple, range } = stateRef.current;
+
+            if (range) {
+                const v = newState.value.split(' - ');
+                v.sort();
+
+                const date = new Date(v[0]);
+
+                newState['selected'] = v.map(d =>
+                    moment(new Date(d)).format(dateFormat),
+                );
+                newState['date'] = date;
+            } else if (multiple) {
+                const v = newState.value
+                    .split(' ')
+                    .join('')
+                    .split(',');
+                v.sort();
+
+                const date = new Date(v[0]);
+
+                newState['selected'] = v.map(d =>
+                    moment(new Date(d)).format(dateFormat),
+                );
+                newState['date'] = date;
+            }
+        }
 
         // Update the stateRef
         stateRef.current = {
-            ...prevState,
+            ...stateRef.current,
             ...newState,
-            prevState,
         };
 
         if (ENUMS.DEBUG) {
@@ -148,31 +175,36 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
 
         selected.sort();
 
-        setState({ selected }, '_onCheckToggle()');
+        setState({ selected, updated: Date.now() }, '_onCheckToggle()');
     };
 
     const _next = (duration = 'months') => {
-        let { date } = stateRef.current;
-        date = moment(date).add(1, duration);
+        let { date, onNav, onNext } = stateRef.current;
+        date = moment(date)
+            .add(1, duration)
+            .toDate();
         setState({ date }, 'Calendar -> _next(' + duration + ')');
 
-        onNext({ type: 'next', ...stateRef.current });
-        onNav({ type: 'nav', ...stateRef.current });
+        onNext({ type: ENUMS.EVENT.NEXT, ...stateRef.current });
+        onNav({ type: ENUMS.EVENT.NAV, ...stateRef.current });
     };
 
     const _prev = (duration = 'months') => {
-        let { date, onPrev } = stateRef.current;
-        date = moment(date).subtract(1, duration);
+        let { date, onNav, onPrev } = stateRef.current;
+        date = moment(date)
+            .subtract(1, duration)
+            .toDate();
         setState({ date }, 'Calendar -> _prev(' + duration + ')');
 
-        onPrev({ type: 'next', ...stateRef.current });
-        onNav({ type: 'nav', ...stateRef.current });
+        onPrev({ type: ENUMS.EVENT.PREV, ...stateRef.current });
+        onNav({ type: ENUMS.EVENT.NAV, ...stateRef.current });
     };
 
     const _today = () => {
-        const date = moment();
+        const { onNav } = stateRef.current;
+        const date = moment().toDate();
         setState({ date }, 'Calendar -> _today()');
-        onNav({ type: 'nav', ...stateRef.current });
+        onNav({ type: ENUMS.EVENT.TODAY, ...stateRef.current });
     };
 
     // External Interface
@@ -181,6 +213,8 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
         state,
         next: _next,
         prev: _prev,
+        today: _today,
+        ...ref,
     }));
 
     // Side Effects
@@ -190,9 +224,20 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
     );
 
     useEffect(() => {
-        const { onChange, selected } = state;
-        onChange({ type: 'change', selected });
-    }, [state.selected]);
+        const { init, onChange, onInit, selected = [] } = state;
+        const { selected: prevSelected = [] } = prevState;
+
+        setPrevState({ ...JSON.parse(JSON.stringify(stateRef.current)) });
+
+        if (init === true && !_.isEqual(prevSelected, selected)) {
+            onChange({ type: ENUMS.EVENT.CHANGE, ...stateRef.current });
+        }
+
+        if (init === false) {
+            stateRef.current.init = true;
+            onInit({ type: ENUMS.EVENT.INIT, ...stateRef.current });
+        }
+    }, [state.updated]);
 
     const renderDays = () => {
         const {
@@ -268,13 +313,65 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
         );
     };
 
-    const renderFooter = () => {
-        const { date } = stateRef.current;
+    const renderHeader = () => {
+        const { date, header, headerFormat, nav } = stateRef.current;
+        const color = Button.ENUMS.COLOR.CLEAR;
+        const label = moment(date).format(headerFormat);
+        const isize = 14;
+        const size = Button.ENUMS.SIZE.XS;
+
+        return !header ? null : (
+            <div className={_ns('header')}>
+                {nav && (
+                    <Button
+                        color={color}
+                        size={size}
+                        onClick={() => _prev('years')}>
+                        <Feather.ChevronLeft width={isize} height={isize} />
+                    </Button>
+                )}
+                <Button
+                    readOnly
+                    size={size}
+                    color={color}
+                    className='flex-grow'>
+                    {label}
+                </Button>
+                {nav && (
+                    <Button
+                        color={color}
+                        size={size}
+                        onClick={() => _next('years')}>
+                        <Feather.ChevronRight width={isize} height={isize} />
+                    </Button>
+                )}
+            </div>
+        );
+    };
+
+    const renderLabels = () => {
+        const { labelFormat, labels } = stateRef.current;
+
+        return !Array.isArray(labels) || labels.length < 1 ? null : (
+            <div className={_ns('labels')}>
+                {labels.map((label, i) => (
+                    <div
+                        key={`${_ns('labels')}-label-${label}-${i}`}
+                        className={_ns('label')}>
+                        {labelFormat(label)}
+                    </div>
+                ))}
+            </div>
+        );
+    };
+
+    const renderNav = () => {
+        const { date, nav } = stateRef.current;
         const color = Button.ENUMS.COLOR.CLEAR;
         const isize = 14;
         const size = Button.ENUMS.SIZE.XS;
 
-        return (
+        return !nav ? null : (
             <div className={_ns('footer')}>
                 <Button
                     color={color}
@@ -299,67 +396,20 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
         );
     };
 
-    const renderHeader = () => {
-        const { date, headerFormat } = stateRef.current;
-        const color = Button.ENUMS.COLOR.CLEAR;
-        const header = moment(date).format(headerFormat);
-        const isize = 14;
-        const size = Button.ENUMS.SIZE.XS;
-
-        return (
-            <div className={_ns('header')}>
-                <Button
-                    color={color}
-                    size={size}
-                    onClick={() => _prev('years')}>
-                    <Feather.ChevronLeft width={isize} height={isize} />
-                </Button>
-                <Button
-                    readOnly
-                    size={size}
-                    color={color}
-                    className='flex-grow'>
-                    {header}
-                </Button>
-                <Button
-                    color={color}
-                    size={size}
-                    onClick={() => _next('years')}>
-                    <Feather.ChevronRight width={isize} height={isize} />
-                </Button>
-            </div>
-        );
-    };
-
-    const renderLabels = () => {
-        const { labelFormat, labels } = stateRef.current;
-
-        return !Array.isArray(labels) ? null : (
-            <div className={_ns('labels')}>
-                {labels.map(label => (
-                    <div
-                        key={`${_ns('labels')}-label-${label}-${Date.now}`}
-                        className={_ns('label')}>
-                        {labelFormat(label)}
-                    </div>
-                ))}
-            </div>
-        );
-    };
-
     const render = () => {
-        const { className } = stateRef.current;
+        const { align, className, id } = stateRef.current;
         const cname = cn({
             [namespace]: !!namespace,
             [className]: !!className,
+            [_ns(align)]: !!align,
         });
 
         return (
-            <div ref={containerRef} className={cname}>
+            <div ref={containerRef} className={cname} id={id}>
                 {renderHeader()}
+                {renderNav()}
                 {renderLabels()}
                 {renderDays()}
-                {renderFooter()}
             </div>
         );
     };
@@ -370,10 +420,13 @@ let Calendar = ({ namespace, ...props }, ref = {}) => {
 Calendar = forwardRef(Calendar);
 
 Calendar.propTypes = {
+    align: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
     className: PropTypes.string,
     date: PropTypes.instanceOf(Date),
     dateFormat: PropTypes.string,
+    header: PropTypes.bool,
     headerFormat: PropTypes.string,
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     labeFormat: PropTypes.func,
     labels: PropTypes.array,
     maxDate: PropTypes.instanceOf(Date),
@@ -381,7 +434,9 @@ Calendar.propTypes = {
     multiple: PropTypes.bool,
     name: PropTypes.string,
     namespace: PropTypes.string,
+    nav: PropTypes.bool,
     onChange: PropTypes.func,
+    onInit: PropTypes.func,
     onNav: PropTypes.func,
     onNext: PropTypes.func,
     onPrev: PropTypes.func,
@@ -390,19 +445,22 @@ Calendar.propTypes = {
 };
 
 Calendar.defaultProps = {
-    date: new Date(),
-    dateFormat: 'L',
-    headerFormat: 'MMMM YYYY',
+    align: ENUMS.ALIGN.CENTER,
+    dateFormat: ENUMS.FORMAT.DATE,
+    header: true,
+    headerFormat: ENUMS.FORMAT.HEADER,
     labelFormat: label => label,
-    labels: ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'],
+    labels: ENUMS.LABELS,
     multiple: false,
     namespace: 'ar-datepicker-calendar',
+    nav: true,
     onChange: noop,
+    onInit: noop,
     onNav: noop,
     onNext: noop,
     onPrev: noop,
     range: false,
-    selected: ['06/15/2019'],
+    selected: [],
 };
 
 export { Calendar as default };

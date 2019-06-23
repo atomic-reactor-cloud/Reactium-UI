@@ -1,6 +1,7 @@
 $ar-picker-z-button: 100 !default;
 $ar-picker-z-input: 10 !default;
-$ar-picker-z-select: 1 !default;
+$ar-picker-z-select: 1000 !default;
+$ar-picker-color-bg: $color-white;
 
 .ar-picker {
     position: relative;
@@ -43,14 +44,13 @@ $ar-picker-z-select: 1 !default;
         }
     }
 
-    &-wrapper:first-child {
-        &:last-child {
-            z-index: $ar-picker-z-select;
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            transform: translateY(100%);
-            box-shadow: $ar-dropdown-shadow;
-        }
+    &-wrapper {
+        z-index: $ar-picker-z-select;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        transform: translateY(100%);
+        box-shadow: $ar-dropdown-shadow;
+        background-color: $ar-picker-color-bg;
     }
 }

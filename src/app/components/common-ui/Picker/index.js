@@ -251,6 +251,7 @@ Picker.propTypes = {
         closed: PropTypes.node,
         opened: PropTypes.node,
     }),
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
     onBeforeHide: PropTypes.func,
     onBeforeShow: PropTypes.func,
