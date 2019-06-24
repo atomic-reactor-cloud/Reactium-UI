@@ -57,7 +57,7 @@ AreaChartMolecule.defaultProps = {
                 .format('M/DD'),
         },
     ],
-    donts: true,
+    dots: true,
     xLabel: moment().format('YYYY'),
     yLabel: 'Crunches',
 };
