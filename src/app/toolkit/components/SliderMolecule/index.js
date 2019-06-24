@@ -34,7 +34,7 @@ class SliderMolecule extends Component {
         return (
             <div className='p-xs-24' style={{ height: 320 }}>
                 <div className='row'>
-                    <div className='col-xs-12 col-sm-6'>
+                    <div className='col-xs-12 col-sm-6 mb-xs-40 flex-center'>
                         <Slider
                             max={20}
                             min={0}
@@ -46,7 +46,20 @@ class SliderMolecule extends Component {
                             direction={Slider.ENUMS.DIRECTION.VERTICAL}
                         />
                     </div>
-                    <div className='col-xs-12 col-sm-6'>
+                    <div className='col-xs-12 col-sm-6 mb-xs-40 flex-center'>
+                        <Slider
+                            max={20}
+                            min={0}
+                            name='ar-slider-demo-1'
+                            value={{ min: 5, max: 15 }}
+                            iDocument={this.props.iDocument}
+                            labelFormat={this.labelFormat}
+                            tickFormat={this.labelFormat}
+                            ticks={[0, 5, 10, 15, 20]}
+                            direction={Slider.ENUMS.DIRECTION.VERTICAL}
+                        />
+                    </div>
+                    <div className='col-xs-12 col-sm-6 pb-xs-20 px-xs-20 flex-center'>
                         <Slider
                             max={20}
                             min={0}
@@ -54,6 +67,20 @@ class SliderMolecule extends Component {
                             value={10}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
+                            ticks={true}
+                            tickFormat={this.labelFormat}
+                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
+                        />
+                    </div>
+                    <div className='col-xs-12 col-sm-6 pb-xs-20 px-xs-20 flex-center'>
+                        <Slider
+                            max={20}
+                            min={0}
+                            name='ar-slider-demo-2'
+                            value={{ min: 5, max: 15 }}
+                            iDocument={this.props.iDocument}
+                            labelFormat={this.labelFormat}
+                            ticks={true}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
                         />

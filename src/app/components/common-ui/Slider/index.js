@@ -97,21 +97,39 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         const bar = barRef.current;
         const cont = containerRef.current;
         const lbl = labelRef.current;
+        const sel = selRef.current;
 
         let barW = bar.offsetWidth;
         let barH = bar.offsetHeight;
 
+        let minX = 0;
+        let minY = 0;
         let maxX = barW;
         let maxY = barH;
 
+        if (range) {
+            const handleW = handle.offsetWidth + 4;
+            switch (dragging) {
+                case ENUMS.MIN:
+                    maxX = handles[ENUMS.MAX].current.offsetLeft - handleW;
+                    minY = handles[ENUMS.MAX].current.offsetTop + handleW;
+                    break;
+
+                case ENUMS.MAX:
+                    minX = handles[ENUMS.MIN].current.offsetLeft + handleW;
+                    maxY = handles[ENUMS.MIN].current.offsetTop - handleW;
+                    break;
+            }
+        }
+
         const x =
             direction === ENUMS.DIRECTION.HORIZONTAL
-                ? Math.min(Math.max(0, e.clientX - cont.offsetLeft), maxX)
+                ? Math.min(Math.max(minX, e.clientX - cont.offsetLeft), maxX)
                 : 0;
 
         const y =
             direction === ENUMS.DIRECTION.VERTICAL
-                ? Math.min(Math.max(0, e.clientY - cont.offsetTop), maxY)
+                ? Math.min(Math.max(minY, e.clientY - cont.offsetTop), maxY)
                 : 0;
 
         const vals = _.range(min, max + 1);
@@ -151,8 +169,24 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         lbl.style.left =
             direction === ENUMS.DIRECTION.HORIZONTAL
                 ? handle.style.left
-                : `${cont.offsetLeft}px`;
-        lbl.style.opacity = 1;
+                : `${handle.offsetWidth}px`;
+        lbl.style.display = 'block';
+
+        if (range) {
+            if (direction === ENUMS.DIRECTION.HORIZONTAL) {
+                const selW =
+                    handles[ENUMS.MAX].current.offsetLeft -
+                    handles[ENUMS.MIN].current.offsetLeft;
+                sel.style.left = handles[ENUMS.MIN].current.style.left;
+                sel.style.width = `${selW}px`;
+            } else {
+                const selH =
+                    handles[ENUMS.MIN].current.offsetTop -
+                    handles[ENUMS.MAX].current.offsetTop;
+                sel.style.top = handles[ENUMS.MAX].current.style.top;
+                sel.style.height = `${selH}px`;
+            }
+        }
 
         setState({ value });
     };
@@ -176,9 +210,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const _move = () => {
-        const sel = selRef.current;
-        const lbl = labelRef.current;
-
         const {
             direction,
             dragging,
@@ -186,40 +217,50 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             range = false,
             value,
         } = stateRef.current;
-        const v = range === true ? value : { min: value };
 
         if (!dragging) {
+            const sel = selRef.current;
+            const v = range === true ? value : { min: value };
+
             Object.entries(v).forEach(([key, value]) => {
                 const handle = handles[key].current;
                 const pos = _positionFromValue({ handle, value });
                 handle.style.left = pos.left;
                 handle.style.top = pos.top;
             });
-        }
 
-        if (range === true) {
-            if (direction === ENUMS.DIRECTION.HORIZONTAL) {
-                const left = Number(
-                    handles[ENUMS.MIN].current.style.left.split('%').join(''),
-                );
-                const right = Number(
-                    handles[ENUMS.MAX].current.style.left.split('%').join(''),
-                );
-                const barW = right - left;
+            if (range === true) {
+                if (direction === ENUMS.DIRECTION.HORIZONTAL) {
+                    const left = Number(
+                        handles[ENUMS.MIN].current.style.left
+                            .split('%')
+                            .join(''),
+                    );
+                    const right = Number(
+                        handles[ENUMS.MAX].current.style.left
+                            .split('%')
+                            .join(''),
+                    );
+                    const barW = right - left;
 
-                sel.style.left = handles[ENUMS.MIN].current.style.left;
-                sel.style.width = `${barW}%`;
-            } else {
-                const top = Number(
-                    handles[ENUMS.MAX].current.style.top.split('%').join(''),
-                );
-                const bottom = Number(
-                    handles[ENUMS.MIN].current.style.top.split('%').join(''),
-                );
-                const barH = bottom - top;
+                    sel.style.left = handles[ENUMS.MIN].current.style.left;
+                    sel.style.width = `${barW}%`;
+                } else {
+                    const top = Number(
+                        handles[ENUMS.MAX].current.style.top
+                            .split('%')
+                            .join(''),
+                    );
+                    const bottom = Number(
+                        handles[ENUMS.MIN].current.style.top
+                            .split('%')
+                            .join(''),
+                    );
+                    const barH = bottom - top;
 
-                sel.style.top = handles[ENUMS.MAX].current.style.top;
-                sel.style.height = `${barH}%`;
+                    sel.style.top = handles[ENUMS.MAX].current.style.top;
+                    sel.style.height = `${barH}%`;
+                }
             }
         }
 
@@ -227,10 +268,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             type: ENUMS.EVENT.CHANGE,
             value,
         });
-
-        if (dragging) {
-            lbl.style.opacity = 1;
-        }
     };
 
     const _onKeyPress = e => {
@@ -265,6 +302,9 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const _positionFromValue = ({ value }) => {
+        const bar = barRef.current;
+        const cont = containerRef.current;
+
         const { direction, max, min } = stateRef.current;
         const vals = _.range(min, max + 1);
 
@@ -295,14 +335,17 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
     // Side Effect: cursor and label
     useEffect(() => {
-        const { dragging } = stateRef.current;
+        const { dragging, snap } = stateRef.current;
         const doc = iDocument || document;
 
         if (Boolean(dragging)) {
             doc.body.style.cursor = 'grabbing';
         } else {
             doc.body.style.cursor = 'default';
-            labelRef.current.style.opacity = 0;
+            labelRef.current.style.display = 'none';
+            if (snap) {
+                _move();
+            }
         }
     }, [stateRef.current.dragging]);
 
@@ -435,6 +478,7 @@ Slider.propTypes = {
     name: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
     onChange: PropTypes.func,
+    snap: PropTypes.bool,
     tickFormat: PropTypes.func,
     ticks: PropTypes.oneOfType([
         PropTypes.bool,
@@ -457,6 +501,7 @@ Slider.defaultProps = {
     max: 100,
     namespace: 'ar-slider',
     onChange: noop,
+    snap: false,
     tickFormat: tick => tick,
     ticks: [],
     value: 0,
