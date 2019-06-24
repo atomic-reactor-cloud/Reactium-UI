@@ -24,18 +24,20 @@ const PieChart = ({
     const chartProps = {
         animate,
         colorScale: colors,
+        cornerRadius: 1,
         data: mapData(data),
         innerRadius,
-        padAngle: padding,
         labelRadius: 160,
         labels: labelFunc,
-        cornerRadius: 1,
+        padAngle: padding,
         ...props,
     };
 
     return <VictoryPie {...chartProps} />;
 };
 
+// See: https://formidable.com/open-source/victory/docs/victory-pie#props
+//      for additional props
 PieChart.propTypes = {
     animate: PropTypes.bool,
     colors: PropTypes.oneOfType([PropTypes.array, PropTypes.string]),
@@ -43,6 +45,7 @@ PieChart.propTypes = {
     innerRadius: PropTypes.number,
     labelFunc: PropTypes.func,
     padding: PropTypes.number,
+    style: PropTypes.object,
 };
 
 PieChart.defaultProps = {
@@ -51,6 +54,11 @@ PieChart.defaultProps = {
     innerRadius: 120,
     labelFunc,
     padding: 2,
+    style: {
+        labels: {
+            fontSize: 10,
+        },
+    },
 };
 
 export default PieChart;

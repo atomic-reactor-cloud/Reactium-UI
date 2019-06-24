@@ -39,12 +39,23 @@ class SliderMolecule extends Component {
                             max={20}
                             min={0}
                             name='ar-slider-demo-1'
-                            onChange={this.onChange}
                             value={10}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.VERTICAL}
+                        />
+                    </div>
+                    <div className='col-xs-12 col-sm-6'>
+                        <Slider
+                            max={20}
+                            min={0}
+                            name='ar-slider-demo-2'
+                            value={10}
+                            iDocument={this.props.iDocument}
+                            labelFormat={this.labelFormat}
+                            tickFormat={this.labelFormat}
+                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
                         />
                     </div>
                 </div>

@@ -24,9 +24,11 @@ class PieMolecule extends Component {
 
     render() {
         return (
-            <>
-                <PieChart onInit={console.log} data={this.props.data} animate />
-            </>
+            <div className='flex-center'>
+                <div className='flex-grow' style={{ maxWidth: 500 }}>
+                    <PieChart data={this.props.data} />
+                </div>
+            </div>
         );
     }
 }

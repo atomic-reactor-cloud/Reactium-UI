@@ -1,5 +1,6 @@
 const ENUMS = {
     BUFFER: 2,
+    DEBUG: true,
     DIRECTION: {
         HORIZONTAL: 'horizontal',
         VERTICAL: 'vertical',

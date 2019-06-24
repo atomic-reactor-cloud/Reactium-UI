@@ -94,30 +94,24 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         }
 
         const handle = handles[dragging].current;
+        const bar = barRef.current;
+        const cont = containerRef.current;
+        const lbl = labelRef.current;
 
-        const hpos = {
-            x: handle.offsetLeft,
-            y: handle.offsetTop,
-            w: handle.offsetWidth,
-            h: handle.offsetHeight,
-        };
-
-        let barW = barRef.current.offsetWidth;
-        let barH = barRef.current.offsetHeight;
+        let barW = bar.offsetWidth;
+        let barH = bar.offsetHeight;
 
         let maxX = barW;
         let maxY = barH;
 
-        const w = hpos.w;
-        const h = hpos.h;
         const x =
             direction === ENUMS.DIRECTION.HORIZONTAL
-                ? Math.min(Math.max(0, e.clientX - w * 2.25), maxX)
+                ? Math.min(Math.max(0, e.clientX - cont.offsetLeft), maxX)
                 : 0;
 
         const y =
             direction === ENUMS.DIRECTION.VERTICAL
-                ? Math.min(Math.max(0, e.clientY - h * 2.25), maxY)
+                ? Math.min(Math.max(0, e.clientY - cont.offsetTop), maxY)
                 : 0;
 
         const vals = _.range(min, max + 1);
@@ -149,10 +143,22 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             }
         }
 
+        handle.style.left = `${x}px`;
+        handle.style.top = `${y}px`;
+
+        lbl.style.top =
+            direction === ENUMS.DIRECTION.HORIZONTAL ? 0 : handle.style.top;
+        lbl.style.left =
+            direction === ENUMS.DIRECTION.HORIZONTAL
+                ? handle.style.left
+                : `${cont.offsetLeft}px`;
+        lbl.style.opacity = 1;
+
         setState({ value });
     };
 
     const _dragEnd = () => {
+        _move();
         setState({ dragging: null });
         const doc = iDocument || document;
         doc.removeEventListener('mousemove', _drag);
@@ -163,7 +169,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
     const _dragStart = e => {
         setState({ dragging: e.target.dataset.handle, focus: e.target });
-
         const doc = iDocument || document;
         doc.addEventListener('mousemove', _drag);
         doc.addEventListener('mouseup', _dragEnd);
@@ -174,6 +179,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     const _move = () => {
         const sel = selRef.current;
         const lbl = labelRef.current;
+
         const {
             direction,
             dragging,
@@ -222,18 +228,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         });
 
         if (dragging) {
-            const handle = handles[dragging].current;
-
-            if (direction === ENUMS.DIRECTION.HORIZONTAL) {
-                lbl.style.left = handle.style.left;
-                lbl.style.top = 'auto';
-            } else {
-                lbl.style.left = `${handle.offsetWidth * 2.65}px`;
-                lbl.style.top = `${handle.offsetTop +
-                    handle.offsetWidth -
-                    3}px`;
-            }
-
             lbl.style.opacity = 1;
         }
     };

@@ -21,25 +21,26 @@ export default class DatePickerMolecule extends Component {
     }
 
     render() {
-        const style = { height: 420 };
+        const style = { minHeight: 420 };
         const iframe = {
             iDocument: this.props.iDocument,
             iWindow: this.props.iWindow,
             width: 296,
         };
 
-        const col = 'col-xs-12 col-sm-6 flex middle column top';
+        const col =
+            'col-xs-12 col-sm-6 mb-xs-20 mb-sm-0 flex middle column top';
 
         return (
             <>
-                <div className='row mb-xs-40'>
-                    <div className={col}>
+                <div className='row mb-xs-10'>
+                    <div className={col} style={style}>
                         <h4 className='mb-xs-8'>
                             Single Select & Keyboard Edit
                         </h4>
                         <DatePicker value='04/22/1978' {...iframe} />
                     </div>
-                    <div className={col}>
+                    <div className={col} style={style}>
                         <h4 className='mb-xs-8'>Range & Keyboard Edit</h4>
                         <DatePicker
                             placeholder='Select Dates'
@@ -49,17 +50,16 @@ export default class DatePickerMolecule extends Component {
                         />
                     </div>
                 </div>
-                <div className='row' style={style}>
-                    <div className={col}>
+                <div className='row mb-xs-10'>
+                    <div className={col} style={style}>
                         <h4 className='mb-xs-8'>Multi Select</h4>
                         <DatePicker
-                            value='04/22/1978'
                             {...iframe}
                             multiple
                             value='04/22/2019, 04/24/2019, 04/01/2019'
                         />
                     </div>
-                    <div className={col}>
+                    <div className={col} style={style}>
                         <h4 className='mb-xs-8'>
                             Customize UI - No Keyboard Edit
                         </h4>

@@ -3,7 +3,7 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { AreaChart } from 'components/common-ui/Charts';
 import moment from 'moment';
 
@@ -19,42 +19,46 @@ class AreaChartMolecule extends Component {
     }
 
     render() {
-        return <AreaChart {...this.props} />;
+        return (
+            <div className='flex-center'>
+                <div className='flex-grow' style={{ maxWidth: 700 }}>
+                    <AreaChart {...this.props} />
+                </div>
+            </div>
+        );
     }
 }
-
-const d = moment();
 
 // Default properties
 AreaChartMolecule.defaultProps = {
     data: [
         {
             y: 20,
-            x: moment().format('M/DD'),
+            x: moment()
+                .subtract(1, 'days')
+                .format('M/DD'),
         },
         {
             y: 50,
             x: moment()
-                .add(1, 'days')
+                .subtract(2, 'days')
                 .format('M/DD'),
         },
         {
             y: 80,
             x: moment()
-                .add(2, 'days')
+                .subtract(3, 'days')
                 .format('M/DD'),
         },
         {
             y: 50,
             x: moment()
-                .add(3, 'days')
+                .subtract(4, 'days')
                 .format('M/DD'),
         },
         {
             y: 100,
-            x: moment()
-                .add(4, 'days')
-                .format('M/DD'),
+            x: moment().format('M/DD'),
         },
     ],
     dots: true,
