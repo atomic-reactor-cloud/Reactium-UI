@@ -20,6 +20,7 @@ import Colors from 'components/common-ui/colors';
 const AreaChart = ({
     color,
     data,
+    dots,
     opacity,
     tickCount,
     tickFormat,
@@ -117,9 +118,11 @@ const AreaChart = ({
                         <VictoryLabel {...tickLabelProps} dy={0} />
                     }
                 />
-                <VictoryPortal>
-                    <VictoryScatter {...dotProps} />
-                </VictoryPortal>
+                {dots && (
+                    <VictoryPortal>
+                        <VictoryScatter {...dotProps} />
+                    </VictoryPortal>
+                )}
             </VictoryChart>
         </>
     );
@@ -129,6 +132,7 @@ AreaChart.propTypes = {
     animate: PropTypes.bool,
     color: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     data: PropTypes.array,
+    dots: PropTypes.bool,
     interpolation: PropTypes.string,
     opacity: PropTypes.number,
     tickCount: PropTypes.number,
