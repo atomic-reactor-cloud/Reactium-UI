@@ -54,6 +54,7 @@ class SliderMolecule extends Component {
                             value={{ min: 5, max: 15 }}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
+                            snap
                             tickFormat={this.labelFormat}
                             ticks={[0, 5, 10, 15, 20]}
                             direction={Slider.ENUMS.DIRECTION.VERTICAL}
@@ -67,6 +68,7 @@ class SliderMolecule extends Component {
                             value={10}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
+                            snap
                             ticks={true}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
@@ -80,7 +82,6 @@ class SliderMolecule extends Component {
                             value={{ min: 5, max: 15 }}
                             iDocument={this.props.iDocument}
                             labelFormat={this.labelFormat}
-                            ticks={true}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
                         />

@@ -335,7 +335,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
     // Side Effect: cursor and label
     useEffect(() => {
-        const { dragging, snap } = stateRef.current;
+        const { dragging, snap, value } = stateRef.current;
         const doc = iDocument || document;
 
         if (Boolean(dragging)) {
