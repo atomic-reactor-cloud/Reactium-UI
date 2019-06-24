@@ -2,15 +2,31 @@ import _ from 'underscore';
 import uuid from 'uuid/v4';
 import React from 'react';
 import PropTypes from 'prop-types';
+import Colors from 'components/common-ui/colors';
+import Gradient from 'components/common-ui/Charts/utils/Gradient';
+
 import {
     VictoryArea,
     VictoryAxis,
     VictoryChart,
-    VictoryLabel,
     VictoryScatter,
-    VictoryPortal,
+    VictoryTooltip,
 } from 'victory';
-import Colors from 'components/common-ui/colors';
+
+const ENUMS = {
+    INTERPOLATION: {
+        BASIS: 'basis',
+        CARDINAL: 'cardinal',
+        CATMULLROM: 'catmullRom',
+        LINEAR: 'linear',
+        MONOTONEX: 'monotoneX',
+        MONOTONEY: 'monotoneY',
+        NATURAL: 'natural',
+        STEP: 'step',
+        STEP_AFTER: 'stepAfter',
+        STEP_BEFORE: 'stepBefore',
+    },
+};
 
 /**
  * -----------------------------------------------------------------------------
@@ -21,111 +37,140 @@ const AreaChart = ({
     color,
     data,
     dots,
+    id,
+    interpolation,
     opacity,
     tickCount,
     tickFormat,
+    xAxis,
+    xGrid,
     xLabel,
+    yAxis,
+    yGrid,
     yLabel,
-    ...props
 }) => {
-    const id = uuid();
+    const renderArea = style => {
+        style = style || {
+            data: {
+                fill: `url(#${id}-gradient)`,
+                fillOpacity: opacity,
+                stroke: color,
+                strokeWidth: 2,
+            },
+        };
 
-    const areaStyle = {
-        data: {
-            fill: `url(#${id}-gradient)`,
-            fillOpacity: opacity,
-            stroke: color,
-            strokeWidth: 2,
-        },
+        const areaProps = {
+            data,
+            style,
+            interpolation,
+        };
+
+        return <VictoryArea {...areaProps} />;
     };
 
-    const dotStyle = {
-        data: {
-            fill: Colors['color-white'],
-            stroke: color,
-            strokeWidth: 2,
-        },
+    const renderDots = style => {
+        if (!dots) {
+            return;
+        }
+
+        style = style || {
+            data: {
+                fill: Colors['color-white'],
+                stroke: color,
+                strokeWidth: 2,
+            },
+        };
+
+        const dotProps = {
+            data,
+            interpolation,
+            style,
+        };
+
+        return <VictoryScatter {...dotProps} />;
     };
 
-    const chartProps = {
-        data,
-        style: areaStyle,
-        ...props,
+    const renderX = () => {
+        if (!xAxis) {
+            return;
+        }
+
+        const style = {
+            axis: { opacity: 0 },
+            axisLabel: {
+                fontSize: 9,
+            },
+            tickLabels: {
+                fontSize: 7,
+                padding: 5,
+            },
+        };
+
+        if (xGrid) {
+            style.grid = { stroke: Colors['color-grey-light'], opacity: 0.75 };
+            style.ticks = {
+                stroke: Colors['color-grey-light'],
+                opacity: 0.75,
+                size: 5,
+            };
+        }
+
+        return <VictoryAxis label={xLabel} style={style} />;
     };
 
-    const dotProps = {
-        data,
-        interpolation: props.interpolation,
-        style: dotStyle,
+    const renderY = () => {
+        if (!yAxis) {
+            return;
+        }
+
+        const style = {
+            axis: { opacity: 0 },
+            axisLabel: {
+                fontSize: 9,
+            },
+            tickLabels: {
+                fontSize: 7,
+                padding: 5,
+            },
+        };
+
+        if (yGrid) {
+            style.grid = { stroke: Colors['color-grey-light'], opacity: 0.75 };
+            style.ticks = {
+                stroke: Colors['color-grey-light'],
+                opacity: 0.75,
+                size: 5,
+            };
+        }
+
+        return (
+            <VictoryAxis
+                crossAxis
+                dependentAxis
+                label={yLabel}
+                style={style}
+                tickCount={tickCount}
+                tickFormat={tickFormat}
+            />
+        );
     };
 
-    const tickLabelProps = {
-        dy: -2,
-        style: {
-            fontSize: 7,
-        },
+    const render = () => {
+        return (
+            <>
+                <Gradient color={color} id={id} />
+                <VictoryChart>
+                    {renderX()}
+                    {renderY()}
+                    {renderArea()}
+                    {renderDots()}
+                    <VictoryTooltip data={data} />
+                </VictoryChart>
+            </>
+        );
     };
 
-    const axisLabelProps = {
-        style: {
-            fontSize: 10,
-        },
-    };
-
-    return (
-        <>
-            <svg
-                style={{
-                    position: 'absolute',
-                    width: 0,
-                    height: 0,
-                    top: -500000,
-                    left: -500000,
-                }}>
-                <defs>
-                    <linearGradient
-                        id={`${id}-gradient`}
-                        x1='0%'
-                        y1='0%'
-                        x2='0%'
-                        y2='100%'>
-                        <stop offset='0%' stopColor={color} stopOpacity={1} />
-                        <stop
-                            offset='100%'
-                            stopColor={color}
-                            stopOpacity={0.25}
-                        />
-                    </linearGradient>
-                </defs>
-            </svg>
-            <VictoryChart>
-                <VictoryArea {...chartProps} />
-                <VictoryAxis
-                    label={xLabel}
-                    axisComponent={<div />}
-                    axisLabelComponent={<VictoryLabel {...axisLabelProps} />}
-                    tickLabelComponent={<VictoryLabel {...tickLabelProps} />}
-                />
-                <VictoryAxis
-                    label={yLabel}
-                    dependentAxis
-                    crossAxis
-                    tickFormat={tickFormat}
-                    axisComponent={<div />}
-                    axisLabelComponent={<VictoryLabel {...axisLabelProps} />}
-                    tickCount={tickCount}
-                    tickLabelComponent={
-                        <VictoryLabel {...tickLabelProps} dy={0} />
-                    }
-                />
-                {dots && (
-                    <VictoryPortal>
-                        <VictoryScatter {...dotProps} />
-                    </VictoryPortal>
-                )}
-            </VictoryChart>
-        </>
-    );
+    return render();
 };
 
 AreaChart.propTypes = {
@@ -133,20 +178,30 @@ AreaChart.propTypes = {
     color: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     data: PropTypes.array,
     dots: PropTypes.bool,
-    interpolation: PropTypes.string,
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    interpolation: PropTypes.oneOf(Object.values(ENUMS.INTERPOLATION)),
     opacity: PropTypes.number,
     tickCount: PropTypes.number,
     tickFormat: PropTypes.func,
+    xAxis: PropTypes.bool,
+    xGrid: PropTypes.bool,
     xLabel: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    yAxis: PropTypes.bool,
+    yGrid: PropTypes.bool,
     yLabel: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
 };
 
 AreaChart.defaultProps = {
     color: Colors['color-blue'],
-    interpolation: 'natural',
-    opacity: 0.3,
+    id: uuid(),
+    interpolation: ENUMS.INTERPOLATION.CARDINAL,
+    opacity: 0.25,
     tickFormat: t => Math.ceil(t),
     tickCount: 3,
+    xAxis: true,
+    xGrid: true,
+    yAxis: true,
+    yGrid: true,
 };
 
 export default AreaChart;
