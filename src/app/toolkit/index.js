@@ -670,5 +670,33 @@ module.exports = {
                 },
             },
         },
+        charts: {
+            label: 'Charts',
+            route: '/toolkit/charts',
+            elements: {
+                'area-chart-molecule': {
+                    type: 'molecule',
+                    label: 'Area Chart',
+                    route: '/toolkit/charts/area-chart-molecule',
+                    dna: '/toolkit/charts/AreaChartMolecule',
+                    component: require('appdir/toolkit/charts/AreaChartMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/AreaChartMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'pie-molecule': {
+                    type: 'molecule',
+                    label: 'Pie Chart',
+                    route: '/toolkit/charts/pie-molecule',
+                    dna: '/toolkit/charts/PieMolecule',
+                    component: require('appdir/toolkit/charts/PieMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/PieMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+            },
+        },
     },
 };
