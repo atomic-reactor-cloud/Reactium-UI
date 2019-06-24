@@ -19,13 +19,7 @@ class AreaChartMolecule extends Component {
     }
 
     render() {
-        return (
-            <AreaChart
-                {...this.props}
-                xLabel={moment().format('YYYY')}
-                yLabel='Crunches'
-            />
-        );
+        return <AreaChart {...this.props} />;
     }
 }
 
@@ -63,6 +57,9 @@ AreaChartMolecule.defaultProps = {
                 .format('M/DD'),
         },
     ],
+    donts: true,
+    xLabel: moment().format('YYYY'),
+    yLabel: 'Crunches',
 };
 
 export default AreaChartMolecule;
