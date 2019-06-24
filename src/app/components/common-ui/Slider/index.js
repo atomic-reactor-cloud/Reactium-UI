@@ -158,7 +158,6 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const _dragEnd = () => {
-        _move();
         setState({ dragging: null });
         const doc = iDocument || document;
         doc.removeEventListener('mousemove', _drag);
@@ -189,12 +188,14 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         } = stateRef.current;
         const v = range === true ? value : { min: value };
 
-        Object.entries(v).forEach(([key, value]) => {
-            const handle = handles[key].current;
-            const pos = _positionFromValue({ handle, value });
-            handle.style.left = pos.left;
-            handle.style.top = pos.top;
-        });
+        if (!dragging) {
+            Object.entries(v).forEach(([key, value]) => {
+                const handle = handles[key].current;
+                const pos = _positionFromValue({ handle, value });
+                handle.style.left = pos.left;
+                handle.style.top = pos.top;
+            });
+        }
 
         if (range === true) {
             if (direction === ENUMS.DIRECTION.HORIZONTAL) {
