@@ -9,12 +9,11 @@ A UI Component Library built with Reactium.
 ## Quick Start
 
 ```
-$ npm install
-$ npm run local
+$ npm install --save @atomic-reactor/reactium-ui
 ```
 
 ## Usage
-```
+```js
 import React from 'react';
 import { PieChart } from '@atomic-reactor/reactium-ui';
 
