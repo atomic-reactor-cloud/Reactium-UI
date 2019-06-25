@@ -35,25 +35,25 @@ BarChartMolecule.defaultProps = {
         {
             y: 20,
             x: moment()
-                .subtract(1, 'days')
+                .subtract(4, 'days')
                 .format('M/DD'),
         },
         {
             y: 50,
-            x: moment()
-                .subtract(2, 'days')
-                .format('M/DD'),
-        },
-        {
-            y: 80,
             x: moment()
                 .subtract(3, 'days')
                 .format('M/DD'),
         },
         {
+            y: 80,
+            x: moment()
+                .subtract(2, 'days')
+                .format('M/DD'),
+        },
+        {
             y: 50,
             x: moment()
-                .subtract(4, 'days')
+                .subtract(1, 'days')
                 .format('M/DD'),
         },
         {
