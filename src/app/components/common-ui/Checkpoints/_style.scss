@@ -1,0 +1,152 @@
+$ar-checkpoint-lbl-margin: 15px !default;
+$ar-checkpoint-trans: .25s ease-in-out !default;
+$ar-checkpoint-width: 300px !default;
+
+.ar-checkpoints {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.ar-checkpoint {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    user-select: none;
+    width: $ar-checkpoint-width;
+    z-index: 1;
+
+    &:hover {
+        cursor: pointer;
+    }
+
+    input {
+        display: none;
+    }
+
+    span.label {
+        width: 66%;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    span.sr-only {
+        display: none;
+    }
+
+    span.icon {
+        position: relative;
+        width: 37px;
+        height: 37px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 100%;
+        color: $color-white;
+        background-color: $color-white;
+        border: 3px solid $color-grey;
+        font-size: 22px;
+        z-index: 100;
+        overflow: hidden;
+
+        transition: background-color $ar-checkpoint-trans, border-color $ar-checkpoint-trans;
+
+        > * {
+            opacity: 0;
+            transition: opacity $ar-checkpoint-trans;
+        }
+
+        svg {
+            fill: $color-white;
+            flex-shrink: 0;
+        }
+    }
+
+    input:disabled + span.icon {
+        background-color: $color-grey-light;
+        border-color: $color-grey-light;
+
+        > * {
+            opacity: 0;
+        }
+    }
+
+    input:checked + span.icon {
+        color: $color-white;
+        background-color: $color-grey;
+        border-color: $color-grey;
+
+        > * {
+            opacity: 1;
+        }
+    }
+
+    &-label-bottom {
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+
+        span.label {
+            margin-top: $ar-checkpoint-lbl-margin;
+        }
+    }
+
+    &-label-top {
+        justify-content: flex-start;
+
+        span.label {
+            margin-bottom: $ar-checkpoint-lbl-margin;
+        }
+    }
+
+    &:before,
+    &:after {
+        position: absolute;
+        bottom: 15px;
+        right: 50%;
+        transform: translateY(-50%);
+        content: '';
+        width: calc(100% - 19px);
+        height: 3px;
+        background-color: $color-grey;
+        z-index: 0;
+    }
+
+    &:after {
+        right: auto;
+        left: 50%;
+    }
+
+    &:first-child {
+        &:before {
+            display: none;
+        }
+    }
+
+    &:last-child {
+        &:after {
+            display: none;
+        }
+    }
+
+    &.disabled {
+        cursor: default;
+
+        &:before,
+        &:after {
+            background-color: $color-grey-light;
+        }
+        z-index: 10;
+    }
+
+    &-label-bottom {
+        &:before,
+        &:after {
+            bottom: auto;
+            top: 15px;
+            transform: translateY(50%);
+        }
+    }
+}

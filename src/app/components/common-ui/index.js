@@ -4,6 +4,7 @@ import Button from './Button';
 import Carousel, { Slide } from './Carousel';
 import Charts from './Charts';
 import Checkbox from './Checkbox';
+import Checkpoints from './Checkpoints';
 import Collapsible from './Collapsible';
 import Colors from './colors';
 import DataTable from './DataTable';
@@ -36,6 +37,7 @@ export {
     Carousel,
     Charts,
     Checkbox,
+    Checkpoints,
     Collapsible,
     Colors,
     DataTable,

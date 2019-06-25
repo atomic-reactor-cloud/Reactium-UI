@@ -532,6 +532,17 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
+                'checkpoints-molecule': {
+                    type: 'molecule',
+                    label: 'Checkpoints',
+                    route: '/toolkit/components/checkpoints-molecule',
+                    dna: '/toolkit/components/CheckpointsMolecule',
+                    component: require('appdir/toolkit/components/CheckpointsMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CheckpointsMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'data-table-molecule': {
                     type: 'molecule',
                     label: 'Data Table',
