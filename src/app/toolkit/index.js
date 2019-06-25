@@ -8,8 +8,8 @@ module.exports = {
     overview: require('appdir/toolkit/overview').default,
     themes: [
         {
-            name: 'Default',
-            css: '/assets/style/style.css',
+            name: 'Reactium UI',
+            css: '/assets/style/reactium-ui.css',
             selected: true,
         },
     ],
