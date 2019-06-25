@@ -630,6 +630,17 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
+                'spinner-molecule': {
+                    type: 'molecule',
+                    label: 'Spinner',
+                    route: '/toolkit/components/spinner-molecule',
+                    dna: '/toolkit/components/SpinnerMolecule',
+                    component: require('appdir/toolkit/components/SpinnerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
                 'tab-molecule': {
                     type: 'molecule',
                     label: 'Tabs',
@@ -638,17 +649,6 @@ module.exports = {
                     component: require('appdir/toolkit/components/TabMolecule')
                         .default,
                     readme: require('appdir/toolkit/components/TabMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'spinner-molecule': {
-                    type: 'molecule',
-                    label: 'Spinner',
-                    route: '/toolkit/components/spinner-molecule',
-                    dna: '/toolkit/components/Spinner',
-                    component: require('appdir/toolkit/components/SpinnerMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
                         .default,
                     hideCode: true,
                 },
@@ -686,17 +686,6 @@ module.exports = {
             label: 'Picker',
             route: '/toolkit/picker',
             elements: {
-                'time-picker-molecule': {
-                    type: 'molecule',
-                    label: 'TimePicker',
-                    route: '/toolkit/picker/time-picker-molecule',
-                    dna: '/toolkit/picker/TimePickerMolecule',
-                    component: require('appdir/toolkit/picker/TimePickerMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/picker/TimePickerMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
                 'date-picker-molecule': {
                     type: 'molecule',
                     label: 'DatePicker',
@@ -705,6 +694,17 @@ module.exports = {
                     component: require('appdir/toolkit/picker/DatePickerMolecule')
                         .default,
                     readme: require('appdir/toolkit/picker/DatePickerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'time-picker-molecule': {
+                    type: 'molecule',
+                    label: 'TimePicker',
+                    route: '/toolkit/picker/time-picker-molecule',
+                    dna: '/toolkit/picker/TimePickerMolecule',
+                    component: require('appdir/toolkit/picker/TimePickerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/picker/TimePickerMolecule/readme')
                         .default,
                     hideCode: true,
                 },
