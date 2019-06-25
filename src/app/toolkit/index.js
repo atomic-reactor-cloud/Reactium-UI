@@ -336,25 +336,35 @@ module.exports = {
             label: 'Form Elements',
             route: '/toolkit/form',
             elements: {
-                'tags-input-molecule': {
-                    type: 'molecule',
-                    label: 'TagsInput',
-                    route: '/toolkit/form/tags-input-molecule',
-                    dna: '/toolkit/form/TagsInputMolecule',
-                    component: require('appdir/toolkit/form/TagsInputMolecule')
+                'checkbox-atom': {
+                    type: 'atom',
+                    label: 'Checkbox',
+                    route: '/toolkit/form/checkbox-atom',
+                    dna: '/toolkit/form/CheckboxAtom',
+                    component: require('appdir/toolkit/form/CheckboxAtom')
                         .default,
-                    readme: require('appdir/toolkit/form/TagsInputMolecule/readme')
+                    readme: require('appdir/toolkit/form/CheckboxAtom/readme')
                         .default,
                     hideCode: true,
                 },
-                'input-group-molecule': {
-                    type: 'molecule',
-                    label: 'Input Group',
-                    route: '/toolkit/form/input-group-molecule',
-                    dna: '/toolkit/form/InputGroupMolecule',
-                    component: require('appdir/toolkit/form/InputGroupMolecule')
+                'radio-atom': {
+                    type: 'atom',
+                    label: 'Radio',
+                    route: '/toolkit/form/radio-atom',
+                    dna: '/toolkit/form/RadioAtom',
+                    component: require('appdir/toolkit/form/RadioAtom').default,
+                    readme: require('appdir/toolkit/form/RadioAtom/readme')
                         .default,
-                    readme: require('appdir/toolkit/form/InputGroupMolecule/readme')
+                    hideCode: true,
+                },
+                'toggle-molecule': {
+                    type: 'molecule',
+                    label: 'Toggle',
+                    route: '/toolkit/form/toggle-molecule',
+                    dna: '/toolkit/form/ToggleMolecule',
+                    component: require('appdir/toolkit/form/ToggleMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/form/ToggleMolecule/readme')
                         .default,
                     hideCode: true,
                 },
@@ -385,227 +395,29 @@ module.exports = {
                     readme: require('appdir/toolkit/form/Select/readme')
                         .default,
                 },
-                'radio-atom': {
-                    type: 'atom',
-                    label: 'Radio',
-                    route: '/toolkit/form/radio-atom',
-                    dna: '/toolkit/form/RadioAtom',
-                    component: require('appdir/toolkit/form/RadioAtom').default,
-                    readme: require('appdir/toolkit/form/RadioAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'checkbox-atom': {
-                    type: 'atom',
-                    label: 'Checkbox',
-                    route: '/toolkit/form/checkbox-atom',
-                    dna: '/toolkit/form/CheckboxAtom',
-                    component: require('appdir/toolkit/form/CheckboxAtom')
-                        .default,
-                    readme: require('appdir/toolkit/form/CheckboxAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'toggle-molecule': {
+                'tags-input-molecule': {
                     type: 'molecule',
-                    label: 'Toggle',
-                    route: '/toolkit/form/toggle-molecule',
-                    dna: '/toolkit/form/ToggleMolecule',
-                    component: require('appdir/toolkit/form/ToggleMolecule')
+                    label: 'TagsInput',
+                    route: '/toolkit/form/tags-input-molecule',
+                    dna: '/toolkit/form/TagsInputMolecule',
+                    component: require('appdir/toolkit/form/TagsInputMolecule')
                         .default,
-                    readme: require('appdir/toolkit/form/ToggleMolecule/readme')
+                    readme: require('appdir/toolkit/form/TagsInputMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'input-group-molecule': {
+                    type: 'molecule',
+                    label: 'Input Group',
+                    route: '/toolkit/form/input-group-molecule',
+                    dna: '/toolkit/form/InputGroupMolecule',
+                    component: require('appdir/toolkit/form/InputGroupMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/form/InputGroupMolecule/readme')
                         .default,
                     hideCode: true,
                 },
             },
-        },
-        components: {
-            label: 'Components',
-            route: '/toolkit/components',
-            hideEmpty: false,
-            elements: {
-                'carousel-molecule': {
-                    type: 'molecule',
-                    label: 'Carousel',
-                    route: '/toolkit/components/carousel-molecule',
-                    dna: '/toolkit/components/CarouselMolecule',
-                    component: require('appdir/toolkit/components/CarouselMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/CarouselMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'pagination-molecule': {
-                    type: 'molecule',
-                    label: 'Pagination',
-                    route: '/toolkit/components/pagination-molecule',
-                    dna: '/toolkit/components/PaginationMolecule',
-                    component: require('appdir/toolkit/components/PaginationMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/PaginationMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'spinner-molecule': {
-                    type: 'molecule',
-                    label: 'Spinner',
-                    route: '/toolkit/components/spinner-molecule',
-                    dna: '/toolkit/components/Spinner',
-                    component: require('appdir/toolkit/components/SpinnerMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'slider-molecule': {
-                    type: 'molecule',
-                    label: 'Slider',
-                    route: '/toolkit/components/slider-molecule',
-                    dna: '/toolkit/components/SliderMolecule',
-                    component: require('appdir/toolkit/components/SliderMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/SliderMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'image-molecule': {
-                    type: 'molecule',
-                    label: 'Image',
-                    route: '/toolkit/components/image-molecule',
-                    dna: '/toolkit/components/ImageMolecule',
-                    component: require('appdir/toolkit/components/ImageMolecule')
-                        .default,
-                    hideCode: true,
-                    hideDocs: true,
-                },
-                'toast-molecule': {
-                    type: 'molecule',
-                    label: 'Toast',
-                    route: '/toolkit/components/toast-molecule',
-                    dna: '/toolkit/components/ToastMolecule',
-                    component: require('appdir/toolkit/components/ToastMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/ToastMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'tooltip-molecule': {
-                    type: 'molecule',
-                    label: 'Tooltip',
-                    route: '/toolkit/components/tooltip-molecule',
-                    dna: '/toolkit/components/TooltipMolecule',
-                    component: require('appdir/toolkit/components/TooltipMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/TooltipMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'modal-molecule': {
-                    type: 'molecule',
-                    label: 'Modal',
-                    route: '/toolkit/components/modal-molecule',
-                    dna: '/toolkit/components/ModalMolecule',
-                    component: require('appdir/toolkit/components/ModalMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/ModalMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'alert-molecule': {
-                    type: 'molecule',
-                    label: 'Alert',
-                    route: '/toolkit/components/alert-molecule',
-                    dna: '/toolkit/components/AlertMolecule',
-                    component: require('appdir/toolkit/components/AlertMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/AlertMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'progress-molecule': {
-                    type: 'molecule',
-                    label: 'Progress',
-                    route: '/toolkit/components/progress-molecule',
-                    dna: '/toolkit/components/ProgressMolecule',
-                    component: require('appdir/toolkit/components/ProgressMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/ProgressMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'dialog-molecule': {
-                    type: 'molecule',
-                    label: 'Dialog',
-                    route: '/toolkit/components/dialog-molecule',
-                    dna: '/toolkit/components/DialogMolecule',
-                    component: require('appdir/toolkit/components/DialogMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/DialogMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'data-table-molecule': {
-                    type: 'molecule',
-                    label: 'Data Table',
-                    route: '/toolkit/components/data-table-molecule',
-                    dna: '/toolkit/components/DataTableMolecule',
-                    component: require('appdir/toolkit/components/DataTableMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/DataTableMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'dropdown-molecule': {
-                    type: 'molecule',
-                    label: 'Dropdown',
-                    route: '/toolkit/components/dropdown-molecule',
-                    dna: '/toolkit/components/DropdownMolecule',
-                    component: require('appdir/toolkit/components/DropdownMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/DropdownMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'tab-molecule': {
-                    type: 'molecule',
-                    label: 'Tabs',
-                    route: '/toolkit/components/tab-molecule',
-                    dna: '/toolkit/components/TabMolecule',
-                    component: require('appdir/toolkit/components/TabMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/TabMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'collapsible-molecule': {
-                    type: 'molecule',
-                    label: 'Collapsible',
-                    route: '/toolkit/components/collapsible-molecule',
-                    dna: '/toolkit/components/CollapsibleMolecule',
-                    component: require('appdir/toolkit/components/CollapsibleMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'button-atom': {
-                    type: 'atom',
-                    label: 'Button',
-                    route: '/toolkit/components/button-atom',
-                    dna: '/toolkit/components/ButtonAtom',
-                    component: require('appdir/toolkit/components/ButtonAtom')
-                        .default,
-                    readme: require('appdir/toolkit/components/ButtonAtom/readme')
-                        .default,
-                    hideCode: true,
-                },
-            },
-        },
-        pages: {
-            label: 'Pages',
-            route: '#',
-            hideEmpty: true,
-            elements: {},
         },
         icons: {
             label: 'Icons',
@@ -631,6 +443,233 @@ module.exports = {
                         .default,
                 },
             },
+        },
+        charts: {
+            label: 'Charts',
+            route: '/toolkit/charts',
+            elements: {
+                'pie-molecule': {
+                    type: 'molecule',
+                    label: 'Pie Chart',
+                    route: '/toolkit/charts/pie-molecule',
+                    dna: '/toolkit/charts/PieMolecule',
+                    component: require('appdir/toolkit/charts/PieMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/PieMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'area-chart-molecule': {
+                    type: 'molecule',
+                    label: 'Area Chart',
+                    route: '/toolkit/charts/area-chart-molecule',
+                    dna: '/toolkit/charts/AreaChartMolecule',
+                    component: require('appdir/toolkit/charts/AreaChartMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/AreaChartMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'bar-chart-molecule': {
+                    type: 'molecule',
+                    label: 'Bar Chart',
+                    route: '/toolkit/charts/bar-chart-molecule',
+                    dna: '/toolkit/charts/BarChartMolecule',
+                    component: require('appdir/toolkit/charts/BarChartMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/BarChartMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+            },
+        },
+        components: {
+            label: 'Components',
+            route: '/toolkit/components',
+            hideEmpty: false,
+            elements: {
+                'alert-molecule': {
+                    type: 'molecule',
+                    label: 'Alert',
+                    route: '/toolkit/components/alert-molecule',
+                    dna: '/toolkit/components/AlertMolecule',
+                    component: require('appdir/toolkit/components/AlertMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/AlertMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'button-atom': {
+                    type: 'atom',
+                    label: 'Button',
+                    route: '/toolkit/components/button-atom',
+                    dna: '/toolkit/components/ButtonAtom',
+                    component: require('appdir/toolkit/components/ButtonAtom')
+                        .default,
+                    readme: require('appdir/toolkit/components/ButtonAtom/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'carousel-molecule': {
+                    type: 'molecule',
+                    label: 'Carousel',
+                    route: '/toolkit/components/carousel-molecule',
+                    dna: '/toolkit/components/CarouselMolecule',
+                    component: require('appdir/toolkit/components/CarouselMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CarouselMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'collapsible-molecule': {
+                    type: 'molecule',
+                    label: 'Collapsible',
+                    route: '/toolkit/components/collapsible-molecule',
+                    dna: '/toolkit/components/CollapsibleMolecule',
+                    component: require('appdir/toolkit/components/CollapsibleMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'data-table-molecule': {
+                    type: 'molecule',
+                    label: 'Data Table',
+                    route: '/toolkit/components/data-table-molecule',
+                    dna: '/toolkit/components/DataTableMolecule',
+                    component: require('appdir/toolkit/components/DataTableMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/DataTableMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'dialog-molecule': {
+                    type: 'molecule',
+                    label: 'Dialog',
+                    route: '/toolkit/components/dialog-molecule',
+                    dna: '/toolkit/components/DialogMolecule',
+                    component: require('appdir/toolkit/components/DialogMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/DialogMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'dropdown-molecule': {
+                    type: 'molecule',
+                    label: 'Dropdown',
+                    route: '/toolkit/components/dropdown-molecule',
+                    dna: '/toolkit/components/DropdownMolecule',
+                    component: require('appdir/toolkit/components/DropdownMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/DropdownMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'image-molecule': {
+                    type: 'molecule',
+                    label: 'Image',
+                    route: '/toolkit/components/image-molecule',
+                    dna: '/toolkit/components/ImageMolecule',
+                    component: require('appdir/toolkit/components/ImageMolecule')
+                        .default,
+                    hideCode: true,
+                    hideDocs: true,
+                },
+                'modal-molecule': {
+                    type: 'molecule',
+                    label: 'Modal',
+                    route: '/toolkit/components/modal-molecule',
+                    dna: '/toolkit/components/ModalMolecule',
+                    component: require('appdir/toolkit/components/ModalMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ModalMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'pagination-molecule': {
+                    type: 'molecule',
+                    label: 'Pagination',
+                    route: '/toolkit/components/pagination-molecule',
+                    dna: '/toolkit/components/PaginationMolecule',
+                    component: require('appdir/toolkit/components/PaginationMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/PaginationMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'progress-molecule': {
+                    type: 'molecule',
+                    label: 'Progress',
+                    route: '/toolkit/components/progress-molecule',
+                    dna: '/toolkit/components/ProgressMolecule',
+                    component: require('appdir/toolkit/components/ProgressMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ProgressMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'slider-molecule': {
+                    type: 'molecule',
+                    label: 'Slider',
+                    route: '/toolkit/components/slider-molecule',
+                    dna: '/toolkit/components/SliderMolecule',
+                    component: require('appdir/toolkit/components/SliderMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SliderMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'tab-molecule': {
+                    type: 'molecule',
+                    label: 'Tabs',
+                    route: '/toolkit/components/tab-molecule',
+                    dna: '/toolkit/components/TabMolecule',
+                    component: require('appdir/toolkit/components/TabMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/TabMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'spinner-molecule': {
+                    type: 'molecule',
+                    label: 'Spinner',
+                    route: '/toolkit/components/spinner-molecule',
+                    dna: '/toolkit/components/Spinner',
+                    component: require('appdir/toolkit/components/SpinnerMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'toast-molecule': {
+                    type: 'molecule',
+                    label: 'Toast',
+                    route: '/toolkit/components/toast-molecule',
+                    dna: '/toolkit/components/ToastMolecule',
+                    component: require('appdir/toolkit/components/ToastMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/ToastMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'tooltip-molecule': {
+                    type: 'molecule',
+                    label: 'Tooltip',
+                    route: '/toolkit/components/tooltip-molecule',
+                    dna: '/toolkit/components/TooltipMolecule',
+                    component: require('appdir/toolkit/components/TooltipMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/TooltipMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+            },
+        },
+        pages: {
+            label: 'Pages',
+            route: '#',
+            hideEmpty: true,
+            elements: {},
         },
         picker: {
             label: 'Picker',
@@ -665,45 +704,6 @@ module.exports = {
                     dna: '/toolkit/picker/Picker',
                     component: require('appdir/toolkit/picker/Picker').default,
                     readme: require('appdir/toolkit/picker/Picker/readme')
-                        .default,
-                    hideCode: true,
-                },
-            },
-        },
-        charts: {
-            label: 'Charts',
-            route: '/toolkit/charts',
-            elements: {
-                'area-chart-molecule': {
-                    type: 'molecule',
-                    label: 'Area Chart',
-                    route: '/toolkit/charts/area-chart-molecule',
-                    dna: '/toolkit/charts/AreaChartMolecule',
-                    component: require('appdir/toolkit/charts/AreaChartMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/charts/AreaChartMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'pie-molecule': {
-                    type: 'molecule',
-                    label: 'Pie Chart',
-                    route: '/toolkit/charts/pie-molecule',
-                    dna: '/toolkit/charts/PieMolecule',
-                    component: require('appdir/toolkit/charts/PieMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/charts/PieMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
-                'bar-chart-molecule': {
-                    type: 'molecule',
-                    label: 'Bar Chart',
-                    route: '/toolkit/charts/bar-chart-molecule',
-                    dna: '/toolkit/charts/BarChartMolecule',
-                    component: require('appdir/toolkit/charts/BarChartMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/charts/BarChartMolecule/readme')
                         .default,
                     hideCode: true,
                 },
