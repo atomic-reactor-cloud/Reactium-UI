@@ -43,8 +43,9 @@ AreaChart.propTypes = {
 
 AreaChart.defaultProps = {
     ...Chart.defaultProps,
-    opacity: 0.25,
+    dots: true,
     id: uuid(),
+    opacity: 0.25,
 };
 
 export default AreaChart;

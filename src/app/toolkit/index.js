@@ -696,6 +696,17 @@ module.exports = {
                         .default,
                     hideCode: true,
                 },
+                'bar-chart-molecule': {
+                    type: 'molecule',
+                    label: 'Bar Chart',
+                    route: '/toolkit/charts/bar-chart-molecule',
+                    dna: '/toolkit/charts/BarChartMolecule',
+                    component: require('appdir/toolkit/charts/BarChartMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/charts/BarChartMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
             },
         },
     },
