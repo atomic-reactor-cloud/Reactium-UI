@@ -83,8 +83,6 @@ const Chart = ({
             delete style.ticks;
         }
 
-        console.log(style);
-
         return (
             <VictoryAxis
                 crossAxis
