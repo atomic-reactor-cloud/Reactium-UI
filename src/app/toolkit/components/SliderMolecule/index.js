@@ -34,7 +34,7 @@ class SliderMolecule extends Component {
         return (
             <div className='p-xs-24' style={{ height: 320 }}>
                 <div className='row'>
-                    <div className='col-xs-12 col-sm-6 mb-xs-40 flex-center'>
+                    <div className='col-xs-6 mb-xs-40 flex-center'>
                         <Slider
                             max={20}
                             min={0}
@@ -46,7 +46,7 @@ class SliderMolecule extends Component {
                             direction={Slider.ENUMS.DIRECTION.VERTICAL}
                         />
                     </div>
-                    <div className='col-xs-12 col-sm-6 mb-xs-40 flex-center'>
+                    <div className='col-xs-6 mb-xs-40 flex-center'>
                         <Slider
                             max={20}
                             min={0}
