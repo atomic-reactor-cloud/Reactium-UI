@@ -14,14 +14,14 @@ const contextMode = () => {
  * @type {Object}
  */
 module.exports = {
-    version: '3.0.7',
+    version: '3.0.9',
     semver: '^3.0.0',
     update: {
         package: {
             devDependencies: {
                 add: {
                     'gulp-run': '^1.7.1',
-                    'atomic-reactor-cli': '^2.0.21',
+                    'atomic-reactor-cli': '^2.1.4',
                     'babel-core': '^7.0.0-bridge.0',
                     'babel-jest': '^24.8.0',
                     '@babel/core': '^7.4.5',
@@ -31,7 +31,7 @@ module.exports = {
                     '@babel/plugin-proposal-export-default-from': '^7.2.0',
                     '@babel/plugin-syntax-dynamic-import': '^7.2.0',
                     'babel-loader': '^8.0.6',
-                    'browser-sync': '^2.26.5',
+                    'browser-sync': '^2.26.7',
                     camelcase: '^5.0.0',
                     'compression-webpack-plugin': '^2.0.0',
                     'cli-spinners': '^1.3.1',
@@ -140,6 +140,7 @@ module.exports = {
                     'redux-local-persist': '0.1.0',
                     'redux-super-thunk': '^0.0.7',
                     'run-script-os': '^1.0.5',
+                    'shallow-equals': '^1.0.0',
                     xss: '^1.0.3',
                 },
                 remove: [

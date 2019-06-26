@@ -197,7 +197,7 @@ export default class Content extends Component {
                     key={`card-${id}`}
                     onButtonClick={this.onCardButtonClick}
                     ref={elm => {
-                        this.registerCard({ elm, id });
+                        //this.registerCard({ elm, id });
                     }}>
                     <Preview
                         component={component}
@@ -209,6 +209,9 @@ export default class Content extends Component {
                     />
                     {noCode !== true ? (
                         <Code
+                            ref={elm => {
+                                this.registerCode({ elm, id });
+                            }}
                             onButtonClick={onButtonClick}
                             component={component}
                             update={update}
@@ -219,6 +222,9 @@ export default class Content extends Component {
                     ) : null}
                     {readme && hideDocs !== true ? (
                         <Docs
+                            ref={elm => {
+                                this.registerDocs({ elm, id });
+                            }}
                             title={'Documentation'}
                             component={readme}
                             update={update}
