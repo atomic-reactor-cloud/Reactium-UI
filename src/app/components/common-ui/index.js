@@ -21,6 +21,7 @@ import Picker from './Picker';
 import Prefs from './Prefs';
 import Progress from './Progress';
 import Radio from './Radio';
+import Scene from './Scene';
 import Slider from './Slider';
 import Spinner from './Spinner';
 import Tabs from './Tabs';
@@ -54,6 +55,7 @@ export {
     Prefs,
     Progress,
     Radio,
+    Scene,
     Slide,
     Slider,
     Spinner,
