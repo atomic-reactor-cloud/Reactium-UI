@@ -115,12 +115,12 @@ let Scene = ({ children, ...props }, ref) => {
         animation = ENUMS.OPPOSITE[animation];
         panel = active;
 
-        historyRef.current.push({
-            ...params,
-            panel,
-            animation,
-            direction,
-        });
+        historyRef.current.push({ ...params, panel, animation, direction });
+        setHistory(historyRef.current);
+    };
+
+    const clear = () => {
+        historyRef.current = [];
         setHistory(historyRef.current);
     };
 
@@ -138,28 +138,21 @@ let Scene = ({ children, ...props }, ref) => {
         setHistory(historyRef.current);
     };
 
-    const clear = () => {
-        historyRef.current = [];
-        setHistory(historyRef.current);
-    };
-
-    const navTo = (params, noHistory, clearHistory) => {
+    const navTo = (params = {}, noHistory, clearHistory) => {
         if (typeof params === 'string' || typeof params === 'number') {
             params = {
                 panel: params,
-                animation: stateRef.current.animation || ENUMS.ANIMATION.SLIDE,
-                direction: stateRef.current.direction || ENUMS.DIRECTION.LEFT,
-                duration: stateRef.current.duration || ENUMS.DURATION,
             };
         }
 
-        const {
-            animation = stateRef.current.animation || ENUMS.ANIMATION.SLIDE,
-            direction = stateRef.current.direction || ENUMS.DIRECTION.LEFT,
-            duration = stateRef.current.duration || ENUMS.DURATION,
-            panel,
-        } = params;
+        params = {
+            animation: stateRef.current.animation || ENUMS.ANIMATION.SLIDE,
+            direction: stateRef.current.direction || ENUMS.DIRECTION.LEFT,
+            duration: stateRef.current.duration || ENUMS.DURATION,
+            ...params,
+        };
 
+        const { animation, direction, duration, panel } = params;
         const { active, animating, onBeforeChange, tween } = stateRef.current;
 
         if (!noHistory && !clearHistory) {
@@ -179,6 +172,11 @@ let Scene = ({ children, ...props }, ref) => {
             active,
             staged: panel,
         });
+
+        // hide all panels
+        Object.values(panelRef.current).forEach(panel =>
+            TweenMax.set(panel, { display: 'none' }),
+        );
 
         if (duration === 0 || !active) {
             setState({ active: panel });

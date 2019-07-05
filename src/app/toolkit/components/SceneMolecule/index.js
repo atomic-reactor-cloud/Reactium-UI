@@ -21,7 +21,7 @@ class SceneMolecule extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            animation: Scene.ENUMS.ANIMATION.SLIDE,
+            animation: Scene.ENUMS.ANIMATION.COVER,
             direction: Scene.ENUMS.DIRECTION.LEFT,
             duration: 0.25,
         };
@@ -168,7 +168,6 @@ class SceneMolecule extends Component {
                                 {
                                     panel: 'dashboard',
                                     direction: 'right',
-                                    duration,
                                 },
                                 null,
                                 true,
@@ -186,7 +185,6 @@ class SceneMolecule extends Component {
                             this.scene.navTo({
                                 panel: 'profile',
                                 direction,
-                                duration,
                             });
                         }}>
                         <Icon.Feather.User />
@@ -201,7 +199,6 @@ class SceneMolecule extends Component {
                             this.scene.navTo({
                                 panel: 'menu',
                                 direction,
-                                duration,
                             });
                         }}>
                         <Icon.Feather.MoreHorizontal />
