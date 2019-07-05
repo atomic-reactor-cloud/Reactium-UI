@@ -488,17 +488,6 @@ module.exports = {
             route: '/toolkit/components',
             hideEmpty: false,
             elements: {
-                'scene-molecule': {
-                    type: 'molecule',
-                    label: 'Scene',
-                    route: '/toolkit/components/scene-molecule',
-                    dna: '/toolkit/components/SceneMolecule',
-                    component: require('appdir/toolkit/components/SceneMolecule')
-                        .default,
-                    readme: require('appdir/toolkit/components/SceneMolecule/readme')
-                        .default,
-                    hideCode: true,
-                },
                 'alert-molecule': {
                     type: 'molecule',
                     label: 'Alert',
@@ -627,6 +616,17 @@ module.exports = {
                     component: require('appdir/toolkit/components/ProgressMolecule')
                         .default,
                     readme: require('appdir/toolkit/components/ProgressMolecule/readme')
+                        .default,
+                    hideCode: true,
+                },
+                'scene-molecule': {
+                    type: 'molecule',
+                    label: 'Scene',
+                    route: '/toolkit/components/scene-molecule',
+                    dna: '/toolkit/components/SceneMolecule',
+                    component: require('appdir/toolkit/components/SceneMolecule')
+                        .default,
+                    readme: require('appdir/toolkit/components/SceneMolecule/readme')
                         .default,
                     hideCode: true,
                 },
