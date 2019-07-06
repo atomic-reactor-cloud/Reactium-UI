@@ -3,6 +3,7 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
+import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import Toggle from 'components/common-ui/Toggle';
 import { Feather } from 'components/common-ui/Icon';
@@ -91,10 +92,11 @@ Checkbox = forwardRef(Checkbox);
 
 Checkbox.ENUMS = ENUMS;
 
-Checkbox.propTypes = { ...Toggle.propTypes };
+Checkbox.propTypes = { ...Toggle.propTypes, readOnly: PropTypes.bool };
 
 Checkbox.defaultProps = {
     ...Toggle.defaultProps,
+    readOnly: false,
     type: ENUMS.TYPE.CHECKBOX,
 };
 

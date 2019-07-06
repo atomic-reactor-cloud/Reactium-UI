@@ -509,6 +509,7 @@ module.exports = {
                     readme: require('appdir/toolkit/components/ButtonAtom/readme')
                         .default,
                     hideCode: true,
+                    hideDocs: true,
                 },
                 'carousel-molecule': {
                     type: 'molecule',

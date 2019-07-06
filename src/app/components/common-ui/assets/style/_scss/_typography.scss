@@ -109,6 +109,13 @@ ul, ol {
     font-weight: 500;
 }
 
+kbd,
+.kbd {
+    color: $color-blue;
+    margin: 0 0 0;
+    padding: 2px;
+    font-family: monospace;
+}
 
 
 @include heading-factory();

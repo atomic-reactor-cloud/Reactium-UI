@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'components/common-ui';
 import Markdown from 'reactium-core/components/Toolkit/Markdown';
 
 /**
@@ -8,18 +9,16 @@ import Markdown from 'reactium-core/components/Toolkit/Markdown';
  */
 
 const content = `
-# Your Documentation Here
-
-Be sure to use [markdown ](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet) to format the text.
-
-I suppose you could also use HTML but come on.. do you _REALLY_ need to?
+### ENUMS
+${'```'}
+${JSON.stringify(Button.ENUMS, null, 4)}
+${'```'}
 `;
-
 
 /**
  * -----------------------------------------------------------------------------
  * DO NOT EDIT BELOW HERE
  * -----------------------------------------------------------------------------
  */
-const readme = (props) => <Markdown {...props}>{content}</Markdown>;
+const readme = props => <Markdown {...props}>{content}</Markdown>;
 export default readme;

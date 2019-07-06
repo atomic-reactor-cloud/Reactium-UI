@@ -29,3 +29,10 @@
     position: absolute;
     width: 1px;
 }
+
+hr, .hr {
+    margin: 24px 0;
+    display: block;
+    border: none;
+    border-bottom: 1px solid $color-grey-light;
+}

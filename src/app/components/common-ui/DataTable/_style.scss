@@ -9,7 +9,7 @@ $ar-table-color-background-search: $color-white-dark !default;
 $ar-table-color-background-drop: $color-white-dark !default;
 $ar-table-color-border: $color-grey-light !default;
 $ar-table-color-checkbox: $color-white !default;
-$ar-table-color-text: $color-gray !default;
+$ar-table-color-text: $color-black !default;
 $ar-table-color-text-heading: $color-gray !default;
 $ar-table-color-drag-handle: $color-gray !default;
 $ar-table-font: Helvetica, Arial, sans-serif !default;
@@ -82,7 +82,7 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
             width: 0;
             padding: 6px 0;
             opacity: 0;
-            transition: width .25s ease-in-out, opacity .25s ease-in-out;
+            transition: width 0.25s ease-in-out, opacity 0.25s ease-in-out;
 
             &:focus,
             &.focus {
@@ -103,7 +103,7 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
             border-radius: 2px;
             background-color: $ar-table-color-background-search;
             opacity: 0;
-            transition: opacity .25s ease-in-out;
+            transition: opacity 0.25s ease-in-out;
         }
 
         input:focus + span.bg,
@@ -319,17 +319,63 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
                 padding: 8px 16px;
                 border-bottom: 1px solid $ar-table-color-border;
                 border-top: 1px solid $ar-table-color-border;
+                line-height: 1.5;
             }
 
             td {
                 border-top: 1px solid $ar-table-color-border;
                 border-bottom: 1px solid $ar-table-color-border;
                 background-color: transparent;
-                color: $ar-table-color-text-heading;
+                color: $ar-table-color-text;
                 padding: 8px 16px;
-                font-weight: 600;
-                font-family: $ar-table-font-heading;
-                font-size: 12px;
+                font-weight: 400;
+                font-family: $ar-table-font;
+                font-size: 14px;
+                line-height: 1.5;
+                word-wrap: break-word;
+                white-space: normal;
+            }
+
+            &.top {
+                th,
+                td {
+                    vertical-align: top;
+                }
+            }
+
+            &.middle {
+                th,
+                td {
+                    vertical-align: middle;
+                }
+            }
+
+            &.bottom {
+                th,
+                td {
+                    vertical-align: bottom;
+                }
+            }
+
+            &.left {
+                th,
+                td {
+                    text-align: left;
+                }
+            }
+
+            &.center {
+                th,
+                td {
+                    text-align: center;
+                }
+            }
+
+            &.right {
+                th,
+                td {
+                    text-align: right;
+                }
             }
 
             th,
