@@ -437,9 +437,9 @@ module.exports = {
                     dna: '/toolkit/charts/PieMolecule',
                     component: require('appdir/toolkit/charts/PieMolecule')
                         .default,
-                    readme: require('appdir/toolkit/charts/PieMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'area-chart-molecule': {
                     type: 'molecule',
@@ -448,9 +448,9 @@ module.exports = {
                     dna: '/toolkit/charts/AreaChartMolecule',
                     component: require('appdir/toolkit/charts/AreaChartMolecule')
                         .default,
-                    readme: require('appdir/toolkit/charts/AreaChartMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'bar-chart-molecule': {
                     type: 'molecule',
@@ -459,9 +459,9 @@ module.exports = {
                     dna: '/toolkit/charts/BarChartMolecule',
                     component: require('appdir/toolkit/charts/BarChartMolecule')
                         .default,
-                    readme: require('appdir/toolkit/charts/BarChartMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
             },
         },
@@ -477,9 +477,9 @@ module.exports = {
                     dna: '/toolkit/components/AlertMolecule',
                     component: require('appdir/toolkit/components/AlertMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/AlertMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'button-atom': {
                     type: 'atom',
@@ -490,6 +490,7 @@ module.exports = {
                         .default,
                     hideCode: true,
                     hideDocs: true,
+                    hideDna: true,
                 },
                 'carousel-molecule': {
                     type: 'molecule',
@@ -498,9 +499,9 @@ module.exports = {
                     dna: '/toolkit/components/CarouselMolecule',
                     component: require('appdir/toolkit/components/CarouselMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/CarouselMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'collapsible-molecule': {
                     type: 'molecule',
@@ -509,9 +510,9 @@ module.exports = {
                     dna: '/toolkit/components/CollapsibleMolecule',
                     component: require('appdir/toolkit/components/CollapsibleMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/CollapsibleMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'checkpoints-molecule': {
                     type: 'molecule',
@@ -520,9 +521,9 @@ module.exports = {
                     dna: '/toolkit/components/CheckpointsMolecule',
                     component: require('appdir/toolkit/components/CheckpointsMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/CheckpointsMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'data-table-molecule': {
                     type: 'molecule',
@@ -531,9 +532,9 @@ module.exports = {
                     dna: '/toolkit/components/DataTableMolecule',
                     component: require('appdir/toolkit/components/DataTableMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/DataTableMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'dialog-molecule': {
                     type: 'molecule',
@@ -542,9 +543,9 @@ module.exports = {
                     dna: '/toolkit/components/DialogMolecule',
                     component: require('appdir/toolkit/components/DialogMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/DialogMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'dropdown-molecule': {
                     type: 'molecule',
@@ -553,9 +554,9 @@ module.exports = {
                     dna: '/toolkit/components/DropdownMolecule',
                     component: require('appdir/toolkit/components/DropdownMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/DropdownMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'image-molecule': {
                     type: 'molecule',
@@ -566,6 +567,7 @@ module.exports = {
                         .default,
                     hideCode: true,
                     hideDocs: true,
+                    hideDna: true,
                 },
                 'modal-molecule': {
                     type: 'molecule',
@@ -574,9 +576,9 @@ module.exports = {
                     dna: '/toolkit/components/ModalMolecule',
                     component: require('appdir/toolkit/components/ModalMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/ModalMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'pagination-molecule': {
                     type: 'molecule',
@@ -585,9 +587,9 @@ module.exports = {
                     dna: '/toolkit/components/PaginationMolecule',
                     component: require('appdir/toolkit/components/PaginationMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/PaginationMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'progress-molecule': {
                     type: 'molecule',
@@ -596,9 +598,9 @@ module.exports = {
                     dna: '/toolkit/components/ProgressMolecule',
                     component: require('appdir/toolkit/components/ProgressMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/ProgressMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'scene-molecule': {
                     type: 'molecule',
@@ -607,9 +609,9 @@ module.exports = {
                     dna: '/toolkit/components/SceneMolecule',
                     component: require('appdir/toolkit/components/SceneMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/SceneMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'slider-molecule': {
                     type: 'molecule',
@@ -618,9 +620,9 @@ module.exports = {
                     dna: '/toolkit/components/SliderMolecule',
                     component: require('appdir/toolkit/components/SliderMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/SliderMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'spinner-molecule': {
                     type: 'molecule',
@@ -629,9 +631,9 @@ module.exports = {
                     dna: '/toolkit/components/SpinnerMolecule',
                     component: require('appdir/toolkit/components/SpinnerMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/SpinnerMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'tab-molecule': {
                     type: 'molecule',
@@ -640,9 +642,9 @@ module.exports = {
                     dna: '/toolkit/components/TabMolecule',
                     component: require('appdir/toolkit/components/TabMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/TabMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'toast-molecule': {
                     type: 'molecule',
@@ -651,9 +653,9 @@ module.exports = {
                     dna: '/toolkit/components/ToastMolecule',
                     component: require('appdir/toolkit/components/ToastMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/ToastMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'tooltip-molecule': {
                     type: 'molecule',
@@ -662,17 +664,11 @@ module.exports = {
                     dna: '/toolkit/components/TooltipMolecule',
                     component: require('appdir/toolkit/components/TooltipMolecule')
                         .default,
-                    readme: require('appdir/toolkit/components/TooltipMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
             },
-        },
-        pages: {
-            label: 'Pages',
-            route: '#',
-            hideEmpty: true,
-            elements: {},
         },
         picker: {
             label: 'Picker',
@@ -685,9 +681,9 @@ module.exports = {
                     dna: '/toolkit/picker/DatePickerMolecule',
                     component: require('appdir/toolkit/picker/DatePickerMolecule')
                         .default,
-                    readme: require('appdir/toolkit/picker/DatePickerMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 'time-picker-molecule': {
                     type: 'molecule',
@@ -696,9 +692,9 @@ module.exports = {
                     dna: '/toolkit/picker/TimePickerMolecule',
                     component: require('appdir/toolkit/picker/TimePickerMolecule')
                         .default,
-                    readme: require('appdir/toolkit/picker/TimePickerMolecule/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
                 picker: {
                     type: 'molecule',
@@ -706,9 +702,9 @@ module.exports = {
                     route: '/toolkit/picker/picker',
                     dna: '/toolkit/picker/Picker',
                     component: require('appdir/toolkit/picker/Picker').default,
-                    readme: require('appdir/toolkit/picker/Picker/readme')
-                        .default,
                     hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
                 },
             },
         },

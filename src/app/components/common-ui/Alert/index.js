@@ -1,4 +1,5 @@
 import uuid from 'uuid/v4';
+import _ from 'underscore';
 import cn from 'classnames';
 import PropTypes from 'prop-types';
 import Button from 'components/common-ui/Button';
@@ -16,8 +17,10 @@ import React, {
 
 const ENUMS = {
     ...Dismissable.ENUMS,
-    COLOR: Button.ENUMS.COLOR,
+    COLOR: { ...Button.ENUMS.COLOR },
 };
+
+delete ENUMS.COLOR.CLEAR;
 
 /**
  * -----------------------------------------------------------------------------
@@ -171,7 +174,7 @@ Alert.propTypes = {
 Alert.defaultProps = {
     ...Dismissable.defaultProps,
     color: ENUMS.COLOR.PRIMARY,
-    dismissable: true,
+    dismissable: false,
     icon: <Feather.Info />,
     id: uuid(),
     namespace: 'ar-alert',

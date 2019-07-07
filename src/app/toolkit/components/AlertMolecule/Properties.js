@@ -57,7 +57,10 @@ const Properties = () => (
             <div className='kbd'>{Colors.join(', ')}.</div>
         </Row>
 
-        <Row property='dismissable' type='Boolean' value='true'>
+        <Row
+            property='dismissable'
+            type='Boolean'
+            value={String(Alert.defaultProps.dismissable)}>
             Allow the user to manually close the Alert.
         </Row>
 

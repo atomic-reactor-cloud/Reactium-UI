@@ -8,7 +8,7 @@ import parserHtml from 'prettier/parser-html';
 const prettierOptions = {
     parser: 'babel',
     singleQuote: true,
-    tabWidth: 4,
+    tabWidth: 2,
     printWidth: 80,
     jsxSingleQuote: true,
     jsxBracketSameLine: true,
