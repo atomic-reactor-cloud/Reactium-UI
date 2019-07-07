@@ -8,3 +8,31 @@
 @import '../../app/toolkit/global/Grid/grid';
 @import '../../app/toolkit/global/Colors/style';
 @import './code';
+
+.p-25 {
+    padding: 25px;
+}
+
+.pt-25 {
+    padding-top: 25px !important;
+}
+
+.pb-25 {
+    padding-bottom: 25px !important;
+}
+
+.pl-25 {
+    padding-left: 25px !important;
+}
+
+.pr-25 {
+    padding-right: 25px !important;
+}
+
+
+hr, .hr {
+    margin: 24px 0;
+    display: block;
+    border: none;
+    border-bottom: 1px solid $color-grey-light;
+}

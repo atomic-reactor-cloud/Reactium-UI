@@ -1,9 +1,9 @@
 module.exports = {
     header: {
         name: 'Reactium',
-        title: 'Style Guide',
+        title: 'Reactium UI',
         logo: '/assets/images/atomic-reactor-logo.svg',
-        version: '2.1.2',
+        version: '0.0.7',
     },
     overview: require('appdir/toolkit/overview').default,
     themes: [
@@ -38,24 +38,6 @@ module.exports = {
                 icon: 'Organism',
                 name: 'filter-organism',
                 label: 'Organisms',
-            },
-            {
-                icon: 'Catalyst',
-                name: 'filter-catalyst',
-                label: 'Catalyst',
-            },
-            {
-                icon: 'Page',
-                name: 'filter-page',
-                label: 'Pages',
-            },
-            {
-                icon: 'Template',
-                name: 'filter-template',
-                label: 'Templates',
-            },
-            {
-                name: 'spacer',
             },
             {
                 icon: 'Settings',
@@ -485,7 +467,7 @@ module.exports = {
         },
         components: {
             label: 'Components',
-            route: '/toolkit/components',
+            route: '/toolkit/components/alert-molecule',
             hideEmpty: false,
             elements: {
                 'alert-molecule': {
@@ -505,8 +487,6 @@ module.exports = {
                     route: '/toolkit/components/button-atom',
                     dna: '/toolkit/components/ButtonAtom',
                     component: require('appdir/toolkit/components/ButtonAtom')
-                        .default,
-                    readme: require('appdir/toolkit/components/ButtonAtom/readme')
                         .default,
                     hideCode: true,
                     hideDocs: true,

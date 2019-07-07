@@ -5,7 +5,8 @@
  */
 
 import Properties from './Properties';
-import Usage from './Usage';
+import Methods from './Methods';
+import Code from 'toolkit/Code';
 import React, { Component } from 'react';
 import { Button, Checkbox, DataTable } from 'components/common-ui';
 
@@ -154,28 +155,41 @@ export default class ButtonAtom extends Component {
                 </div>
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Properties</h3>
+                <div className='hr mx--32' />
                 <div className='ar-data-table'>
                     <Properties />
+                </div>
+                <blockquote>
+                    <small>HTML</small>
+                    <kbd>{' <button /> '}</kbd>
+                    <small>attributes are also valid properties.</small>
+                </blockquote>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Methods</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Methods />
                 </div>
 
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Import</h3>
                 <div style={{ margin: '0 -25px' }}>
-                    <Usage>
+                    <Code>
                         {
                             "import { Button } from '@atomic-reactor/reactium-ui';"
                         }
-                    </Usage>
+                    </Code>
                 </div>
-                <h3 className='my-xs-20'>Usage</h3>
+                <h3 className='my-xs-20'>Code</h3>
                 <div style={{ margin: '0 -25px' }}>
                     <div className='row flex-middle bg-black'>
                         <div className='col-xs-12 col-sm-9'>
-                            <Usage>
+                            <Code>
                                 {
                                     '<Button color={Button.ENUMS.COLOR.PRIMARY} size={Button.ENUMS.SIZE.SM}>Button</Button>'
                                 }
-                            </Usage>
+                            </Code>
                         </div>
                         <div className='col-xs-12 col-sm-3 flex-center py-20'>
                             <Button
@@ -187,10 +201,10 @@ export default class ButtonAtom extends Component {
                     </div>
                 </div>
                 <h3 className='my-xs-20'>ENUMS</h3>
-                <div style={{ margin: '0 -25px' }}>
-                    <Usage language='json'>
+                <div style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code language='json'>
                         {JSON.stringify(Button.ENUMS, null, 4)}
-                    </Usage>
+                    </Code>
                 </div>
             </div>
         );

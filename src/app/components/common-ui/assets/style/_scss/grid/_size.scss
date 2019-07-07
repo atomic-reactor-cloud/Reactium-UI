@@ -15,7 +15,7 @@ $sizes: (
     "py": (padding-top, padding-bottom),
 ) !default;
 
-$sizing: (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 32, 40, 48, 56, 64, 72, 80) !default;
+$sizing: (0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 25, 32, 40, 48, 56, 64, 72, 80) !default;
 
 @mixin size-factory($thisPrefix: null) {
     @each $prop-name, $props in $sizes {

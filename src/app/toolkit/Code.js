@@ -18,7 +18,7 @@ const prettierOptions = {
 
 const syntax = str => prettier.format(str, prettierOptions);
 
-const Usage = ({
+const Code = ({
     children,
     language = 'html',
     lineNumbers = false,
@@ -33,4 +33,4 @@ const Usage = ({
     </SyntaxHighlighter>
 );
 
-export default Usage;
+export default Code;

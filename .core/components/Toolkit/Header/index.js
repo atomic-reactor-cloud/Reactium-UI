@@ -66,7 +66,7 @@ const Header = ({
 
 Header.defaultProps = {
     logo: null,
-    minThemes: 0,
+    minThemes: 1,
     onThemeChange: null,
     themes: [],
     title: null,
