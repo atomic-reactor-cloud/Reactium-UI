@@ -10,6 +10,7 @@ import Code from 'toolkit/Code';
 import Properties from './Properties';
 import React, { Component } from 'react';
 import { Button } from 'components/common-ui';
+import { Feather } from 'components/common-ui/Icon';
 
 /**
  * -----------------------------------------------------------------------------
@@ -183,6 +184,26 @@ export default class ButtonAtom extends Component {
                                 color={Button.ENUMS.COLOR.PRIMARY}
                                 size={Button.ENUMS.SIZE.SM}>
                                 Button
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+
+                <div style={{ margin: '0 -25px' }}>
+                    <div className='row flex-middle bg-black'>
+                        <div className='col-xs-12 col-sm-9'>
+                            <Code>
+                                {
+                                    '<Button appearance={Button.ENUMS.APPEARANCE.CIRCLE} color={Button.ENUMS.COLOR.SUCCESS} size={Button.ENUMS.SIZE.SM} style={{width: 50, height: 50}}><Feather.User /></Button>'
+                                }
+                            </Code>
+                        </div>
+                        <div className='col-xs-12 col-sm-3 flex-center py-20'>
+                            <Button
+                                color={Button.ENUMS.COLOR.SUCCESS}
+                                appearance={Button.ENUMS.APPEARANCE.CIRCLE}
+                                style={{ width: 50, height: 50 }}>
+                                <Feather.Plus />
                             </Button>
                         </div>
                     </div>
