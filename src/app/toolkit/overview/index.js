@@ -4,13 +4,6 @@ import Card from 'reactium-core/components/Toolkit/Content/Card';
 import Docs from 'reactium-core/components/Toolkit/Content/Docs';
 import Markdown from 'reactium-core/components/Toolkit/Markdown';
 
-/**
- * -----------------------------------------------------------------------------
- * Overview
- * Write up something about the style guide or remove all of this and make
- * this a component that shows off something flashy!
- * -----------------------------------------------------------------------------
- */
 const content = {};
 
 content.install = `
@@ -152,7 +145,7 @@ const overview = ({ getState }) => {
                     <small>
                         Reactium UI relies on default values for most of it's
                         sass. You can overwrite the defaults by declaring them
-                        before including reactium.scss.
+                        before including reactium-ui.scss.
                     </small>
                 </Wrap>
             </Card>

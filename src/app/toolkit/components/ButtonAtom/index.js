@@ -4,11 +4,12 @@
  * -----------------------------------------------------------------------------
  */
 
-import Properties from './Properties';
+import Sass from './Sass';
 import Methods from './Methods';
 import Code from 'toolkit/Code';
+import Properties from './Properties';
 import React, { Component } from 'react';
-import { Button, Checkbox, DataTable } from 'components/common-ui';
+import { Button } from 'components/common-ui';
 
 /**
  * -----------------------------------------------------------------------------
@@ -153,6 +154,7 @@ export default class ButtonAtom extends Component {
                 <div className='flex middle center'>
                     <Button {...buttonProps}>Button</Button>
                 </div>
+
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Properties</h3>
                 <div className='hr mx--32' />
@@ -201,10 +203,15 @@ export default class ButtonAtom extends Component {
                     </div>
                 </div>
                 <h3 className='my-xs-20'>ENUMS</h3>
-                <div style={{ margin: '0 -25px -25px -25px' }}>
+                <div style={{ margin: '0 -25px' }}>
                     <Code language='json'>
                         {JSON.stringify(Button.ENUMS, null, 4)}
                     </Code>
+                </div>
+
+                <h3 className='my-xs-20'>SCSS</h3>
+                <div style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code language='scss'>{Sass()}</Code>
                 </div>
             </div>
         );

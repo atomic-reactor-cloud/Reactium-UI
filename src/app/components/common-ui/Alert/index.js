@@ -28,7 +28,6 @@ let Alert = ({ children, id, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
-        prevState: {},
         timer: null,
         ...props,
     });
@@ -38,8 +37,7 @@ let Alert = ({ children, id, ...props }, ref) => {
 
     // Internal Interface
     const setState = newState => {
-        const prevState = { ...stateRef.current };
-        stateRef.current = { ...stateRef.current, ...newState, prevState };
+        stateRef.current = { ...stateRef.current, ...newState };
         setNewState(stateRef.current);
     };
 
@@ -66,6 +64,8 @@ let Alert = ({ children, id, ...props }, ref) => {
         if (!autoDismiss || !dismissable) {
             return;
         }
+
+        autoDismiss *= 1000;
 
         timer = setTimeout(() => {
             containerRef.current.hide();
@@ -172,10 +172,10 @@ Alert.defaultProps = {
     ...Dismissable.defaultProps,
     color: ENUMS.COLOR.PRIMARY,
     dismissable: true,
+    icon: <Feather.Info />,
     id: uuid(),
     namespace: 'ar-alert',
     visible: true,
-    icon: <Feather.Info />,
 };
 
 export { Alert as default };
