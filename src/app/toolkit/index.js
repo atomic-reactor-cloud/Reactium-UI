@@ -3,7 +3,7 @@ module.exports = {
         name: 'Reactium',
         title: 'Reactium UI',
         logo: '/assets/images/atomic-reactor-logo.svg',
-        version: '0.0.7',
+        version: '0.0.8',
     },
     overview: require('appdir/toolkit/overview').default,
     themes: [
@@ -403,17 +403,29 @@ module.exports = {
         },
         icons: {
             label: 'Icons',
-            route: '/toolkit/icons',
+            route: '/toolkit/icons/icon-overview',
             hideEmpty: true,
             elements: {
+                'icon-overview': {
+                    type: 'atom',
+                    label: 'Overview',
+                    route: '/toolkit/icons/icon-overview',
+                    dna: '/toolkit/icons/IconOverview',
+                    component: require('appdir/toolkit/icons/IconOverview')
+                        .default,
+                    hideCode: true,
+                    hideDna: true,
+                    hideDocs: true,
+                },
                 'feather-icons': {
                     type: 'atom',
                     label: 'Feather Icons',
                     route: '/toolkit/icons/feather-icons',
                     dna: '/toolkit/icons/Feather',
                     component: require('appdir/toolkit/icons/Feather').default,
-                    readme: require('appdir/toolkit/icons/Feather/readme')
-                        .default,
+                    hideCode: true,
+                    hideDna: true,
+                    hideDocs: true,
                 },
                 'linear-icons': {
                     type: 'atom',
@@ -421,8 +433,9 @@ module.exports = {
                     route: '/toolkit/icons/linear-icons',
                     dna: '/toolkit/icons/Linear',
                     component: require('appdir/toolkit/icons/Linear').default,
-                    readme: require('appdir/toolkit/icons/Linear/readme')
-                        .default,
+                    hideCode: true,
+                    hideDna: true,
+                    hideDocs: true,
                 },
             },
         },
