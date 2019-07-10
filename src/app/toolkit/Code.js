@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import op from 'object-path';
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { vs, vs2015 } from 'react-syntax-highlighter/dist/styles/hljs';
 import prettier from 'prettier/standalone';
 import parserbabel from 'prettier/parser-babylon';
 import parserHtml from 'prettier/parser-html';
+import { useStore } from 'reactium-core/easy-connect';
 
 const prettierOptions = {
     parser: 'babel',
@@ -18,19 +20,70 @@ const prettierOptions = {
 
 const syntax = str => prettier.format(str, prettierOptions);
 
-const Code = ({
-    children,
-    language = 'html',
-    lineNumbers = false,
-    style = {},
-}) => (
-    <SyntaxHighlighter
-        showLineNumbers={lineNumbers}
-        style={vs2015}
-        customStyle={{ padding: '20px 30px' }}
-        language={language}>
-        {language === 'html' ? syntax(children) : children}
-    </SyntaxHighlighter>
-);
+const Code = props => {
+    const { getState, subscribe } = useStore();
+
+    const stateRef = useRef({
+        theme: 'light',
+        ...props,
+    });
+
+    const [state, setNewState] = useState(stateRef.current);
+
+    const setState = (newState = {}) => {
+        const prevState = { ...stateRef.current };
+
+        stateRef.current = {
+            ...prevState,
+            ...newState,
+        };
+
+        setNewState(stateRef.current);
+    };
+
+    useEffect(() => {
+        const unsub = subscribe(() => {
+            const theme = op.get(
+                getState(),
+                'Toolkit.prefs.codeColor.all',
+                'light',
+            );
+            if (stateRef.current.theme !== theme) {
+                setState({ theme });
+            }
+        });
+
+        return () => unsub();
+    }, [stateRef.current.theme]);
+
+    const render = () => {
+        const {
+            children,
+            theme,
+            language = 'html',
+            lineNumbers = false,
+            style = {},
+        } = stateRef.current;
+
+        const codeColor = theme === 'dark' ? vs2015 : vs;
+
+        return (
+            <SyntaxHighlighter
+                showLineNumbers={lineNumbers}
+                style={codeColor}
+                customStyle={{
+                    padding: '20px 30px',
+                    borderTop: '1px solid #F7F7F7',
+                    borderBottom: '1px solid #F7F7F7',
+                    ...style,
+                }}
+                language={language}>
+                {language === 'html' ? syntax(children) : children}
+            </SyntaxHighlighter>
+        );
+    };
+
+    return render();
+};
 
 export default Code;
