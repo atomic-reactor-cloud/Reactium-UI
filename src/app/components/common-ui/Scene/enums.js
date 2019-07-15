@@ -6,6 +6,7 @@ const ENUMS = {
         SLIDE: 'slide',
         REVEAL: 'reveal',
     },
+    DEBUG: false,
     DIRECTION: {
         UP: 'up',
         DOWN: 'down',

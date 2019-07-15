@@ -9,7 +9,6 @@ import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
     useRef,
     useState,
 } from 'react';
@@ -40,7 +39,7 @@ let Scene = ({ children, ...props }, ref) => {
     const [history, setHistory] = useState(historyRef.current);
 
     // Internal Interface
-    const setState = newState => {
+    const setState = (newState, caller) => {
         // Get the previous state
         const prvState = { ...stateRef.current };
 
@@ -52,6 +51,13 @@ let Scene = ({ children, ...props }, ref) => {
             ...prvState,
             ...newState,
         };
+
+        if (ENUMS.DEBUG === true && caller) {
+            console.log(caller, {
+                prev: prevStateRef.current,
+                curr: stateRef.current,
+            });
+        }
 
         // Trigger useEffect()
         setPrevState(prevStateRef.current);
@@ -77,7 +83,7 @@ let Scene = ({ children, ...props }, ref) => {
             panels[String(id)] = child;
         });
 
-        setState({ panels });
+        setState({ panels }, 'addChildren()');
     };
 
     const removeChildren = childs => {
@@ -95,7 +101,7 @@ let Scene = ({ children, ...props }, ref) => {
             op.del(panels, String(id));
         });
 
-        setState({ panels });
+        setState({ panels }, 'removeChildren()');
     };
 
     const ns = suffix => {
@@ -126,6 +132,7 @@ let Scene = ({ children, ...props }, ref) => {
 
     const back = () => {
         const hist = Array.from(historyRef.current);
+
         if (hist.length < 1) {
             return;
         }
@@ -152,7 +159,7 @@ let Scene = ({ children, ...props }, ref) => {
             ...params,
         };
 
-        const { animation, direction, duration, panel } = params;
+        const { animation, duration, panel } = params;
         const { active, animating, onBeforeChange, tween } = stateRef.current;
 
         if (!noHistory && !clearHistory) {
@@ -179,7 +186,7 @@ let Scene = ({ children, ...props }, ref) => {
         );
 
         if (duration === 0 || !active) {
-            setState({ active: panel });
+            setState({ active: panel }, 'navTo()');
             return Promise.resolve(stateRef.current);
         }
 
@@ -212,7 +219,10 @@ let Scene = ({ children, ...props }, ref) => {
         stateRef.current.tween = anime;
 
         return anime.then(() => {
-            setState({ active: panel, animating: false, tween: null });
+            setState(
+                { active: panel, animating: false, tween: null },
+                'navTo()',
+            );
             return stateRef.current;
         });
     };
@@ -489,7 +499,9 @@ let Scene = ({ children, ...props }, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
-        active: stateRef.current.active,
+        active: () => {
+            return stateRef.current.active;
+        },
         addChildren,
         back,
         history: {
@@ -504,7 +516,9 @@ let Scene = ({ children, ...props }, ref) => {
     }));
 
     // Side Effects
-    useEffect(() => setState(props), Object.values(props));
+    useEffect(() => {
+        setState(props, 'useEffect(props)');
+    }, _.without(Object.values(props), props.onChange, props.onBeforeChange));
 
     useEffect(() => {
         const { active, init, panels = {} } = stateRef.current;
@@ -532,7 +546,7 @@ let Scene = ({ children, ...props }, ref) => {
         if (init === true && String(active) !== String(previous)) {
             onChange({ evt: ENUMS.EVENT.CHANGE, active, previous });
         }
-    }, [state.active]);
+    }, [stateRef.current.active]);
 
     const renderPanels = () => {
         const { active, panels } = stateRef.current;
@@ -556,11 +570,9 @@ let Scene = ({ children, ...props }, ref) => {
 
     const render = () => {
         let {
-            active,
             className,
             height,
             namespace,
-            panels = {},
             style = {},
             width,
         } = stateRef.current;
