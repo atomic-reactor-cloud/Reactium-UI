@@ -137,14 +137,12 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         width: 100%;
         display: flex;
         align-items: stretch;
-        flex-wrap: wrap;
-        border-top: 1px solid $ar-table-color-border;
+        flex-wrap: nowrap;
     }
 
     &-row {
         flex-wrap: nowrap;
-        border-bottom: 1px solid $ar-table-color-border;
-        margin-bottom: -1px;
+        //margin-bottom: -1px;
     }
 
     &-rows {
@@ -166,7 +164,7 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
     }
 
     &-headings {
-        border-top: 1px solid $ar-table-color-border;
+
         background-color: $ar-table-color-background-heading;
     }
 
@@ -178,6 +176,7 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         flex-grow: 1;
         background-color: transparent;
         align-items: flex-start;
+        border-top: 1px solid $ar-table-color-border;
 
         &.right {
             justify-content: flex-end;
@@ -220,6 +219,7 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
         align-items: center;
         border: none;
         border-bottom: 1px solid $ar-table-color-border;
+        border-top: 1px solid $ar-table-color-border;
         margin-bottom: -1px;
 
         svg {

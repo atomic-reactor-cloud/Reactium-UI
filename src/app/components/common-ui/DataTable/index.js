@@ -4,6 +4,7 @@ import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import Row from './Row';
 import Rows from './Rows';
@@ -42,9 +43,12 @@ const applyReorderProp = reorderable =>
  */
 let DataTable = (props, ref) => {
     // Refs
+    let contentRef;
     const containerRef = useRef();
+    const scrollBarRef = useRef();
     const stateRef = useRef({
         data: props.data || [],
+        height: 0,
         page: props.page || 0,
         prevState: { page: 0 },
         reorderable: props.reorderable,
@@ -295,8 +299,18 @@ let DataTable = (props, ref) => {
         });
     }, [state]);
 
+    const setContentRef = elm => {
+        const { height, scrollable } = stateRef.current;
+        if (elm && !scrollable) {
+            if (height !== elm.offsetHeight) {
+                setState({ height: elm.offsetHeight });
+            }
+        }
+    };
+
     const render = () => {
         const {
+            height,
             reorderable,
             rowsPerPage,
             sort,
@@ -315,24 +329,32 @@ let DataTable = (props, ref) => {
                     [namespace]: !!namespace,
                 })}>
                 <Header {...props} />
-                <Headings
-                    {...props}
-                    onClick={applySort}
-                    sortable={sortable}
-                    sortBy={sortBy}
-                    sort={sort}
-                />
-                {children}
-                <Rows
-                    {...props}
-                    onReorder={applyReorder}
-                    reorderable={reorderable}
-                    rowsPerPage={rowsPerPage}
-                    data={getData()}
-                    selection={getSelection()}
-                    state={stateRef.current}
-                    onToggle={onToggle}
-                />
+                <Scrollbars
+                    autoHeight
+                    autoHeightMin={height}
+                    ref={scrollBarRef}
+                    style={{ width: '100%' }}>
+                    <div ref={elm => setContentRef(elm)}>
+                        <Headings
+                            {...props}
+                            onClick={applySort}
+                            sortable={sortable}
+                            sortBy={sortBy}
+                            sort={sort}
+                        />
+                        {children}
+                        <Rows
+                            {...props}
+                            onReorder={applyReorder}
+                            reorderable={reorderable}
+                            rowsPerPage={rowsPerPage}
+                            data={getData()}
+                            selection={getSelection()}
+                            state={stateRef.current}
+                            onToggle={onToggle}
+                        />
+                    </div>
+                </Scrollbars>
                 <Footer {...props} />
             </div>
         );
@@ -353,6 +375,7 @@ DataTable.propTypes = {
     filter: PropTypes.oneOfType([PropTypes.func, PropTypes.string]),
     footer: PropTypes.node,
     header: PropTypes.node,
+    height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     multiselect: PropTypes.bool,
     namespace: PropTypes.string,
@@ -365,6 +388,7 @@ DataTable.propTypes = {
     page: PropTypes.number,
     reorderable: PropTypes.bool,
     rowsPerPage: PropTypes.number,
+    scrollable: PropTypes.bool,
     selectable: PropTypes.bool,
     sort: PropTypes.oneOf(_.uniq(Object.values(ENUMS.SORT))),
     sortable: PropTypes.bool,
@@ -387,6 +411,7 @@ DataTable.defaultProps = {
     page: 1,
     reorderable: false,
     rowsPerPage: -1,
+    scrollable: false,
     selectable: false,
     sort: ENUMS.SORT.ASC,
     sortable: false,
