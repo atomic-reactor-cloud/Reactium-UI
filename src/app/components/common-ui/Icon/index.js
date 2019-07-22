@@ -12,7 +12,7 @@ const icons = {
 };
 
 const ENUMS = {
-    COLOR: Button.ENUMS.COLOR,
+    COLOR: { ...Button.ENUMS.COLOR },
 };
 
 delete ENUMS.COLOR.CLEAR;

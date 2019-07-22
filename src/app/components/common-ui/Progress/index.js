@@ -23,7 +23,6 @@ let Progress = ({ children, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
-        prevState: { value: null },
         ...props,
     });
 
@@ -32,8 +31,7 @@ let Progress = ({ children, ...props }, ref) => {
 
     // Internal Interface
     const setState = newState => {
-        const prevState = { ...stateRef.current };
-        stateRef.current = { ...stateRef.current, ...newState, prevState };
+        stateRef.current = { ...stateRef.current, ...newState };
         setNewState(stateRef.current);
     };
 
@@ -66,7 +64,7 @@ let Progress = ({ children, ...props }, ref) => {
                 type: ENUMS.EVENT.CHANGE,
                 value,
                 percent,
-                target: ref.current,
+                target: containerRef.current,
             };
             _onChange(evt);
 
