@@ -14,6 +14,7 @@ import Slide from './Slide';
 class Carousel extends Component {
     static propTypes = {
         active: PropTypes.number,
+        animationSpeed: PropTypes.number,
         autoplay: PropTypes.bool,
         className: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
         duration: PropTypes.number,
@@ -30,7 +31,6 @@ class Carousel extends Component {
         onStop: PropTypes.func,
         pauseOnHover: PropTypes.bool,
         previous: PropTypes.number,
-        speed: PropTypes.number,
         startIndex: PropTypes.number,
         style: PropTypes.object,
         swipeable: PropTypes.bool,
@@ -38,6 +38,7 @@ class Carousel extends Component {
 
     static defaultProps = {
         active: 0,
+        animationSpeed: 0.5,
         autoplay: false,
         duration: 10,
         loop: false,
@@ -53,7 +54,6 @@ class Carousel extends Component {
         onNext: null,
         pauseOnHover: true,
         previous: null,
-        speed: 0.5,
         startIndex: 0,
         style: {},
         swipeable: true,
@@ -147,7 +147,7 @@ class Carousel extends Component {
             return;
         }
 
-        const { loop, speed } = this.props;
+        const { loop, animationSpeed } = this.props;
         const max = Object.keys(this.slides).length - 1;
         const { active = 0 } = this.state;
 
@@ -182,14 +182,14 @@ class Carousel extends Component {
         if (next === 0) {
             tl.fromTo(
                 currentSlide,
-                speed,
+                animationSpeed,
                 { xPercent: -100 },
                 { xPercent: -200, ease: Power2.easeInOut },
                 0,
             );
             tl.fromTo(
                 nextSlide,
-                speed,
+                animationSpeed,
                 { xPercent: 100 },
                 { xPercent: 0, ease: Power2.easeInOut },
                 0,
@@ -197,14 +197,14 @@ class Carousel extends Component {
         } else {
             tl.fromTo(
                 currentSlide,
-                speed,
+                animationSpeed,
                 { xPercent: 0 },
                 { xPercent: -100, ease: Power2.easeInOut },
                 0,
             );
             tl.fromTo(
                 nextSlide,
-                speed,
+                animationSpeed,
                 { xPercent: 0 },
                 { xPercent: -100, ease: Power2.easeInOut },
                 0,
@@ -254,7 +254,7 @@ class Carousel extends Component {
             return;
         }
 
-        const { loop, speed } = this.props;
+        const { loop, animationSpeed } = this.props;
         const max = Object.keys(this.slides).length - 1;
         const { active = 0 } = this.state;
 
@@ -290,14 +290,14 @@ class Carousel extends Component {
         if (next === max) {
             tl.fromTo(
                 currentSlide,
-                speed,
+                animationSpeed,
                 { xPercent: 0 },
                 { xPercent: 100, ease: Power2.easeInOut },
                 0,
             );
             tl.fromTo(
                 nextSlide,
-                speed,
+                animationSpeed,
                 { xPercent: -200 },
                 { xPercent: -100, ease: Power2.easeInOut },
                 0,
@@ -305,14 +305,14 @@ class Carousel extends Component {
         } else {
             tl.fromTo(
                 currentSlide,
-                speed,
+                animationSpeed,
                 { xPercent: -100 },
                 { xPercent: 0, ease: Power2.easeInOut },
                 0,
             );
             tl.fromTo(
                 nextSlide,
-                speed,
+                animationSpeed,
                 { xPercent: -100 },
                 { xPercent: 0, ease: Power2.easeInOut },
                 0,

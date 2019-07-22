@@ -45,7 +45,7 @@ const Properties = () => (
             Time in seconds before the Alert automatically closes.
         </Row>
 
-        <Row property='chidlren' type='Node' value='null'>
+        <Row property='children' type='Node' value='null'>
             <div>Anything that can be rendered:</div>
             <kbd>numbers,</kbd> <kbd>strings,</kbd> <kbd>elements,</kbd>
             {' or an '}

@@ -23,8 +23,11 @@ const syntax = str => prettier.format(str, prettierOptions);
 const Code = props => {
     const { getState, subscribe } = useStore();
 
+    const getTheme = () =>
+        op.get(getState(), 'Toolkit.prefs.codeColor.all', 'light');
+
     const stateRef = useRef({
-        theme: 'light',
+        theme: getTheme(),
         ...props,
     });
 
@@ -43,11 +46,8 @@ const Code = props => {
 
     useEffect(() => {
         const unsub = subscribe(() => {
-            const theme = op.get(
-                getState(),
-                'Toolkit.prefs.codeColor.all',
-                'light',
-            );
+            const theme = getTheme();
+
             if (stateRef.current.theme !== theme) {
                 setState({ theme });
             }
@@ -73,8 +73,8 @@ const Code = props => {
                 style={codeColor}
                 customStyle={{
                     padding: '20px 30px',
-                    borderTop: '1px solid #F7F7F7',
-                    borderBottom: '1px solid #F7F7F7',
+                    borderBottom:
+                        theme !== 'dark' ? '1px solid #F7F7F7' : 'none',
                     ...style,
                 }}
                 language={language}>

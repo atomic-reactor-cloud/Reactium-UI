@@ -161,7 +161,7 @@ export default class ButtonAtom extends Component {
                 <div className='hr mx--32' />
 
                 <h3 className='my-xs-20'>Import</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code>
                         {
                             "import { Button } from '@atomic-reactor/reactium-ui';"
@@ -170,7 +170,7 @@ export default class ButtonAtom extends Component {
                 </div>
 
                 <h3 className='my-xs-20'>Usage</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <div className='row flex-middle bg-black'>
                         <div className='col-xs-12 col-sm-9'>
                             <Code>
@@ -193,9 +193,13 @@ export default class ButtonAtom extends Component {
                     <div className='row flex-middle bg-black'>
                         <div className='col-xs-12 col-sm-9'>
                             <Code>
-                                {
-                                    '<Button appearance={Button.ENUMS.APPEARANCE.CIRCLE} color={Button.ENUMS.COLOR.SUCCESS} size={Button.ENUMS.SIZE.SM} style={{width: 50, height: 50}}><Feather.User /></Button>'
-                                }
+                                {`<Button
+                                        appearance={Button.ENUMS.APPEARANCE.CIRCLE}
+                                        color={Button.ENUMS.COLOR.SUCCESS}
+                                        size={Button.ENUMS.SIZE.SM}
+                                        style={{width: 50, height: 50}}>
+                                        <Feather.Plus />
+                                    </Button>`}
                             </Code>
                         </div>
                         <div className='col-xs-12 col-sm-3 flex-center py-20'>
@@ -210,7 +214,7 @@ export default class ButtonAtom extends Component {
                 </div>
 
                 <h3 className='my-xs-20'>Properties</h3>
-                <div className='hr mx--32' />
+                <div className='hr mx--32 ht' />
                 <div className='ar-data-table'>
                     <Properties />
                 </div>
@@ -231,14 +235,14 @@ export default class ButtonAtom extends Component {
                 <div className='hr mx--32' />
 
                 <h3 className='my-xs-20'>ENUMS</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code language='json'>
                         {JSON.stringify(Button.ENUMS, null, 2)}
                     </Code>
                 </div>
 
                 <h3 className='my-xs-20'>SCSS</h3>
-                <div style={{ margin: '0 -25px -25px -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
                     <Code language='scss'>{Sass()}</Code>
                 </div>
             </div>

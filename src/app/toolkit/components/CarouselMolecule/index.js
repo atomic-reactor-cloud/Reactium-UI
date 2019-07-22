@@ -3,6 +3,11 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
+
+import Events from './Events';
+import Methods from './Methods';
+import Code from 'toolkit/Code';
+import Properties from './Properties';
 import React, { Component } from 'react';
 import { Button, Carousel, Icon, Slide, Toggle } from 'components/common-ui';
 
@@ -55,6 +60,12 @@ class CarouselMolecule extends Component {
 
         return (
             <>
+                <p className='pb-xs-20'>
+                    The Carousel component linearly cycles through{' '}
+                    <kbd>{'<Slide />'}</kbd> components. The children of the{' '}
+                    <kbd>{'<Slide />'}</kbd> components can be any renderable
+                    node.
+                </p>
                 <div className='flex-xs-center'>
                     <div className='col-xs-12 col-sm-3 col-lg-2 mb-xs-24'>
                         <Toggle
@@ -77,13 +88,14 @@ class CarouselMolecule extends Component {
                         />
                     </div>
                 </div>
+
                 <div style={{ height: 200 }}>
                     <Carousel
+                        animationSpeed={speed}
                         autoplay={autoplay}
                         duration={duration}
                         loop={loop}
                         startIndex={startIndex}
-                        speed={speed}
                         swipeable={swipeable}
                         ref={elm => (this.carousel = elm)}>
                         <Slide>
@@ -152,6 +164,64 @@ class CarouselMolecule extends Component {
                             <Icon.Feather.ChevronRight />
                         </Button>
                     </div>
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Import</h3>
+                <div className='ht' style={{ margin: '0 -25px' }}>
+                    <Code>
+                        {
+                            "import { Carousel, Slide } from '@atomic-reactor/reactium-ui';"
+                        }
+                    </Code>
+                </div>
+
+                <h3 className='my-xs-20'>Usage</h3>
+                <div className='ht' style={{ margin: '0 -25px' }}>
+                    <Code>
+                        {`<Carousel
+                                animationSpeed={${speed}}
+                                autoplay={${autoplay}}
+                                duration={${duration}}
+                                loop={${loop}}
+                                startIndex={${startIndex}}
+                                swipeable={${swipeable}}>
+                                <Slide>
+                                    SLIDE - 0
+                                </Slide>
+                                <Slide>
+                                    SLIDE - 1
+                                </Slide>
+                                <Slide>
+                                    SLIDE - 2
+                                </Slide>
+                                <Slide>
+                                    SLIDE - 3
+                                </Slide>
+                            </Carousel>`}
+                    </Code>
+                </div>
+
+                <h3 className='my-xs-20'>Properties</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Properties />
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Methods</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Methods />
+                </div>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Events</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Events />
                 </div>
             </>
         );

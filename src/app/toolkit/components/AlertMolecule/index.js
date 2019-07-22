@@ -64,14 +64,14 @@ class AlertMolecule extends Component {
                 <div className='hr mx--32' />
 
                 <h3 className='my-xs-20'>Import</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code>
                         {"import { Alert } from '@atomic-reactor/reactium-ui';"}
                     </Code>
                 </div>
 
                 <h3 className='my-xs-20'>Usage</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code>
                         {`<Alert
                             dismissable
@@ -108,7 +108,7 @@ class AlertMolecule extends Component {
 
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Events</h3>
-                <div className='hr mx--32' />
+                <div className='ht hr mx--32' />
                 <div className='ar-data-table'>
                     <Events />
                 </div>
@@ -116,14 +116,14 @@ class AlertMolecule extends Component {
                 <div className='hr mx--32' />
 
                 <h3 className='my-xs-20'>ENUMS</h3>
-                <div style={{ margin: '0 -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code language='json'>
                         {JSON.stringify(Alert.ENUMS, null, 2)}
                     </Code>
                 </div>
 
                 <h3 className='my-xs-20'>SCSS</h3>
-                <div style={{ margin: '0 -25px -25px -25px' }}>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
                     <Code language='scss'>{Sass()}</Code>
                 </div>
             </div>
