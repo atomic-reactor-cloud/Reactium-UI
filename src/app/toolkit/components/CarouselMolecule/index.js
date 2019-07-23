@@ -180,26 +180,20 @@ class CarouselMolecule extends Component {
                 <h3 className='my-xs-20'>Usage</h3>
                 <div className='ht' style={{ margin: '0 -25px' }}>
                     <Code>
-                        {`<Carousel
-                                animationSpeed={${speed}}
-                                autoplay={${autoplay}}
-                                duration={${duration}}
-                                loop={${loop}}
-                                startIndex={${startIndex}}
-                                swipeable={${swipeable}}>
-                                <Slide>
-                                    SLIDE - 0
-                                </Slide>
-                                <Slide>
-                                    SLIDE - 1
-                                </Slide>
-                                <Slide>
-                                    SLIDE - 2
-                                </Slide>
-                                <Slide>
-                                    SLIDE - 3
-                                </Slide>
-                            </Carousel>`}
+                        {`<Carousel>
+                            <Slide>
+                                SLIDE - 0
+                            </Slide>
+                            <Slide>
+                                SLIDE - 1
+                            </Slide>
+                            <Slide>
+                                SLIDE - 2
+                            </Slide>
+                            <Slide>
+                                SLIDE - 3
+                            </Slide>
+                        </Carousel>`}
                     </Code>
                 </div>
 
