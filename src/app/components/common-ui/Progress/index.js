@@ -22,16 +22,20 @@ const noop = () => {};
 let Progress = ({ children, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
+    const prevStateRef = useRef();
     const stateRef = useRef({
         ...props,
     });
 
     // State
     const [state, setNewState] = useState(stateRef.current);
+    const [prevState, setPrevState] = useState(prevStateRef.current);
 
     // Internal Interface
     const setState = newState => {
+        prevStateRef.current = { ...stateRef.current };
         stateRef.current = { ...stateRef.current, ...newState };
+        setPrevState(prevStateRef.current);
         setNewState(stateRef.current);
     };
 
@@ -57,8 +61,8 @@ let Progress = ({ children, ...props }, ref) => {
     useEffect(() => setState(props), Object.values(props));
 
     useEffect(() => {
-        const { prevState, value } = stateRef.current;
-        if (prevState.value !== value) {
+        const { value } = stateRef.current;
+        if (op.get(prevState, 'value') !== value) {
             const percent = Math.min(100, Math.ceil(value * 100));
             const evt = {
                 type: ENUMS.EVENT.CHANGE,
