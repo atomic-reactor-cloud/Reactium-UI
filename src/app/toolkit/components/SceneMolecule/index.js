@@ -4,6 +4,10 @@
  * -----------------------------------------------------------------------------
  */
 import _ from 'underscore';
+import Events from './Events';
+import Methods from './Methods';
+import Code from 'toolkit/Code';
+import Properties from './Properties';
 import React, { Component } from 'react';
 import { Button, Icon, Scene } from 'components/common-ui';
 
@@ -28,7 +32,7 @@ class SceneMolecule extends Component {
         this.scene = null;
     }
 
-    render() {
+    Demo = () => {
         const { animation, direction, duration } = this.state;
         let directions = Object.values(Scene.ENUMS.DIRECTION);
 
@@ -98,7 +102,7 @@ class SceneMolecule extends Component {
                         active='dashboard'
                         animation={animation}
                         direction={direction}
-                        duration={duration}
+                        animationSpeed={duration}
                         width='100%'
                         height={300}
                         onChange={console.log}
@@ -107,13 +111,14 @@ class SceneMolecule extends Component {
                         }}>
                         <div
                             id='dashboard'
-                            className='p-20 bg-white'
+                            className='p-20 white bg-grey'
                             style={{
                                 height: '100%',
                             }}>
                             <div className='flex middle'>
                                 <Button size='xs' color='clear' readOnly>
                                     <Icon.Feather.Monitor
+                                        style={{ fill: '#FFFFFF' }}
                                         width={16}
                                         height={16}
                                     />
@@ -123,7 +128,7 @@ class SceneMolecule extends Component {
                         </div>
                         <div
                             id='profile'
-                            className='p-20 bg-white'
+                            className='p-20 white bg-gray'
                             style={{
                                 height: '100%',
                             }}>
@@ -133,6 +138,7 @@ class SceneMolecule extends Component {
                                     size='xs'
                                     onClick={() => this.scene.back()}>
                                     <Icon.Feather.ChevronLeft
+                                        style={{ fill: '#FFFFFF' }}
                                         width={16}
                                         height={16}
                                     />
@@ -148,10 +154,11 @@ class SceneMolecule extends Component {
                             }}>
                             <div className='flex middle'>
                                 <Button
-                                    color='primary'
+                                    color='clear'
                                     size='xs'
                                     onClick={() => this.scene.back()}>
                                     <Icon.Feather.ChevronLeft
+                                        style={{ fill: '#FFFFFF' }}
                                         width={16}
                                         height={16}
                                     />
@@ -206,10 +213,86 @@ class SceneMolecule extends Component {
                 </div>
             </div>
         );
+    };
+
+    render() {
+        const { Demo } = this;
+        const { animation, direction, duration } = this.state;
+        return (
+            <>
+                <div className='mb-xs-32'>
+                    <p>
+                        The Scene component is similar to the Carousel component
+                        in that it renders elements inside a container and
+                        allows you to navigate between them. The major
+                        difference is that the Scene component allows you to
+                        navigate in different directions and with different
+                        animiations.
+                    </p>
+                </div>
+                <Demo />
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Import</h3>
+                <div className='ht' style={{ margin: '0 -25px' }}>
+                    <Code>
+                        {"import { Scene } from '@atomic-reactor/reactium-ui';"}
+                    </Code>
+                </div>
+
+                <h3 className='my-xs-20'>Usage</h3>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code>
+                        {`<Scene
+                            active='dashboard'
+                            animation={Scene.ENUMS.ANIMATION.COVER}
+                            animationSpeed={Scene.ENUMS.DURATION}
+                            direction={Scene.ENUMS.DIRECTION.LEFT}
+                            width={Scene.ENUMS.SIZE.WIDTH}
+                            height={Scene.ENUMS.SIZE.HEIGHT}
+                            onBeforeChange={console.log}
+                            onChange={console.log}>
+                                <div id='dashboard'>Dashboard</div>
+                                <div id='profile'>Profile</div>
+                                <div id='menu'>Menu</div>
+                        </Scene>`}
+                    </Code>
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Properties</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Properties />
+                </div>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Methods</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Methods />
+                </div>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Events</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Events />
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>ENUMS</h3>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code language='json'>
+                        {JSON.stringify(Scene.ENUMS, null, 2)}
+                    </Code>
+                </div>
+            </>
+        );
     }
 }
-
-// Default properties
-SceneMolecule.defaultProps = {};
 
 export default SceneMolecule;

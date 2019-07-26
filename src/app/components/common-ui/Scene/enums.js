@@ -15,7 +15,7 @@ const ENUMS = {
         IN: 'in',
         OUT: 'out',
     },
-    DURATION: 0.5,
+    DURATION: 0.25,
     EVENT: {
         BEFORE_CHANGE: 'beforeChange',
         CHANGE: 'change',
@@ -32,6 +32,10 @@ const ENUMS = {
         fade: 'fade',
         flip: 'flip',
         slide: 'slide',
+    },
+    SIZE: {
+        HEIGHT: '100vh',
+        WIDTH: '100vw',
     },
 };
 

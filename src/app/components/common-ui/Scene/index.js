@@ -93,6 +93,9 @@ let Scene = ({ children, ...props }, ref) => {
             return;
         }
 
+        childs.sort();
+        childs.reverse();
+
         let { panels = {} } = stateRef.current;
 
         React.Children.forEach(childs, (child, i) => {
@@ -139,10 +142,12 @@ let Scene = ({ children, ...props }, ref) => {
 
         const last = hist.pop();
 
-        navTo(last, true);
+        const anime = navTo(last, true);
 
         historyRef.current = hist;
         setHistory(historyRef.current);
+
+        return anime;
     };
 
     const navTo = (params = {}, noHistory, clearHistory) => {
@@ -155,11 +160,11 @@ let Scene = ({ children, ...props }, ref) => {
         params = {
             animation: stateRef.current.animation || ENUMS.ANIMATION.SLIDE,
             direction: stateRef.current.direction || ENUMS.DIRECTION.LEFT,
-            duration: stateRef.current.duration || ENUMS.DURATION,
+            animationSpeed: stateRef.current.animationSpeed || ENUMS.DURATION,
             ...params,
         };
 
-        const { animation, duration, panel } = params;
+        const { animation, animationSpeed, panel } = params;
         const { active, animating, onBeforeChange, tween } = stateRef.current;
 
         if (!noHistory && !clearHistory) {
@@ -185,7 +190,7 @@ let Scene = ({ children, ...props }, ref) => {
             TweenMax.set(panel, { display: 'none' }),
         );
 
-        if (duration === 0 || !active) {
+        if (animationSpeed === 0 || !active) {
             setState({ active: panel }, 'navTo()');
             return Promise.resolve(stateRef.current);
         }
@@ -257,7 +262,7 @@ let Scene = ({ children, ...props }, ref) => {
     const fadeIn = params =>
         new Promise(resolve => {
             const { active } = stateRef.current;
-            const { duration = ENUMS.DURATION, panel } = params;
+            const { animationSpeed = ENUMS.DURATION, panel } = params;
 
             const front = panelRef.current[String(panel)];
 
@@ -279,7 +284,7 @@ let Scene = ({ children, ...props }, ref) => {
                 opacity: 1,
             });
 
-            TweenMax.from(front, duration, {
+            TweenMax.from(front, animationSpeed, {
                 opacity: 0,
                 ease: Power2.easeInOut,
                 onComplete: () => {
@@ -292,7 +297,7 @@ let Scene = ({ children, ...props }, ref) => {
     const fadeOut = params =>
         new Promise(resolve => {
             const { active } = stateRef.current;
-            const { duration = ENUMS.DURATION, panel } = params;
+            const { animationSpeed = ENUMS.DURATION, panel } = params;
 
             const back = panelRef.current[String(panel)];
 
@@ -314,7 +319,7 @@ let Scene = ({ children, ...props }, ref) => {
                 opacity: 1,
             });
 
-            TweenMax.to(front, duration, {
+            TweenMax.to(front, animationSpeed, {
                 opacity: 0,
                 ease: Power2.easeInOut,
                 onComplete: () => {
@@ -329,7 +334,7 @@ let Scene = ({ children, ...props }, ref) => {
 
         const {
             direction = ENUMS.DIRECTION.LEFT,
-            duration = ENUMS.DURATION,
+            animationSpeed = ENUMS.DURATION,
             panel,
         } = params;
 
@@ -352,7 +357,7 @@ let Scene = ({ children, ...props }, ref) => {
                     top: 0,
                     backfaceVisibility: 'visible',
                 });
-                TweenMax.from(back, duration, {
+                TweenMax.from(back, animationSpeed, {
                     [prop]: rotation,
                     ease: Power2.easeInOut,
                     onComplete: () => {
@@ -369,7 +374,7 @@ let Scene = ({ children, ...props }, ref) => {
                     top: 0,
                     backfaceVisibility: 'hidden',
                 });
-                TweenMax.to(front, duration, {
+                TweenMax.to(front, animationSpeed, {
                     [prop]: rotation,
                     ease: Power2.easeInOut,
                     onComplete: () => {
@@ -399,7 +404,7 @@ let Scene = ({ children, ...props }, ref) => {
         new Promise(resolve => {
             const {
                 direction = ENUMS.DIRECTION.LEFT,
-                duration = ENUMS.DURATION,
+                animationSpeed = ENUMS.DURATION,
                 panel,
             } = params;
 
@@ -435,7 +440,7 @@ let Scene = ({ children, ...props }, ref) => {
                 top: 0,
             });
 
-            TweenMax.from(elm, duration, {
+            TweenMax.from(elm, animationSpeed, {
                 left: x,
                 top: y,
                 ease: Power2.easeInOut,
@@ -447,7 +452,7 @@ let Scene = ({ children, ...props }, ref) => {
         new Promise(resolve => {
             const {
                 direction = ENUMS.DIRECTION.LEFT,
-                duration = ENUMS.DURATION,
+                animationSpeed = ENUMS.DURATION,
             } = params;
 
             const { active } = stateRef.current;
@@ -481,7 +486,7 @@ let Scene = ({ children, ...props }, ref) => {
                 zIndex: 10,
             });
 
-            TweenMax.to(elm, duration, {
+            TweenMax.to(elm, animationSpeed, {
                 left: x,
                 top: y,
                 ease: Power2.easeInOut,
@@ -504,6 +509,7 @@ let Scene = ({ children, ...props }, ref) => {
         },
         addChildren,
         back,
+        clearHistory: clear,
         history: {
             clear,
         },
@@ -601,9 +607,9 @@ Scene.ENUMS = ENUMS;
 Scene.propTypes = {
     active: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     animation: PropTypes.oneOf(Object.values(ENUMS.ANIMATION)),
+    animationSpeed: PropTypes.number,
     className: PropTypes.string,
     direction: PropTypes.oneOf(Object.values(ENUMS.DIRECTION)),
-    duration: PropTypes.number,
     height: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     namespace: PropTypes.string,
     onBeforeChange: PropTypes.func,
@@ -615,15 +621,15 @@ Scene.propTypes = {
 
 Scene.defaultProps = {
     animation: ENUMS.ANIMATION.SLIDE,
+    animationSpeed: ENUMS.DURATION,
     direction: ENUMS.DIRECTION.LEFT,
-    duration: ENUMS.DURATION,
-    height: '100vh',
+    height: ENUMS.SIZE.HEIGHT,
     namespace: 'ar-scene',
     onBeforeChange: noop,
     onChange: noop,
     panels: {},
     style: {},
-    width: '100vw',
+    width: ENUMS.SIZE.WIDTH,
 };
 
 export { Scene as default };

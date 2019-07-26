@@ -108,7 +108,7 @@ class AlertMolecule extends Component {
 
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Events</h3>
-                <div className='ht hr mx--32' />
+                <div className='hr mx--32' />
                 <div className='ar-data-table'>
                     <Events />
                 </div>
