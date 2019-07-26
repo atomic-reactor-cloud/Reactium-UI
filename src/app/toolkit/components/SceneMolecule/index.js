@@ -227,7 +227,7 @@ class SceneMolecule extends Component {
                         allows you to navigate between them. The major
                         difference is that the Scene component allows you to
                         navigate in different directions and with different
-                        animiations.
+                        animations.
                     </p>
                 </div>
                 <Demo />
