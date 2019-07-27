@@ -28,8 +28,8 @@ const Icon = ({ size, color, name, ...props }) => {
 
     const cx = cn({
         [className]: !!className,
+        [color]: !!color,
         'ar-icon': true,
-        [color]: true,
     });
 
     return Ico({ ...props, width: size, height: size, className: cx });
@@ -43,7 +43,6 @@ Icon.propTypes = {
     size: PropTypes.number,
 };
 Icon.defaultProps = {
-    color: ENUMS.COLOR.SECONDARY,
     size: 24,
 };
 

@@ -230,6 +230,7 @@ class SceneMolecule extends Component {
                         animations.
                     </p>
                 </div>
+
                 <Demo />
 
                 <div className='hr mx--32' />

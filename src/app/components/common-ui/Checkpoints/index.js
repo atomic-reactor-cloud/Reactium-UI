@@ -1,3 +1,4 @@
+import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
 import Checkpoint from './Checkpoint';
@@ -12,12 +13,24 @@ import React, {
 } from 'react';
 
 const noop = () => {};
+
+const ENUMS = {
+    ALIGN: {
+        TOP: Checkpoint.ALIGN_TOP,
+        BOTTOM: Checkpoint.ALIGN_BOTTOM,
+    },
+    EVENT: {
+        CHANGE: 'change',
+        COMPLETE: 'complete',
+    },
+};
+
 /**
  * -----------------------------------------------------------------------------
  * Hook Component: Checkpoints
  * -----------------------------------------------------------------------------
  */
-let Checkpoints = ({ index, points = [], ...props }, ref) => {
+let Checkpoints = ({ index, points = [], namespace, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const prevStateRef = useRef({});
@@ -25,6 +38,7 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
         complete: false,
         index,
         init: false,
+        namespace,
         update: Date.now(),
         previous: {},
     });
@@ -42,6 +56,10 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
     };
 
     const getValue = currIndex => {
+        if (currIndex < 0) {
+            return null;
+        }
+
         currIndex = currIndex || op.get(stateRef.current, 'index');
 
         const values = points.map((point, i) => op.get(point, 'value', i));
@@ -63,7 +81,7 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
 
     const prev = () => {
         let { index } = stateRef.current;
-        if (index > 0) {
+        if (index > -1) {
             index -= 1;
         }
 
@@ -72,7 +90,7 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
 
     const complete = () => setState({ index: points.length });
 
-    const restart = () => setState({ index: 0 });
+    const restart = () => setState({ index: -1 });
 
     const onCheckpointChange = (e, index) => {
         const { readOnly } = props;
@@ -92,11 +110,13 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
         container: containerRef.current,
         setState,
         state,
-        complete,
         next,
         prev,
-        restart,
+        first: restart,
+        last: complete,
         value: getValue(),
+        restart, // depricated 0.0.16
+        complete, // depricated 0.0.16
     }));
 
     // Side Effects
@@ -116,7 +136,7 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
 
             setState({ value });
 
-            const evt = { type: 'change', ...state, props, value };
+            const evt = { type: ENUMS.EVENT.CHANGE, ...state, props, value };
             delete evt.init;
 
             onChange(evt);
@@ -126,7 +146,7 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
             setState({ complete });
 
             if (complete === true) {
-                onComplete({ type: 'complete', state, props });
+                onComplete({ type: ENUMS.EVENT.COMPLETE, state, props });
             }
         }
     }, [props]);
@@ -138,19 +158,70 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
         }
     });
 
+    const cx = suffix => {
+        const { namespace } = stateRef.current;
+        return `${namespace}-${suffix}`;
+    };
+
+    const lineWidth = () => {
+        const len = points.length;
+        const seg = Math.ceil(100 / len);
+        const p = 100 - seg;
+        return `${p}%`;
+    };
+
+    const activeWidth = () => {
+        let { index } = stateRef.current;
+        index += 1;
+
+        const len = points.length - 1;
+        const p = Math.min(100, Math.ceil((index / len) * 100));
+        return `${p}%`;
+    };
+
+    const progressWidth = () => {
+        let { index = 0 } = stateRef.current;
+        if (index === -1) {
+            return '0%';
+        }
+
+        const len = points.length - 1;
+        const p = Math.min(100, Math.ceil((index / len) * 100));
+        return `${p}%`;
+    };
+
     const render = () => {
         const { className, labelAlign, name, readOnly } = props;
-        const { complete, index } = stateRef.current;
+        const { complete, index, namespace } = stateRef.current;
+
+        const cname = cn({
+            [className]: !!className,
+            [namespace]: !!namespace,
+            readOnly,
+        });
+
+        const lw = lineWidth();
+        const aw = activeWidth();
+        const pw = progressWidth();
 
         return (
-            <div ref={containerRef} className={className}>
+            <div ref={containerRef} className={cname}>
+                <div className={cx('line')} style={{ width: lw }} />
+                <div className={cx('active')} style={{ width: lw }}>
+                    <div style={{ width: aw }} />
+                </div>
+                <div className={cx('progress')} style={{ width: lw }}>
+                    <div style={{ width: pw }} />
+                </div>
                 {points.map((point, i) => {
                     const { icon, label, value, ...cprops } = point;
+                    const width = `${100 / points.length}%`;
                     let key = `checkpoint-${i}`;
                     key += name || '';
 
                     return (
                         <Checkpoint
+                            style={{ width }}
                             key={key}
                             name={name}
                             label={label}
@@ -173,14 +244,14 @@ let Checkpoints = ({ index, points = [], ...props }, ref) => {
 
 Checkpoints = forwardRef(Checkpoints);
 
+Checkpoints.ENUMS = ENUMS;
+
 Checkpoints.propTypes = {
     className: PropTypes.string,
     index: PropTypes.number,
-    labelAlign: PropTypes.oneOf([
-        Checkpoint.ALIGN_TOP,
-        Checkpoint.ALIGN_BOTTOM,
-    ]),
+    labelAlign: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
     name: PropTypes.string,
+    namespace: PropTypes.string,
     points: PropTypes.arrayOf(
         PropTypes.shape({
             label: PropTypes.node,
@@ -194,11 +265,11 @@ Checkpoints.propTypes = {
 };
 
 Checkpoints.defaultProps = {
-    className: 'updox-checkpoints',
-    index: 0,
-    labelAlign: Checkpoint.ALIGN_BOTTOM,
+    namespace: 'ar-checkpoints',
+    index: -1,
+    labelAlign: ENUMS.ALIGN.BOTTOM,
     points: [],
-    readOnly: true,
+    readOnly: false,
     onChange: noop,
     onComplete: noop,
 };

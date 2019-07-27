@@ -1,23 +1,78 @@
+$ar-checkpoint-border-size: 3px !default;
+$ar-checkpoint-color-active: $color-white !default;
+$ar-checkpoint-color-border: $color-grey !default;
+$ar-checkpoint-color-disabled: $color-grey-light !default;
+$ar-checkpoint-color-icon: $color-white !default;
+$ar-checkpoint-color-icon-disabled: $color-grey-light !default;
+$ar-checkpoint-color-line: $color-grey-light !default;
+$ar-checkpoint-color-progress: $color-grey !default;
+$ar-checkpoint-font-size-icon: 22px !default;
+$ar-checkpoint-font-size-sm: 12px !default;
+$ar-checkpoint-font-size-xs: 10px !default;
+$ar-checkpoint-height-icon: 37px !default;
+$ar-checkpoint-height-line: 4px !default;
 $ar-checkpoint-lbl-margin: 15px !default;
-$ar-checkpoint-trans: .25s ease-in-out !default;
-$ar-checkpoint-width: 300px !default;
+$ar-checkpoint-shadow-bar: inset 0 0 2px 1px rgba($color-black, 0.1) !default;
+$ar-checkpoint-trans: 0.5s ease-in-out !default;
+$ar-checkponit-trans-bar: .25s ease-in-out !default;
+
+@mixin checkpointsLine() {
+    position: absolute;
+    top: $ar-checkpoint-height-icon/2;
+    left: 50%;
+    height: $ar-checkpoint-height-line;
+    overflow: hidden;
+    transform: translateX(-50%) translateY(-50%);
+
+    > div {
+        width: 0;
+        height: $ar-checkpoint-height-line;
+        transition: width $ar-checkponit-trans-bar;
+    }
+}
 
 .ar-checkpoints {
     display: flex;
     flex-wrap: nowrap;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    width: 100%;
+    position: relative;
+
+    &-line {
+        @include checkpointsLine();
+        z-index: 1;
+        background-color: $ar-checkpoint-color-line;
+    }
+
+    &-active {
+        @include checkpointsLine();
+        z-index: 2;
+
+        > div {
+            background-color: $ar-checkpoint-color-active;
+            box-shadow: $ar-checkpoint-shadow-bar;
+        }
+    }
+
+    &-progress {
+        @include checkpointsLine();
+        z-index: 3;
+
+        > div {
+            background-color: $ar-checkpoint-color-progress;
+        }
+    }
 }
 
 .ar-checkpoint {
     position: relative;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     flex-direction: column;
     flex-wrap: wrap;
     user-select: none;
-    width: $ar-checkpoint-width;
-    z-index: 1;
+    z-index: 10;
 
     &:hover {
         cursor: pointer;
@@ -29,8 +84,13 @@ $ar-checkpoint-width: 300px !default;
 
     span.label {
         width: 66%;
-        font-size: 12px;
+        font-size: $ar-checkpoint-font-size-xs;
         text-align: center;
+        line-height: 1.25;
+
+        @include breakpoint(sm) {
+            font-size: $ar-checkpoint-font-size-sm;
+        }
     }
 
     span.sr-only {
@@ -39,20 +99,21 @@ $ar-checkpoint-width: 300px !default;
 
     span.icon {
         position: relative;
-        width: 37px;
-        height: 37px;
+        width: $ar-checkpoint-height-icon;
+        height: $ar-checkpoint-height-icon;
         display: flex;
         justify-content: center;
         align-items: center;
         border-radius: 100%;
-        color: $color-white;
-        background-color: $color-white;
-        border: 3px solid $color-grey;
-        font-size: 22px;
+        color: $ar-checkpoint-color-icon;
+        background-color: $ar-checkpoint-color-icon;
+        border: $ar-checkpoint-border-size solid $ar-checkpoint-color-border;
+        font-size: $ar-checkpoint-font-size-icon;
         z-index: 100;
         overflow: hidden;
 
-        transition: background-color $ar-checkpoint-trans, border-color $ar-checkpoint-trans;
+        transition: background-color $ar-checkpoint-trans,
+            border-color $ar-checkpoint-trans;
 
         > * {
             opacity: 0;
@@ -60,14 +121,14 @@ $ar-checkpoint-width: 300px !default;
         }
 
         svg {
-            fill: $color-white;
+            fill: $ar-checkpoint-color-icon;
             flex-shrink: 0;
         }
     }
 
     input:disabled + span.icon {
-        background-color: $color-grey-light;
-        border-color: $color-grey-light;
+        background-color: $ar-checkpoint-color-icon-disabled;
+        border-color: $ar-checkpoint-color-icon-disabled;
 
         > * {
             opacity: 0;
@@ -75,9 +136,9 @@ $ar-checkpoint-width: 300px !default;
     }
 
     input:checked + span.icon {
-        color: $color-white;
-        background-color: $color-grey;
-        border-color: $color-grey;
+        color: $ar-checkpoint-color-icon;
+        background-color: $ar-checkpoint-color-border;
+        border-color: $ar-checkpoint-color-border;
 
         > * {
             opacity: 1;
@@ -101,42 +162,12 @@ $ar-checkpoint-width: 300px !default;
         }
     }
 
-    &:before,
-    &:after {
-        position: absolute;
-        bottom: 15px;
-        right: 50%;
-        transform: translateY(-50%);
-        content: '';
-        width: calc(100% - 19px);
-        height: 3px;
-        background-color: $color-grey;
-        z-index: 0;
-    }
-
-    &:after {
-        right: auto;
-        left: 50%;
-    }
-
-    &:first-child {
-        &:before {
-            display: none;
-        }
-    }
-
-    &:last-child {
-        &:after {
-            display: none;
-        }
-    }
-
     &.disabled {
         cursor: default;
 
         &:before,
         &:after {
-            background-color: $color-grey-light;
+            background-color: $ar-checkpoint-color-disabled;
         }
         z-index: 10;
     }
@@ -145,8 +176,12 @@ $ar-checkpoint-width: 300px !default;
         &:before,
         &:after {
             bottom: auto;
-            top: 15px;
+            top: $ar-checkpoint-lbl-margin;
             transform: translateY(50%);
         }
     }
+}
+
+.readOnly .ar-checkpoint:hover {
+    cursor: default;
 }

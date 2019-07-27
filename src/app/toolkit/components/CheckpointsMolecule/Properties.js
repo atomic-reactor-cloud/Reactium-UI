@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'underscore';
-import { Collapsible } from 'components/common-ui';
+import { Checkpoints } from 'components/common-ui';
 
 const Table = ({ children }) => (
     <table style={{ tableLayout: 'fixed' }}>
@@ -35,61 +35,71 @@ const Row = ({ children, property, type, value = 'null' }) => (
 
 const data = [
     {
-        children: 'Time in seconds of the collapse/expand animation.',
-        property: 'animationSpeed',
+        children: 'The active Checkpoint.',
+        property: 'index',
         type: 'Number',
-        value: Collapsible.defaultProps.animationSpeed,
+        value: Checkpoints.defaultProps.index,
     },
     {
-        children: 'Initial expanded state.',
-        property: 'expanded',
+        children: (
+            <>
+                {'The location vertical location of the labels: '}
+                <kbd>{Object.values(Checkpoints.ENUMS.ALIGN).join(', ')}</kbd>.
+            </>
+        ),
+        property: 'labelAlign',
+        type: 'String',
+        value: Checkpoints.defaultProps.labelAlign,
+    },
+    {
+        children: (
+            <>
+                {'Array of Checkpoint objects: '}
+                <kbd>label:</kbd>
+                <span className='number'>{'Node, '}</span>
+                <kbd>icon:</kbd>
+                <span className='number'>{'Node, '}</span>
+                <kbd>value:</kbd>
+                <span className='number'>{'Number|String'}</span>.
+            </>
+        ),
+        property: 'points',
+        type: 'Array',
+    },
+    {
+        children:
+            'Disable progress updates by clicking the Checkpoint elements.',
+        property: 'readOnly',
         type: 'Boolean',
-        value: String(Collapsible.defaultProps.expanded),
+        value: String(Checkpoints.defaultProps.readOnly),
     },
     {
         children: (
             <>
-                <kbd>beforeCollapse</kbd>
-                {' event callback.'}
+                <kbd>{Checkpoints.ENUMS.EVENT.CHANGE}</kbd> event callback.
             </>
         ),
-        property: 'onBeforeCollapse',
+        property: 'onChange',
         type: 'Function',
     },
     {
         children: (
             <>
-                <kbd>beforeExpand</kbd>
-                {' event callback.'}
+                <kbd>{Checkpoints.ENUMS.EVENT.COMPLETE}</kbd> event callback.
             </>
         ),
-        property: 'onBeforeExpand',
-        type: 'Function',
-    },
-    {
-        children: (
-            <>
-                <kbd>collapse</kbd>
-                {' event callback.'}
-            </>
-        ),
-        property: 'onCollapse',
-        type: 'Function',
-    },
-    {
-        children: (
-            <>
-                <kbd>expand</kbd>
-                {' event callback.'}
-            </>
-        ),
-        property: 'onExpand',
+        property: 'onComplete',
         type: 'Function',
     },
     {
         children: 'Reference to the internal state object',
         property: 'state',
         type: 'Object',
+        value: 'read only',
+    },
+    {
+        children: 'Get the current value of the Checkpoints.',
+        property: 'value',
         value: 'read only',
     },
 ];

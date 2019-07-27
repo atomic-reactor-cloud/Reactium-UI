@@ -27,14 +27,13 @@ class CollapsibleMolecule extends Component {
         this.collapsible = null;
     }
 
-    collapse = () => this.collapsible.collapse();
-
-    toggle = () => this.collapsible.toggle();
-
     Demo = () => (
         <div style={{ minHeight: 200 }}>
             <div>
-                <Button block onClick={this.toggle} style={{ borderRadius: 0 }}>
+                <Button
+                    block
+                    onClick={() => this.collapsible.toggle()}
+                    style={{ borderRadius: 0 }}>
                     Toggle Collapsible
                 </Button>
             </div>

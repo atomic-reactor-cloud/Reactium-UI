@@ -3,7 +3,7 @@ module.exports = {
         name: 'Reactium',
         title: 'Reactium UI',
         logo: '/assets/images/atomic-reactor-logo.svg',
-        version: '0.0.15',
+        version: '0.0.16',
     },
     overview: require('appdir/toolkit/overview').default,
     themes: [
@@ -516,23 +516,23 @@ module.exports = {
                     hideDocs: true,
                     hideDna: true,
                 },
-                'collapsible-molecule': {
-                    type: 'molecule',
-                    label: 'Collapsible',
-                    route: '/toolkit/components/collapsible-molecule',
-                    dna: '/toolkit/components/CollapsibleMolecule',
-                    component: require('appdir/toolkit/components/CollapsibleMolecule')
-                        .default,
-                    hideCode: true,
-                    hideDocs: true,
-                    hideDna: true,
-                },
                 'checkpoints-molecule': {
                     type: 'molecule',
                     label: 'Checkpoints',
                     route: '/toolkit/components/checkpoints-molecule',
                     dna: '/toolkit/components/CheckpointsMolecule',
                     component: require('appdir/toolkit/components/CheckpointsMolecule')
+                        .default,
+                    hideCode: true,
+                    hideDocs: true,
+                    hideDna: true,
+                },
+                'collapsible-molecule': {
+                    type: 'molecule',
+                    label: 'Collapsible',
+                    route: '/toolkit/components/collapsible-molecule',
+                    dna: '/toolkit/components/CollapsibleMolecule',
+                    component: require('appdir/toolkit/components/CollapsibleMolecule')
                         .default,
                     hideCode: true,
                     hideDocs: true,
