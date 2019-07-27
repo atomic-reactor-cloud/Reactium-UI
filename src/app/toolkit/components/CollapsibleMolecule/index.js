@@ -3,10 +3,13 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
+import _ from 'underscore';
+import Events from './Events';
+import Methods from './Methods';
+import Code from 'toolkit/Code';
+import Properties from './Properties';
 import React, { Component } from 'react';
-import Collapsible from 'components/common-ui/Collapsible';
-import Button from 'components/common-ui/Button';
-import { Feather } from 'components/common-ui/Icon';
+import { Button, Collapsible, Icon } from 'components/common-ui';
 
 /**
  * -----------------------------------------------------------------------------
@@ -28,36 +31,115 @@ class CollapsibleMolecule extends Component {
 
     toggle = () => this.collapsible.toggle();
 
-    render() {
-        return (
-            <div style={{ minHeight: 140 }}>
-                <div className='mb-xs-8'>
-                    <Button onClick={this.toggle}>Toggle Collapsible</Button>
-                </div>
-                <Collapsible ref={elm => (this.collapsible = elm)}>
-                    <div className='pr-xs-32'>
-                        <p className='bg-blue white p-xs-20'>
-                            Lorem ipsum dolor sit amet, consectetur adipiscing
-                            elit, sed do eiusmod tempor incididunt ut labore et
-                            dolore magna aliqua. Ut enim ad minim veniam, quis
-                            nostrud exercitation ullamco laboris nisi ut aliquip
-                            ex ea commodo consequat. Duis aute irure dolor in
-                            reprehenderit in voluptate velit esse cillum dolore
-                            eu fugiat nulla pariatur. Excepteur sint occaecat
-                            cupidatat non proident, sunt in culpa qui officia
-                            deserunt mollit anim id est laborum.
-                        </p>
-                    </div>
-                    <div style={{ position: 'absolute', top: 0, right: 0 }}>
-                        <Button
-                            size={Button.ENUMS.SIZE.XS}
-                            onClick={this.collapse}
-                            style={{ width: 33 }}>
-                            <Feather.X />
-                        </Button>
-                    </div>
-                </Collapsible>
+    Demo = () => (
+        <div style={{ minHeight: 200 }}>
+            <div>
+                <Button block onClick={this.toggle} style={{ borderRadius: 0 }}>
+                    Toggle Collapsible
+                </Button>
             </div>
+            <Collapsible ref={elm => (this.collapsible = elm)}>
+                <div className='bg-blue white py-xs-20 pl-xs-20 pr-xs-32'>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                        sed do eiusmod tempor incididunt ut labore et dolore
+                        magna aliqua. Ut enim ad minim veniam, quis nostrud
+                        exercitation ullamco laboris nisi ut aliquip ex ea
+                        commodo consequat. Duis aute irure dolor in
+                        reprehenderit in voluptate velit esse cillum dolore eu
+                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                        non proident, sunt in culpa qui officia deserunt mollit
+                        anim id est laborum.
+                    </p>
+                    <Button
+                        size={Button.ENUMS.SIZE.XS}
+                        onClick={() => this.collapsible.collapse()}
+                        style={{
+                            width: 32,
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                        }}>
+                        <Icon name='Feather.X' style={{ fill: '#FFFFFF' }} />
+                    </Button>
+                </div>
+            </Collapsible>
+        </div>
+    );
+
+    render() {
+        const { Demo } = this;
+
+        return (
+            <>
+                <Demo />
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Import</h3>
+                <div className='ht' style={{ margin: '0 -25px' }}>
+                    <Code>
+                        {
+                            "import { Collapsible } from '@atomic-reactor/reactium-ui';"
+                        }
+                    </Code>
+                </div>
+
+                <h3 className='my-xs-20'>Usage</h3>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code>
+                        {`<Collapsible ref={elm => (this.collapsible = elm)}>
+                            <div>
+                                <p>
+                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                                    sed do eiusmod tempor incididunt ut labore et dolore
+                                    magna aliqua. Ut enim ad minim veniam, quis nostrud
+                                    exercitation ullamco laboris nisi ut aliquip ex ea
+                                    commodo consequat. Duis aute irure dolor in
+                                    reprehenderit in voluptate velit esse cillum dolore eu
+                                    fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+                                    non proident, sunt in culpa qui officia deserunt mollit
+                                    anim id est laborum.
+                                </p>
+                                <Button onClick={() => this.collapsible.collapse()} style={{ position: 'absolute', top: 0, right: 0 }}>
+                                    <Icon name='Feather.X' />
+                                </Button>
+                            </div>
+                        </Collapsible>`}
+                    </Code>
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>Properties</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Properties />
+                </div>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Methods</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Methods />
+                </div>
+
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Events</h3>
+                <div className='hr mx--32' />
+                <div className='ar-data-table'>
+                    <Events />
+                </div>
+
+                <div className='hr mx--32' />
+
+                <h3 className='my-xs-20'>ENUMS</h3>
+                <div className='ht' style={{ margin: '0 -25px -25px -25px' }}>
+                    <Code language='json'>
+                        {JSON.stringify(Collapsible.ENUMS, null, 2)}
+                    </Code>
+                </div>
+            </>
         );
     }
 }
