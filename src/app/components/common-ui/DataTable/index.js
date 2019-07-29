@@ -313,11 +313,35 @@ let DataTable = (props, ref) => {
             height,
             reorderable,
             rowsPerPage,
+            scrollable,
             sort,
             sortable,
             sortBy,
         } = stateRef.current;
         const { children, className, id, namespace, style = {} } = props;
+
+        const content = (
+            <div ref={elm => setContentRef(elm)}>
+                <Headings
+                    {...props}
+                    onClick={applySort}
+                    sortable={sortable}
+                    sortBy={sortBy}
+                    sort={sort}
+                />
+                {children}
+                <Rows
+                    {...props}
+                    onReorder={applyReorder}
+                    reorderable={reorderable}
+                    rowsPerPage={rowsPerPage}
+                    data={getData()}
+                    selection={getSelection()}
+                    state={stateRef.current}
+                    onToggle={onToggle}
+                />
+            </div>
+        );
 
         return (
             <div
@@ -329,32 +353,17 @@ let DataTable = (props, ref) => {
                     [namespace]: !!namespace,
                 })}>
                 <Header {...props} />
-                <Scrollbars
-                    autoHeight
-                    autoHeightMin={height}
-                    ref={scrollBarRef}
-                    style={{ width: '100%' }}>
-                    <div ref={elm => setContentRef(elm)}>
-                        <Headings
-                            {...props}
-                            onClick={applySort}
-                            sortable={sortable}
-                            sortBy={sortBy}
-                            sort={sort}
-                        />
-                        {children}
-                        <Rows
-                            {...props}
-                            onReorder={applyReorder}
-                            reorderable={reorderable}
-                            rowsPerPage={rowsPerPage}
-                            data={getData()}
-                            selection={getSelection()}
-                            state={stateRef.current}
-                            onToggle={onToggle}
-                        />
-                    </div>
-                </Scrollbars>
+                {scrollable ? (
+                    <Scrollbars
+                        autoHeight
+                        autoHeightMin={height}
+                        ref={scrollBarRef}
+                        style={{ width: '100%' }}>
+                        {content}
+                    </Scrollbars>
+                ) : (
+                    <div style={{ width: '100%' }}>{content}</div>
+                )}
                 <Footer {...props} />
             </div>
         );

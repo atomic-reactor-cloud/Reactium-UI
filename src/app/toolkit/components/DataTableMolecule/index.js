@@ -3,6 +3,13 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
+
+import Sass from './Sass';
+import Events from './Events';
+import Methods from './Methods';
+import Code from 'toolkit/Code';
+import Properties from './Properties';
+
 import moment from 'moment';
 import op from 'object-path';
 import React, { Component } from 'react';
@@ -113,29 +120,47 @@ class DataTableMolecule extends Component {
         />
     );
 
-    render() {
+    Demo = () => {
         const { columns, data } = this.props;
         const tableData = op.get(this, 'table.data');
         const search = op.get(this, 'table.search');
 
         return (
-            <div style={{ minHeight: 480 }}>
-                <DataTable
-                    reorderable={true}
-                    multiselect
-                    selectable
-                    sort={DataTable.ENUMS.SORT.DESC}
-                    sortable
-                    sortBy='name'
-                    ref={elm => (this.table = elm)}
-                    columns={columns}
-                    data={data}
-                    rowsPerPage={4}
-                    footer={this.renderFooter()}
-                    header={this.renderHeader({ search, tableData })}
-                    onChange={this.onChange}
-                />
-            </div>
+            <DataTable
+                reorderable={true}
+                multiselect
+                selectable
+                sort={DataTable.ENUMS.SORT.DESC}
+                sortable
+                scrollable={false}
+                sortBy='name'
+                ref={elm => (this.table = elm)}
+                columns={columns}
+                data={data}
+                rowsPerPage={4}
+                footer={this.renderFooter()}
+                header={this.renderHeader({ search, tableData })}
+                onChange={this.onChange}
+            />
+        );
+    };
+
+    render() {
+        const { Demo } = this;
+
+        return (
+            <>
+                <Demo />
+                <div className='hr mx--32' />
+                <h3 className='my-xs-20'>Import</h3>
+                <div className='ht' style={{ margin: '0 -25px' }}>
+                    <Code>
+                        {
+                            "import { DataTable } from '@atomic-reactor/reactium-ui';"
+                        }
+                    </Code>
+                </div>
+            </>
         );
     }
 }
