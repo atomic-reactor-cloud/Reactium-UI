@@ -222,14 +222,14 @@ export default class Content extends Component {
                     ) : null}
                     {readme && hideDocs !== true ? (
                         <Docs
+                            ref={elm => {
+                                this.registerDocs({ elm, id });
+                            }}
                             title={'Documentation'}
                             component={readme}
                             update={update}
                             prefs={prefs}
                             id={id}
-                            onInit={elm => {
-                                this.registerDocs({ elm, id });
-                            }}
                         />
                     ) : null}
                     {hideDna !== true ? (

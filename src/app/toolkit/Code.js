@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import op from 'object-path';
 import SyntaxHighlighter from 'react-syntax-highlighter';
-import { vs, vs2015 } from 'react-syntax-highlighter/dist/styles/hljs';
+import { vs, vs2015 } from 'react-syntax-highlighter/dist/cjs/styles/hljs';
 import prettier from 'prettier/standalone';
 import parserbabel from 'prettier/parser-babylon';
 import parserHtml from 'prettier/parser-html';
