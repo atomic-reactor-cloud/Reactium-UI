@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-ui",
-  "version": "0.0.16",
+  "version": "0.0.18",
   "main": "index.js",
   "author": "Reactium LLC",
   "dependencies": {

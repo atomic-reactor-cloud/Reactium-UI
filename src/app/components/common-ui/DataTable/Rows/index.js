@@ -25,7 +25,7 @@ const getRows = ({
     const { provided } = props;
 
     if (data.length < 1) {
-        return null;
+        return [];
     }
 
     const limit = Math.max(0, rowsPerPage);
