@@ -11,12 +11,14 @@ import cn from 'classnames';
 import ENUMS from './enums';
 import PropTypes from 'prop-types';
 
+ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
+
 /**
  * -----------------------------------------------------------------------------
  * Functional Component: Button
  * -----------------------------------------------------------------------------
  */
-let Button = ({ children, readOnly, style = {}, ...props }, ref) => {
+let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -116,10 +118,15 @@ let Button = ({ children, readOnly, style = {}, ...props }, ref) => {
                 ref={containerRef}>
                 {children}
             </span>
+        ) : type === ENUMS.TYPE.LINK ? (
+            <ENUMS.LINK className={cname()} style={s} {...elementProps}>
+                {children}
+            </ENUMS.LINK>
         ) : (
             <button
                 className={cname()}
                 style={s}
+                type={type}
                 {...elementProps}
                 ref={containerRef}>
                 {children}

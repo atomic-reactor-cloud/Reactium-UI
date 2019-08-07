@@ -1,4 +1,5 @@
 import React from 'react';
+import Code from 'toolkit/Code';
 import { Button } from 'components/common-ui';
 
 const Table = ({ children }) => (
@@ -92,6 +93,27 @@ const Properties = () => (
 
         <Row property='state' type='Object' value='read only'>
             Reference to the component's state object.
+        </Row>
+
+        <Row property='type' type='String' value={Button.defaultProps.type}>
+            The enumerated value for the button type:
+            <div className='kbd mb-xs-12'>
+                {Object.values(Button.ENUMS.TYPE).join(', ')}
+            </div>
+            <div>
+                If the value is <kbd>{Button.ENUMS.TYPE.LINK}</kbd>, an anchor
+                element is used instead of the button element.
+            </div>
+            <div className='mb-xs-12'>
+                If you would like to use a different element for the link, you
+                can override the default element by setting the
+                <kbd>{'Button.ENUMS.LINK'}</kbd> value:
+            </div>
+            <Code>
+                {
+                    'Button.ENUMS.LINK = ({ children, ...props }) => (<Link {...props}>{children}</Link>);'
+                }
+            </Code>
         </Row>
     </Table>
 );

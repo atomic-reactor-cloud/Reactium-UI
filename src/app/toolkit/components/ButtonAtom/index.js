@@ -155,7 +155,9 @@ export default class ButtonAtom extends Component {
                 </div>
 
                 <div className='flex middle center'>
-                    <Button {...buttonProps}>Button</Button>
+                    <Button {...buttonProps} type='link' href='#'>
+                        Button
+                    </Button>
                 </div>
 
                 <div className='hr mx--32' />
