@@ -20,7 +20,7 @@ const noop = () => {};
  * Hook Component: Tooltip
  * -----------------------------------------------------------------------------
  */
-let Tooltip = (props, ref) => {
+let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
@@ -93,7 +93,7 @@ let Tooltip = (props, ref) => {
         const { tooltip } = element.dataset;
 
         if (tooltip) {
-            let { onHide, timer } = stateRef.current;
+            let { timer } = stateRef.current;
 
             if (timer) {
                 clearTimeout(timer);
@@ -127,7 +127,6 @@ let Tooltip = (props, ref) => {
             let {
                 align: defaultAlign,
                 autohide: defaultAutohide,
-                onShow,
                 timer,
                 verticalAlign: defaultVerticalAlign,
             } = stateRef.current;
