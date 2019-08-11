@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = ({ header, namespace }) =>
-    !header ? null : <div className={`${namespace}-header`}>{header}</div>;
+const Header = ({ children, namespace }) =>
+    !children ? null : <div className={`${namespace}-header`}>{children}</div>;
 
 export default Header;

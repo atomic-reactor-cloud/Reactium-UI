@@ -110,29 +110,34 @@ class DataTableMolecule extends Component {
         </>
     );
 
-    renderFooter = () => (
-        <Pagination
-            className='ml-xs-auto mr-xs-auto ml-sm-auto mr-sm-0'
-            onNextClick={this.next}
-            onPrevClick={this.prev}
-            page={op.get(this, 'table.page', 0) || 0}
-            pages={op.get(this, 'table.pages', 0) || 0}
-        />
-    );
+    renderFooter = () => {
+        const page = Number(op.get(this.table, 'page', 1));
+        const pages = Number(op.get(this.table, 'pages', 1));
+        return (
+            <Pagination
+                className='ml-xs-auto mr-xs-auto ml-sm-auto mr-sm-0'
+                onNextClick={this.next}
+                onPrevClick={this.prev}
+                page={page}
+                pages={pages}
+                update={Date.now()}
+            />
+        );
+    };
 
     Demo = () => {
-        const { columns, data } = this.props;
+        const { columns, data = [] } = this.props;
         const tableData = op.get(this, 'table.data');
         const search = op.get(this, 'table.search');
 
         return (
             <DataTable
-                reorderable={true}
-                multiselect
-                selectable
-                sort={DataTable.ENUMS.SORT.DESC}
-                sortable
+                reorderable={false}
+                multiselect={false}
+                selectable={false}
+                sortable={false}
                 scrollable={false}
+                sort={DataTable.ENUMS.SORT.DESC}
                 sortBy='name'
                 ref={elm => (this.table = elm)}
                 columns={columns}

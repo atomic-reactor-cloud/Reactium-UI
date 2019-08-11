@@ -1,29 +1,49 @@
 import _ from 'underscore';
 import cn from 'classnames';
 import PropTypes from 'prop-types';
-import React, { forwardRef } from 'react';
+import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import Button from 'components/common-ui/Button';
 import { Feather } from 'components/common-ui/Icon';
 
+const DEBUG = true;
 const noop = () => {};
 
 let Pagination = (
-    {
-        arrows,
-        className,
-        color,
-        namespace,
-        numbers,
-        onClick,
-        onNextClick,
-        onPrevClick,
-        page,
-        pages,
-        size,
-    },
+    { onClick, onNextClick, onPrevClick, update, ...props },
     ref,
 ) => {
+    const stateRef = useRef({
+        ...props,
+    });
+
+    const [state, setNewState] = useState({ ...stateRef.current });
+
+    const setState = (newState, caller) => {
+        stateRef.current = {
+            ...stateRef.current,
+            ...newState,
+        };
+
+        if (caller && DEBUG === true) {
+            console.log(caller, stateRef.current);
+        }
+        setNewState(stateRef.current);
+    };
+
+    useEffect(() => {
+        setState(props);
+    }, Object.values(props));
+
     const renderNumbers = () => {
+        const {
+            color,
+            namespace,
+            numbers,
+            page,
+            pages,
+            size,
+        } = stateRef.current;
+
         let pgs = _.range(1, pages + 1);
         let idx = pgs.indexOf(page) - Math.floor(numbers / 2);
         idx = Math.max(0, idx);
@@ -55,6 +75,8 @@ let Pagination = (
     };
 
     const renderCurrent = () => {
+        const { arrows, color, page, pages, size } = stateRef.current;
+
         const style = { minWidth: 50 };
 
         if (arrows) {
@@ -71,38 +93,51 @@ let Pagination = (
         );
     };
 
-    const render = () =>
-        pages < 2 ? null : (
-            <div
-                ref={ref}
-                className={cn({
-                    [namespace]: !!namespace,
-                    [className]: !!className,
-                })}>
-                <div className='btn-group'>
-                    {arrows && (
-                        <Button
-                            color={color}
-                            size={size}
-                            onClick={onPrevClick}
-                            className='px-xs-4'>
-                            <Feather.ChevronLeft width={14} height={14} />
-                        </Button>
-                    )}
-                    {numbers < 2 && renderCurrent()}
-                    {numbers > 1 && renderNumbers()}
-                    {arrows && (
-                        <Button
-                            color={color}
-                            size={size}
-                            onClick={onNextClick}
-                            className='px-xs-4'>
-                            <Feather.ChevronRight width={14} height={14} />
-                        </Button>
-                    )}
+    const render = () => {
+        const {
+            arrows,
+            className,
+            color,
+            namespace,
+            numbers,
+            pages,
+            size,
+        } = stateRef.current;
+
+        return (
+            pages > 1 && (
+                <div
+                    ref={ref}
+                    className={cn({
+                        [namespace]: !!namespace,
+                        [className]: !!className,
+                    })}>
+                    <div className='btn-group'>
+                        {arrows && (
+                            <Button
+                                color={color}
+                                size={size}
+                                onClick={onPrevClick}
+                                className='px-xs-4'>
+                                <Feather.ChevronLeft width={14} height={14} />
+                            </Button>
+                        )}
+                        {numbers < 2 && renderCurrent()}
+                        {numbers > 1 && renderNumbers()}
+                        {arrows && (
+                            <Button
+                                color={color}
+                                size={size}
+                                onClick={onNextClick}
+                                className='px-xs-4'>
+                                <Feather.ChevronRight width={14} height={14} />
+                            </Button>
+                        )}
+                    </div>
                 </div>
-            </div>
+            )
         );
+    };
 
     return render();
 };
@@ -133,7 +168,7 @@ Pagination.defaultProps = {
     onNextClick: noop,
     onPrevClick: noop,
     page: 0,
-    pages: 0,
+    pagesx: 0,
     size: Button.ENUMS.SIZE.XS,
 };
 

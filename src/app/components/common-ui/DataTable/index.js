@@ -41,24 +41,31 @@ const applyReorderProp = reorderable =>
  * Hook Component: DataTable
  * -----------------------------------------------------------------------------
  */
-let DataTable = (props, ref) => {
+
+let DataTable = (
+    {
+        data,
+        footer,
+        header,
+        onChange,
+        onDrop,
+        onDropOut,
+        onSelect,
+        onSort,
+        onUnSelect,
+        reorderable,
+        ...props
+    },
+    ref,
+) => {
     // Refs
     let contentRef;
     const containerRef = useRef();
     const scrollBarRef = useRef();
     const stateRef = useRef({
-        data: props.data || [],
-        height: 0,
-        page: props.page || 0,
-        prevState: { page: 0 },
-        reorderable: props.reorderable,
-        rowsPerPage: props.rowsPerPage,
-        selection: [],
-        search: props.search,
-        sort: props.sort,
-        sortable: props.sortable,
-        sortBy: props.sortBy,
-        ...applyReorderProp(props.reorderable),
+        ...props,
+        reorderable,
+        ...applyReorderProp(reorderable),
     });
 
     // State
@@ -66,14 +73,12 @@ let DataTable = (props, ref) => {
 
     // Internal Interface
     const setState = newState => {
-        const { prevState = {} } = stateRef.current;
-
         if (op.get(newState, 'reorderable') === true) {
             applyReorder(true);
             return;
         }
 
-        stateRef.current = { ...stateRef.current, ...newState, prevState };
+        stateRef.current = { ...stateRef.current, ...newState };
         setNewState(stateRef.current);
     };
 
@@ -85,9 +90,14 @@ let DataTable = (props, ref) => {
     };
 
     const getData = search => {
-        let output;
-        const { data, sort, sortable, sortBy } = stateRef.current;
-        const { filter = defaultFilter } = props;
+        let output = [];
+
+        const {
+            filter = defaultFilter,
+            sort,
+            sortable,
+            sortBy,
+        } = stateRef.current;
 
         search = search || op.get(stateRef, 'current.search');
 
@@ -194,8 +204,7 @@ let DataTable = (props, ref) => {
     };
 
     const applyReorder = e => {
-        const { deleteOnDropOut, onDrop, onDropOut } = props;
-        const { data } = stateRef.current;
+        const { data, deleteOnDropOut, onDrop, onDropOut } = stateRef.current;
 
         const startIndex = op.get(e, 'source.index');
         const endIndex = op.get(e, 'destination.index');
@@ -222,8 +231,6 @@ let DataTable = (props, ref) => {
     };
 
     const applySort = ({ sort, sortBy }) => {
-        const { onSort } = props;
-
         setState({
             sort,
             sortBy,
@@ -238,7 +245,7 @@ let DataTable = (props, ref) => {
         index = Number(index);
 
         const { checked } = e.target;
-        const { multiselect, onSelect, onUnSelect } = props;
+        const { multiselect } = stateRef.current;
         const item = data[index];
 
         if (item) {
@@ -285,7 +292,6 @@ let DataTable = (props, ref) => {
 
     // Side Effects
     useEffect(() => {
-        const { onChange } = props;
         const { page } = stateRef.current;
 
         if (page > getPages()) {
@@ -310,31 +316,27 @@ let DataTable = (props, ref) => {
 
     const render = () => {
         const {
+            children,
+            className,
             height,
+            id,
+            namespace,
             reorderable,
             rowsPerPage,
             scrollable,
             sort,
             sortable,
             sortBy,
+            style,
         } = stateRef.current;
-        const { children, className, id, namespace, style = {} } = props;
 
         const content = (
             <div ref={elm => setContentRef(elm)}>
-                <Headings
-                    {...props}
-                    onClick={applySort}
-                    sortable={sortable}
-                    sortBy={sortBy}
-                    sort={sort}
-                />
+                <Headings {...stateRef.current} onClick={applySort} />
                 {children}
                 <Rows
-                    {...props}
+                    {...stateRef.current}
                     onReorder={applyReorder}
-                    reorderable={reorderable}
-                    rowsPerPage={rowsPerPage}
                     data={getData()}
                     selection={getSelection()}
                     state={stateRef.current}
@@ -352,7 +354,7 @@ let DataTable = (props, ref) => {
                     [className]: !!className,
                     [namespace]: !!namespace,
                 })}>
-                <Header {...props} />
+                <Header namespace={namespace}>{header}</Header>
                 {scrollable ? (
                     <Scrollbars
                         autoHeight
@@ -364,7 +366,7 @@ let DataTable = (props, ref) => {
                 ) : (
                     <div style={{ width: '100%' }}>{content}</div>
                 )}
-                <Footer {...props} />
+                <Footer namespace={namespace}>{footer}</Footer>
             </div>
         );
     };
@@ -421,6 +423,7 @@ DataTable.defaultProps = {
     reorderable: false,
     rowsPerPage: -1,
     scrollable: false,
+    selection: [],
     selectable: false,
     sort: ENUMS.SORT.ASC,
     sortable: false,

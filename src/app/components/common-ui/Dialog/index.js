@@ -313,6 +313,7 @@ Dialog.defaultProps = {
     onHide: noop,
     onShow: noop,
     style: {},
+    visible: true,
 };
 
 export { Dialog as default };
