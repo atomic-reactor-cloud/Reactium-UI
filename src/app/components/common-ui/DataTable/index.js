@@ -301,6 +301,7 @@ let DataTable = (
         onChange({
             type: ENUMS.EVENT.CHANGE,
             page: stateRef.current.page,
+            pages: getPages(),
             data: getData(),
         });
     }, [state]);

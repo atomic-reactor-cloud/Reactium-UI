@@ -26,7 +26,11 @@ class ModalMolecule extends Component {
     }
 
     showModal = () => {
-        this.modal.current.show(<div className='bg-white'>{Date.now()}</div>);
+        this.modal.current.show(
+            <div className='bg-white' style={{ height: '200vh' }}>
+                {Date.now()}
+            </div>,
+        );
     };
 
     render() {

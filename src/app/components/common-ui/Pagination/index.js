@@ -1,9 +1,16 @@
 import _ from 'underscore';
 import cn from 'classnames';
 import PropTypes from 'prop-types';
-import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import Button from 'components/common-ui/Button';
 import { Feather } from 'components/common-ui/Icon';
+
+import React, {
+    forwardRef,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
+} from 'react';
 
 const DEBUG = true;
 const noop = () => {};
@@ -33,6 +40,11 @@ let Pagination = (
     useEffect(() => {
         setState(props);
     }, Object.values(props));
+
+    useImperativeHandle(ref, () => ({
+        setState,
+        state,
+    }));
 
     const renderNumbers = () => {
         const {
@@ -104,38 +116,39 @@ let Pagination = (
             size,
         } = stateRef.current;
 
+        const display = pages > 1 ? null : 'none';
+
         return (
-            pages > 1 && (
-                <div
-                    ref={ref}
-                    className={cn({
-                        [namespace]: !!namespace,
-                        [className]: !!className,
-                    })}>
-                    <div className='btn-group'>
-                        {arrows && (
-                            <Button
-                                color={color}
-                                size={size}
-                                onClick={onPrevClick}
-                                className='px-xs-4'>
-                                <Feather.ChevronLeft width={14} height={14} />
-                            </Button>
-                        )}
-                        {numbers < 2 && renderCurrent()}
-                        {numbers > 1 && renderNumbers()}
-                        {arrows && (
-                            <Button
-                                color={color}
-                                size={size}
-                                onClick={onNextClick}
-                                className='px-xs-4'>
-                                <Feather.ChevronRight width={14} height={14} />
-                            </Button>
-                        )}
-                    </div>
+            <div
+                ref={ref}
+                style={{ display }}
+                className={cn({
+                    [namespace]: !!namespace,
+                    [className]: !!className,
+                })}>
+                <div className='btn-group'>
+                    {arrows && (
+                        <Button
+                            color={color}
+                            size={size}
+                            onClick={onPrevClick}
+                            className='px-xs-4'>
+                            <Feather.ChevronLeft width={14} height={14} />
+                        </Button>
+                    )}
+                    {numbers < 2 && renderCurrent()}
+                    {numbers > 1 && renderNumbers()}
+                    {arrows && (
+                        <Button
+                            color={color}
+                            size={size}
+                            onClick={onNextClick}
+                            className='px-xs-4'>
+                            <Feather.ChevronRight width={14} height={14} />
+                        </Button>
+                    )}
                 </div>
-            )
+            </div>
         );
     };
 

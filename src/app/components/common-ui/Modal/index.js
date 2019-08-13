@@ -88,7 +88,9 @@ let Modal = (props, ref) => {
                     />
                 )}
                 {!dismissable && <div className={`${namespace}-bg`} />}
-                <div className={`${namespace}-content`}>{children}</div>
+                <div className={`${namespace}-wrapper`}>
+                    <div className={`${namespace}-content`}>{children}</div>
+                </div>
             </Dismissable>
         );
     };

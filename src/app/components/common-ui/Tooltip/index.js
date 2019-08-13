@@ -111,6 +111,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             if (!autohide) {
                 element.setAttribute('title', tooltip);
                 element.removeEventListener('mouseleave', hide);
+                element.removeEventListener('focus', hide);
             }
 
             onHide({ event: ENUMS.EVENT.HIDE, target: e.target, ref });
@@ -168,6 +169,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             containerRef.current.style.top = `${pos.y}px`;
 
             element.addEventListener('mouseleave', hide);
+            element.addEventListener('focus', hide);
 
             if (autohide) {
                 timer = setTimeout(

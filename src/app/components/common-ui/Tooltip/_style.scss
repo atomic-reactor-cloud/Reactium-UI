@@ -6,7 +6,7 @@ $ar-tooltip-shadow: none !default;
 $ar-tooltip-z: 10000000;
 
 .ar-tooltip {
-    position: fixed;
+    position: absolute;
     user-select: none;
     z-index: $ar-tooltip-z;
     display: none;
