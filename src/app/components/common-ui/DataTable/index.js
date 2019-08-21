@@ -271,7 +271,8 @@ let DataTable = (
                 onUnSelect({ event: ENUMS.EVENT.UNSELECT, item, index });
             }
 
-            setTimeout(() => setState({ updated: Date.now() }), 1);
+            setState({ updated: Date.now() });
+            //setTimeout(() => setState({ updated: Date.now() }), 1);
         }
     };
 

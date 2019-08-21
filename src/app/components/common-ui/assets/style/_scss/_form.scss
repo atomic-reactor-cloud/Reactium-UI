@@ -150,10 +150,6 @@ $select-color-bg: $color-white !default;
         line-height: 1;
         padding: 10px;
 
-        &:hover {
-            cursor: pointer;
-        }
-
         &:disabled {
             opacity: 0.8;
         }
@@ -177,6 +173,10 @@ $select-color-bg: $color-white !default;
         &:last-child {
             border-right: 1px solid $input-color-border;
         }
+
+        &:hover {
+            cursor: pointer;
+        }
     }
 
     textarea {
@@ -187,14 +187,14 @@ $select-color-bg: $color-white !default;
         z-index: 1;
 
         &:last-child {
-            border-radius: 0 4px 4px 0;
+            border-radius: 0 $input-radius $input-radius 0;
         }
 
         &:first-child {
-            border-radius: 4px 0 0 4px;
+            border-radius: $input-radius 0 0 $input-radius;
 
             &:last-child {
-                border-radius: 4px;
+                border-radius: $input-radius;
             }
         }
     }
