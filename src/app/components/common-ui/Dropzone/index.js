@@ -18,7 +18,10 @@ const noop = () => {};
  * Hook Component: Dropzone
  * -----------------------------------------------------------------------------
  */
-let Dropzone = (props, ref) => {
+let Dropzone = (
+    { onChange, onError, onFileAdded, onFileRemoved, onInitialize, ...props },
+    ref,
+) => {
     // Refs
     const containerRef = useRef();
     const dzRef = useRef();
@@ -58,7 +61,6 @@ let Dropzone = (props, ref) => {
     const _onFileAdded = file => {
         const { max = 0 } = stateRef.current;
         const { maxFiles = 0 } = config;
-        const { onFileAdded } = props;
 
         if (maxFiles > 0 && max >= maxFiles) {
             return;
@@ -81,8 +83,6 @@ let Dropzone = (props, ref) => {
     };
 
     const _onFileRemoved = file => {
-        const { onFileRemoved } = props;
-
         setState(
             { max: dzRef.current.getAcceptedFiles().length },
             '_onFileRemoved()',
@@ -98,7 +98,6 @@ let Dropzone = (props, ref) => {
     };
 
     const _onFileError = (file, error) => {
-        const { onError } = props;
         const { files } = stateRef.current;
 
         const evt = {
@@ -107,8 +106,6 @@ let Dropzone = (props, ref) => {
             files,
             error,
         };
-
-        console.log('_onFileError()', evt);
 
         onError(evt);
     };
@@ -145,8 +142,6 @@ let Dropzone = (props, ref) => {
             JSON.stringify(currFiles) !== JSON.stringify(prevFiles) &&
             initialized === true
         ) {
-            const { onChange } = props;
-
             const evt = { type: 'change', ...state };
             onChange(evt);
         }
@@ -155,7 +150,6 @@ let Dropzone = (props, ref) => {
     useLayoutEffect(() => {
         if (!dzRef.current) {
             const { files } = stateRef.current;
-            const { onInitialize } = props;
             let { maxFiles } = config;
             maxFiles = maxFiles < 1 ? null : maxFiles;
 
@@ -215,7 +209,6 @@ Dropzone.propTypes = {
     disabled: PropTypes.bool,
     namespace: PropTypes.string,
     onChange: PropTypes.func,
-    onEffect: PropTypes.func,
     onError: PropTypes.func,
     onFileAdded: PropTypes.func,
     onFileRemoved: PropTypes.func,
@@ -241,7 +234,6 @@ Dropzone.defaultProps = {
     disabled: false,
     namespace: 'ar-dropzone',
     onChange: noop,
-    onEffect: noop,
     onError: noop,
     onFileAdded: noop,
     onFileRemoved: noop,
