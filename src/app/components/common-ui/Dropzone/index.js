@@ -55,7 +55,8 @@ let Dropzone = (
 
         setNewState(stateRef.current);
         setPrevState(prevStateRef.current);
-        setTimeout(() => setUpdated(Date.now()), 1);
+        //setTimeout(() => setUpdated(Date.now()), 1);
+        setUpdated(Date.now());
     };
 
     const _onFileAdded = file => {
@@ -66,20 +67,17 @@ let Dropzone = (
             return;
         }
 
-        setTimeout(() => {
-            setState(
-                { files: dzRef.current.getAcceptedFiles() },
-                '_onFileAdded()',
-            );
+        // setTimeout(() => {
+        setState({ files: dzRef.current.getAcceptedFiles() }, '_onFileAdded()');
 
-            const evt = {
-                type: 'added',
-                file,
-                files: dzRef.current.getAcceptedFiles(),
-            };
+        const evt = {
+            type: 'added',
+            file,
+            files: dzRef.current.getAcceptedFiles(),
+        };
 
-            onFileAdded(evt);
-        }, 100);
+        onFileAdded(evt);
+        //}, 100);
     };
 
     const _onFileRemoved = file => {
