@@ -190,7 +190,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         hide,
         setState,
         show,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

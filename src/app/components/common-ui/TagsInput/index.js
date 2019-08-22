@@ -363,7 +363,7 @@ let TagsInput = (
     useImperativeHandle(ref, () => ({
         container: containerRef.current,
         setState,
-        state,
+        state: stateRef.current,
         value: _value(),
     }));
 

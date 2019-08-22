@@ -166,7 +166,7 @@ let Collapsible = ({ children, ...props }, ref) => {
         container: containerRef.current,
         expand,
         setState,
-        state,
+        state: stateRef.current,
         toggle,
     }));
 

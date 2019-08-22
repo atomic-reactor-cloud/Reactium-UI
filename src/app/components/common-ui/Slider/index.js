@@ -324,7 +324,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     // External Interface
     useImperativeHandle(ref, () => ({
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

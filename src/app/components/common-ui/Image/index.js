@@ -129,7 +129,7 @@ let Img = (
     useImperativeHandle(ref, () => ({
         breakpoint: op.get(containerRef.current, 'state.active', null),
         setState,
-        state,
+        state: stateRef.current,
         ...ref,
     }));
 

@@ -1,3 +1,5 @@
+// TODO: Refactor to use newer hook template. 8/22/19
+
 import lunr from 'lunr';
 import _ from 'underscore';
 import uuid from 'uuid/v4';

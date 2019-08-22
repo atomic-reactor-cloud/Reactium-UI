@@ -141,7 +141,7 @@ let Picker = (
         isChild,
         show,
         setState,
-        state,
+        state: stateRef.current,
         toggle,
     });
 

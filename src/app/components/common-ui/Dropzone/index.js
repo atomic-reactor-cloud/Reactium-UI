@@ -118,10 +118,10 @@ let Dropzone = (
     // External Interface
     useImperativeHandle(ref, () => ({
         container: containerRef.current,
-        prevState,
+        prevState: prevStateRef.current,
         props,
         setState,
-        state,
+        state: stateRef.current,
         files: {
             list: stateRef.current.files,
             remove: file => dzRef.current.removeFile(file),

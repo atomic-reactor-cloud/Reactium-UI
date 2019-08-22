@@ -82,7 +82,7 @@ let Alert = ({ children, id, ...props }, ref) => {
     useImperativeHandle(ref, () => ({
         ...containerRef.current,
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

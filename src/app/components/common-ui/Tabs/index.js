@@ -74,7 +74,7 @@ let Tabs = ({ children, data = {}, id, namespace, ...props }, ref) => {
     useImperativeHandle(ref, () => ({
         dialog: dialogRef.current,
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

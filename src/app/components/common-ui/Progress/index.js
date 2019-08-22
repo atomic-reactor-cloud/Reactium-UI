@@ -53,7 +53,7 @@ let Progress = ({ children, ...props }, ref) => {
     useImperativeHandle(ref, () => ({
         container: containerRef.current,
         setState,
-        state,
+        state: stateRef.current,
         value: op.get(stateRef.current, 'value'),
     }));
 

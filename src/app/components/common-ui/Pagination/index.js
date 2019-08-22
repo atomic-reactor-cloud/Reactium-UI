@@ -43,7 +43,7 @@ let Pagination = (
 
     useImperativeHandle(ref, () => ({
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     const renderNumbers = () => {

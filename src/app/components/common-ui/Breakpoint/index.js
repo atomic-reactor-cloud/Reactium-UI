@@ -83,7 +83,7 @@ let Breakpoint = ({ iDocument, iWindow, ...props }, ref) => {
     // External Interface
     useImperativeHandle(ref, () => ({
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

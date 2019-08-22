@@ -109,7 +109,7 @@ let Checkpoints = ({ index, points = [], namespace, ...props }, ref) => {
     useImperativeHandle(ref, () => ({
         container: containerRef.current,
         setState,
-        state,
+        state: stateRef.current,
         next,
         prev,
         first: restart,

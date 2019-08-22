@@ -71,7 +71,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
         expand: () => contentRef.current.expand(),
         hide: () => containerRef.current.hide(),
         show: () => containerRef.current.show(),
-        setState,
+        state: stateRef.current,
         state,
         toggle: {
             collapse: () => contentRef.current.toggle(),

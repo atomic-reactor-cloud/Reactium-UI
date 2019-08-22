@@ -49,7 +49,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
     useImperativeHandle(ref, () => ({
         element: containerRef.current,
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects

@@ -52,8 +52,8 @@ let Modal = (props, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
-        state,
         ...dissmissableRef.current,
+        state: stateRef.current,
         dismiss,
         show,
     }));

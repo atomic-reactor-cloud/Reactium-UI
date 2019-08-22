@@ -518,7 +518,7 @@ let Scene = ({ children, ...props }, ref) => {
         navTo,
         removeChildren,
         setState,
-        state,
+        state: stateRef.current,
     }));
 
     // Side Effects
