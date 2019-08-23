@@ -30,6 +30,7 @@ import TimePicker from './TimePicker';
 import Toast from './Toast';
 import Toggle from './Toggle';
 import Tooltip from './Tooltip';
+import WebForm from './WebForm';
 
 export {
     Alert,
@@ -65,4 +66,5 @@ export {
     Toast,
     Toggle,
     Tooltip,
+    WebForm,
 };
