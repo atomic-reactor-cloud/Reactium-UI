@@ -164,9 +164,7 @@ let WebForm = (props, ref) => {
     }));
 
     // Side Effects
-    useLayoutEffect(() => {
-        update(value);
-    }, Object.values(value));
+    useLayoutEffect(() => update(value), Object.values(value));
 
     const getValue = k => {
         const elements = op.get(stateRef, 'current.elements', {});
