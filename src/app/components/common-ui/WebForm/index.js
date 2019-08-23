@@ -280,6 +280,7 @@ let WebForm = (props, ref) => {
 
     const render = () => {
         const cname = cn({ [className]: !!className, [namespace]: true });
+        const errorMsg = op.get(stateRef, 'current.error.message');
 
         return (
             <form
