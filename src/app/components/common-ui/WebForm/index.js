@@ -81,7 +81,7 @@ let WebForm = (props, ref) => {
 
         setState({
             elements: ids.reduce((obj, i) => {
-                const element = this.form.elements[i];
+                const element = elements[i];
                 const name = element.name;
 
                 if (name) {
