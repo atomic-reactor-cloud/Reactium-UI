@@ -75,23 +75,29 @@ let WebForm = (props, ref) => {
         setNewState(stateRef.current);
     };
 
-    // External Interface
-    useImperativeHandle(ref, () => ({
-        setState,
-        state: stateRef.current,
-        update,
-    }));
+    const getElements = () => {
+        const elements = op.get(formRef, 'current.elements', {});
+        const ids = Object.keys(elements).filter(key => !isNaN(key));
 
-    // Side Effects
-    useLayoutEffect(() => {
-        update(value);
-    }, Object.values(value));
+        setState({
+            elements: ids.reduce((obj, i) => {
+                const element = this.form.elements[i];
+                const name = element.name;
 
-    const update = value => {
-        value = value || stateRef.current.value;
-        setState({ value });
-        getElements();
-        applyValue(value);
+                if (name) {
+                    if (op.has(obj, name)) {
+                        if (!Array.isArray(obj[name])) {
+                            obj[name] = [obj[name]];
+                        }
+                        obj[name].push(element);
+                    } else {
+                        obj[name] = element;
+                    }
+                }
+
+                return obj;
+            }, {}),
+        });
     };
 
     const applyValue = value => {
@@ -143,30 +149,24 @@ let WebForm = (props, ref) => {
         onUpdate({ value, elements });
     };
 
-    const getElements = () => {
-        const elements = op.get(formRef, 'current.elements', {});
-        const ids = Object.keys(elements).filter(key => !isNaN(key));
-
-        setState({
-            elements: ids.reduce((obj, i) => {
-                const element = this.form.elements[i];
-                const name = element.name;
-
-                if (name) {
-                    if (op.has(obj, name)) {
-                        if (!Array.isArray(obj[name])) {
-                            obj[name] = [obj[name]];
-                        }
-                        obj[name].push(element);
-                    } else {
-                        obj[name] = element;
-                    }
-                }
-
-                return obj;
-            }, {}),
-        });
+    const update = value => {
+        value = value || stateRef.current.value;
+        setState({ value });
+        getElements();
+        applyValue(value);
     };
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        setState,
+        state: stateRef.current,
+        update,
+    }));
+
+    // Side Effects
+    useLayoutEffect(() => {
+        update(value);
+    }, Object.values(value));
 
     const getValue = k => {
         const elements = op.get(stateRef, 'current.elements', {});
