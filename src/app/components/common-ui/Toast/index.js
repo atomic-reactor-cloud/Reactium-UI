@@ -21,16 +21,12 @@ Toast = forwardRef(Toast);
 Toast[toast.TYPE.DEFAULT] = toast;
 
 Toast.show = ({
-    autoClose = false,
     icon,
     message = null,
     position = Toast.POSITION.TOP_RIGHT,
     type = Toast.TYPE.DEFAULT,
+    ...props
 }) => {
-    if (!message) {
-        return;
-    }
-
     if (!message) {
         return;
     }
@@ -46,7 +42,7 @@ Toast.show = ({
 
     type = Object.values(Toast.TYPE).includes(type) ? type : Toast.TYPE.DEFAULT;
 
-    const config = { autoClose, position };
+    const config = { ...props, position };
 
     return Toast[type](message, config);
 };

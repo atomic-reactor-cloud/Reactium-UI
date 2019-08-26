@@ -4,13 +4,11 @@
 
     .grow,
     &-grow {
-        display: flex;
         flex-grow: 1;
     }
 
     .shrink,
     &-shrink {
-        display: flex;
         flex-shrink: 1;
     }
 
