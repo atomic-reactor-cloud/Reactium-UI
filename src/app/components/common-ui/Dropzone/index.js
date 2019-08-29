@@ -19,7 +19,15 @@ const noop = () => {};
  * -----------------------------------------------------------------------------
  */
 let Dropzone = (
-    { onChange, onError, onFileAdded, onFileRemoved, onInitialize, ...props },
+    {
+        children,
+        onChange,
+        onError,
+        onFileAdded,
+        onFileRemoved,
+        onInitialize,
+        ...props
+    },
     ref,
 ) => {
     // Refs
@@ -28,13 +36,12 @@ let Dropzone = (
     const initRef = useRef(false);
     const prevStateRef = useRef({});
     const stateRef = useRef({
-        files: props.files,
+        ...props,
+        config: { ...Dropzone.defaultProps.config, ...props.config },
         initialized: initRef.current,
     });
 
     // State
-    const config = { ...Dropzone.defaultProps.config, ...props.config };
-
     const [state, setNewState] = useState(stateRef.current);
     const [prevState, setPrevState] = useState(prevStateRef.current);
 
@@ -42,7 +49,7 @@ let Dropzone = (
 
     // Internal Interface
     const setState = (newState, caller) => {
-        const { debug } = props;
+        const { debug } = stateRef.current;
 
         newState = { ...stateRef.current, ...newState };
 
@@ -60,7 +67,7 @@ let Dropzone = (
     };
 
     const _onFileAdded = file => {
-        const { max = 0 } = stateRef.current;
+        const { config, max = 0 } = stateRef.current;
         const { maxFiles = 0 } = config;
 
         if (maxFiles > 0 && max >= maxFiles) {
@@ -147,9 +154,16 @@ let Dropzone = (
 
     useLayoutEffect(() => {
         if (!dzRef.current) {
-            const { files } = stateRef.current;
+            const { config, files } = stateRef.current;
             let { maxFiles } = config;
             maxFiles = maxFiles < 1 ? null : maxFiles;
+
+            try {
+                const dzs = document.querySelector('.dz-hidden-input');
+                if (dzs) {
+                    dzs.parentNode.removeChild(dzs);
+                }
+            } catch (err) {}
 
             const dzone = new dz(containerRef.current, { ...config, maxFiles });
 
@@ -172,7 +186,7 @@ let Dropzone = (
     });
 
     const render = () => {
-        const { children, className, namespace } = props;
+        const { className, namespace } = stateRef.current;
 
         return (
             <div
