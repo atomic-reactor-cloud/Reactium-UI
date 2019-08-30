@@ -374,7 +374,7 @@ let Dropdown = (props, ref) => {
 
         setTabIndex(idx);
         if (idx === -1) {
-            setTimeout(() => ElementComponent.focus(), 1);
+            ElementComponent.focus();
         }
     };
 
@@ -442,7 +442,6 @@ let Dropdown = (props, ref) => {
 
                         return (
                             <li key={key} className={className}>
-                                <input type='hidden' value={val} name={name} />
                                 <button
                                     type='button'
                                     onClick={e => _onItemClick(e, val)}

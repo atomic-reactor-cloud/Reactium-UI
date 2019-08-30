@@ -84,6 +84,9 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
                 break;
         }
 
+        y += window.scrollY;
+        x += window.scrollX;
+
         return { x: Math.floor(x), y: Math.floor(y) };
     };
 
