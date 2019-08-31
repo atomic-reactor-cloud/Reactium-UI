@@ -239,12 +239,8 @@ let DataTable = (
         onSort({ e: 'sort', sort, sortBy });
     };
 
-    const onToggle = e => {
+    const toggleItem = ({ checked, index, silent = false }) => {
         const data = getData();
-        let { index = -1 } = e.target.dataset;
-        index = Number(index);
-
-        const { checked } = e.target;
         const { multiselect } = stateRef.current;
         const item = data[index];
 
@@ -254,26 +250,45 @@ let DataTable = (
                     const { selected } = row;
                     if (i !== index && selected === true) {
                         row.selected = false;
-                        onUnSelect({
-                            event: ENUMS.EVENT.UNSELECT,
-                            item: row,
-                            index: i,
-                        });
+                        if (silent !== true) {
+                            onUnSelect({
+                                event: ENUMS.EVENT.UNSELECT,
+                                item: row,
+                                index: i,
+                            });
+                        }
                     }
                 });
             }
 
             item.selected = checked;
 
-            if (checked === true) {
-                onSelect({ event: ENUMS.EVENT.SELECT, item, index });
-            } else {
-                onUnSelect({ event: ENUMS.EVENT.UNSELECT, item, index });
+            if (silent !== true) {
+                if (checked === true) {
+                    onSelect({ event: ENUMS.EVENT.SELECT, item, index });
+                } else {
+                    onUnSelect({ event: ENUMS.EVENT.UNSELECT, item, index });
+                }
             }
-
-            setState({ updated: Date.now() });
-            //setTimeout(() => setState({ updated: Date.now() }), 1);
         }
+    };
+
+    const onToggle = e => {
+        const data = getData();
+        let { index = -1 } = e.target.dataset;
+        index = Number(index);
+
+        const { checked } = e.target;
+        toggleItem({ checked, index });
+        setState({ updated: Date.now() });
+    };
+
+    const onToggleAll = e => {
+        const data = getData();
+        const { checked } = e.target;
+
+        data.forEach((row, index) => toggleItem({ checked, index }));
+        setState({ updated: Date.now() });
     };
 
     // External Interface
@@ -326,20 +341,28 @@ let DataTable = (
             reorderable,
             rowsPerPage,
             scrollable,
+            selectable,
             sort,
             sortable,
             sortBy,
             style,
         } = stateRef.current;
 
+        const data = getData();
+
         const content = (
             <div ref={elm => setContentRef(elm)}>
-                <Headings {...stateRef.current} onClick={applySort} />
+                <Headings
+                    data={data}
+                    {...stateRef.current}
+                    onClick={applySort}
+                    onToggleAll={onToggleAll}
+                />
                 {children}
                 <Rows
                     {...stateRef.current}
                     onReorder={applyReorder}
-                    data={getData()}
+                    data={data}
                     selection={getSelection()}
                     state={stateRef.current}
                     onToggle={onToggle}
@@ -355,6 +378,7 @@ let DataTable = (
                 className={cn({
                     [className]: !!className,
                     [namespace]: !!namespace,
+                    selectable,
                 })}>
                 <Header namespace={namespace}>{header}</Header>
                 {scrollable ? (

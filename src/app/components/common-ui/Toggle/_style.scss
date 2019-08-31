@@ -11,6 +11,7 @@ label.ar-toggle {
     flex-shrink: 0;
     align-items: center;
     cursor: pointer;
+    user-select: none;
 
     * {
         pointer-events: none;

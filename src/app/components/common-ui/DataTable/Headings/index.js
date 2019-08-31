@@ -1,10 +1,53 @@
 import React from 'react';
 import Heading from '../Heading';
 import ENUMS from '../enums';
+import { Feather } from 'components/common-ui/Icon';
 
-const Headings = ({ columns, namespace, onClick, sort, sortable, sortBy }) =>
-    !columns ? null : (
+const style = {
+    width: 30,
+    maxWidth: 30,
+    minWidth: 30,
+    flexGrow: 0,
+    flexShrink: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+};
+
+const Headings = ({
+    columns,
+    data = [],
+    multiselect,
+    namespace,
+    onClick,
+    onToggleAll,
+    selectable,
+    sort,
+    sortable,
+    sortBy,
+}) => {
+    const selection = data.filter(item => Boolean(item.selected === true));
+
+    return !columns ? null : (
         <div className={`${namespace}-headings`}>
+            {selectable === true && (
+                <label className={`${namespace}-select`} style={style}>
+                    {multiselect === true ? (
+                        <>
+                            <input
+                                type='checkbox'
+                                checked={selection.length > 0}
+                                onChange={onToggleAll}
+                            />
+                            <span className='box'>
+                                <Feather.Check width={15} height={15} />
+                            </span>
+                        </>
+                    ) : (
+                        <span className='dash' />
+                    )}
+                </label>
+            )}
             {Object.entries(columns).map(([key, value]) => {
                 value =
                     typeof value === 'string'
@@ -44,5 +87,6 @@ const Headings = ({ columns, namespace, onClick, sort, sortable, sortBy }) =>
             })}
         </div>
     );
+};
 
 export default Headings;

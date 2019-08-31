@@ -164,8 +164,11 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
     }
 
     &-headings {
-
         background-color: $ar-table-color-background-heading;
+
+        .ar-data-table-select {
+            border-top: 1px solid $ar-table-color-border;
+        }
     }
 
     &-col,
@@ -246,8 +249,9 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
     &-select {
         padding-left: 16px;
         display: flex;
-        width: 100%;
+        width: 32px;
         position: relative;
+        user-select: none;
 
         input {
             height: 0;
@@ -280,6 +284,11 @@ $ar-table-shadow: 0 0 3px 1px rgba($color-black, 0.05) !default;
                 fill: $ar-table-color-checkbox;
                 flex-shrink: 0;
             }
+        }
+
+        span.dash {
+            width: 4px;
+            border-bottom: 2px solid darken($ar-table-color-border, 5%);
         }
 
         input:checked + span.box {

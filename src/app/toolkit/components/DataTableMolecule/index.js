@@ -133,8 +133,8 @@ class DataTableMolecule extends Component {
         return (
             <DataTable
                 reorderable={false}
-                multiselect={false}
-                selectable={false}
+                multiselect={true}
+                selectable={true}
                 sortable={false}
                 scrollable={false}
                 sort={DataTable.ENUMS.SORT.DESC}

@@ -3,7 +3,7 @@ module.exports = {
         name: 'Reactium',
         title: 'Reactium UI',
         logo: '/assets/images/atomic-reactor-logo.svg',
-        version: '0.0.40',
+        version: '0.0.42',
     },
     overview: require('appdir/toolkit/overview').default,
     themes: [
