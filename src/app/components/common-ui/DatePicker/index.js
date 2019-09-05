@@ -298,6 +298,8 @@ let DatePicker = ({ iDocument, iWindow, ...props }, ref) => {
 
 DatePicker = forwardRef(DatePicker);
 
+DatePicker.ENUMS = ENUMS;
+
 DatePicker.propTypes = {
     align: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
     calendar: PropTypes.shape(Calendar.propTypes),
