@@ -54,7 +54,7 @@ let WebForm = (props, ref) => {
     const formRef = useRef();
     const stateRef = useRef({
         value,
-        error: null,
+        errors: null,
         mounted: false,
         status: ENUMS.STATUS.READY,
         elements: {},
@@ -76,27 +76,28 @@ let WebForm = (props, ref) => {
     };
 
     const getElements = () => {
-        const elements = op.get(formRef, 'current.elements', {});
+        const elements = formRef.current.elements;
         const ids = Object.keys(elements).filter(key => !isNaN(key));
+        const formElements = ids.reduce((obj, i) => {
+            const element = elements[i];
+            const name = element.name;
+
+            if (name) {
+                if (op.has(obj, name)) {
+                    if (!Array.isArray(obj[name])) {
+                        obj[name] = [obj[name]];
+                    }
+                    obj[name].push(element);
+                } else {
+                    obj[name] = element;
+                }
+            }
+
+            return obj;
+        }, {});
 
         setState({
-            elements: ids.reduce((obj, i) => {
-                const element = elements[i];
-                const name = element.name;
-
-                if (name) {
-                    if (op.has(obj, name)) {
-                        if (!Array.isArray(obj[name])) {
-                            obj[name] = [obj[name]];
-                        }
-                        obj[name].push(element);
-                    } else {
-                        obj[name] = element;
-                    }
-                }
-
-                return obj;
-            }, {}),
+            elements: formElements,
         });
     };
 
@@ -116,7 +117,7 @@ let WebForm = (props, ref) => {
         Object.entries(elements).forEach(([, element]) => {
             const name = element.name;
             const type = element.type;
-            const val = op.get(value, name, '');
+            const val = value[name] || '';
 
             if (Array.isArray(val)) {
                 // Checkbox & Radio
@@ -158,17 +159,30 @@ let WebForm = (props, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
-        setState,
-        state: stateRef.current,
         update,
+        getValue,
     }));
 
     // Side Effects
-    useLayoutEffect(() => update(value), Object.values(value));
+    const errorFields = op.get(stateRef.current, 'errors.fields', []);
+
+    useLayoutEffect(() => {
+        update(value);
+        Object.entries(stateRef.current.elements).forEach(
+            ([fieldName, field]) => {
+                if (errorFields.find(error => error === fieldName)) {
+                    field.classList.add('error');
+                } else {
+                    field.classList.remove('error');
+                }
+            },
+        );
+    }, Object.values(value).concat(errorFields.join(',')));
 
     const getValue = k => {
-        const elements = op.get(stateRef, 'current.elements', {});
+        const elements = stateRef.current.elements;
         const keys = Object.keys(elements);
+
         const formData = new FormData(formRef.current);
         for (const key of formData.keys()) {
             keys.push(key);
@@ -197,33 +211,33 @@ let WebForm = (props, ref) => {
     const validate = value => {
         value = value || getValue();
 
-        if (required.length < 1 && validator) {
-            return validator({ value });
+        let valid = true;
+        let errors = { focus: null, fields: [], errors: [] };
+
+        const missing = required.filter(k => _.isEmpty(value[k]));
+
+        if (missing.length > 0) {
+            valid = false;
+            missing.reduce((errors, field) => {
+                errors.fields.push(field);
+                errors.errors.push(`${field} is a required field`);
+
+                return errors;
+            }, errors);
         }
 
-        const errors = required.filter(k => _.isEmpty(value[k]));
-        const valid = errors.length > 0 ? errors : true;
+        if (validator) {
+            const validatorResult = validator(value, valid, errors);
+            valid = op.get(validatorResult, 'valid', true) && valid;
+            const newErrors = op.get(validatorResult, 'errors', {});
+            errors = {
+                focus: newErrors.focus || null,
+                fields: _.unique([...errors.fields, ...newErrors.fields]),
+                errors: _.unique([...errors.errors, ...newErrors.errors]),
+            };
+        }
 
-        return validator && valid !== true
-            ? validator({ errors, value })
-            : valid === true
-            ? true
-            : valid.reduce(
-                  (obj, k) => {
-                      if (!obj.focus) {
-                          obj.focus = k;
-                      }
-                      if (!obj.message) {
-                          obj.message = [`${k} is a required field`];
-                      }
-
-                      obj.fields.push(k);
-                      obj.errors.push(`${k} is a required field`);
-
-                      return obj;
-                  },
-                  { message: null, focus: null, fields: [], errors: [] },
-              );
+        return { valid, errors };
     };
 
     const complete = () => {
@@ -241,22 +255,16 @@ let WebForm = (props, ref) => {
             return;
         }
 
-        setState({ error: null });
+        setState({ errors: null });
 
         const value = getValue();
 
-        const valid = validate(value);
+        const { valid, errors } = validate(value);
 
-        onBeforeSubmit({ value, valid });
-
+        onBeforeSubmit({ value, valid, errors });
         if (valid !== true) {
-            // stringify errors if they are an array.
-            if (Array.isArray(op.get(valid, 'message'))) {
-                valid.message = valid.message.join(', ');
-            }
-
-            setState({ error: valid });
-            onError({ error: valid, value });
+            setState({ errors });
+            onError({ errors, value });
             return;
         }
 
@@ -277,8 +285,11 @@ let WebForm = (props, ref) => {
     };
 
     const render = () => {
-        const cname = cn({ [className]: !!className, [namespace]: true });
-        const errorMsg = op.get(stateRef, 'current.error.message');
+        const cname = cn({
+            [className]: !!className,
+            [namespace]: !!namespace,
+        });
+        const errors = op.get(stateRef, 'current.errors');
 
         return (
             <form
@@ -286,8 +297,14 @@ let WebForm = (props, ref) => {
                 {...formProps}
                 onSubmit={submit}
                 ref={formRef}>
-                {errorMsg && showError === true && (
-                    <div className='webform-error'>{errorMsg}</div>
+                {errors && showError === true && (
+                    <ul className='webform-error'>
+                        {errors.errors.map(error => (
+                            <li className='webform-error-item' key={error}>
+                                {error}
+                            </li>
+                        ))}
+                    </ul>
                 )}
                 {children}
             </form>
@@ -304,7 +321,7 @@ WebForm.ENUMS = ENUMS;
 WebForm.propTypes = {
     className: PropTypes.string,
     namespace: PropTypes.string,
-    required: PropTypes.array,
+    required: PropTypes.array.isRequired,
     onBeforeSubmit: PropTypes.func,
     onComplete: PropTypes.func,
     onError: PropTypes.func,
@@ -313,7 +330,7 @@ WebForm.propTypes = {
     showError: PropTypes.bool,
     validator: PropTypes.func,
     value: PropTypes.object,
-    name: PropTypes.string.required,
+    name: PropTypes.string.isRequired,
     id: PropTypes.string,
 };
 
@@ -326,7 +343,7 @@ WebForm.defaultProps = {
     onSubmit: null,
     onUpdate: noop,
     showError: true,
-    validator: () => true,
+    validator: (value, valid = true, errors) => ({ valid, errors }),
     name: 'form',
     value: {},
 };
