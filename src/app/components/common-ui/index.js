@@ -32,6 +32,8 @@ import Toggle from './Toggle';
 import Tooltip from './Tooltip';
 import WebForm from './WebForm';
 
+import hooks from './hooks';
+
 export {
     Alert,
     Breakpoint,
@@ -67,4 +69,5 @@ export {
     Toggle,
     Tooltip,
     WebForm,
+    hooks,
 };
