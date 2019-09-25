@@ -34,7 +34,7 @@ const Label = forwardRef(
  */
 let Slider = ({ labelFormat, iDocument, iWindow, value, ...props }, ref) => {
     iDocument = iDocument || document;
-    iWindow = iWindow || iWindow;
+    iWindow = iWindow || window;
 
     // Refs
     const barRef = useRef();
