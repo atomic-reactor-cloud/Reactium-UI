@@ -32,7 +32,10 @@ const Label = forwardRef(
  * Hook Component: Slider
  * -----------------------------------------------------------------------------
  */
-let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
+let Slider = ({ labelFormat, iDocument, iWindow, value, ...props }, ref) => {
+    iDocument = iDocument || document;
+    iWindow = iWindow || iWindow;
+
     // Refs
     const barRef = useRef();
     const containerRef = useRef();
@@ -74,11 +77,12 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
     };
 
     const offset = el => {
-        let rect = el.getBoundingClientRect(),
+        const rect = el.getBoundingClientRect(),
             scrollLeft =
-                window.pageXOffset || document.documentElement.scrollLeft,
+                iWindow.pageXOffset || iDocument.documentElement.scrollLeft,
             scrollTop =
-                window.pageYOffset || document.documentElement.scrollTop;
+                iWindow.pageYOffset || iDocument.documentElement.scrollTop;
+
         return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
     };
 
@@ -103,6 +107,8 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         }
 
         const handle = handles[dragging].current;
+        const handleW = handle.offsetWidth + 4;
+        const handleH = handle.offsetHeight + 4;
         const bar = barRef.current;
         const cont = containerRef.current;
         const lbl = labelRef.current;
@@ -113,22 +119,29 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
         let minX = 0;
         let minY = 0;
-        let maxX = barW;
-        let maxY = barH;
+        let maxX = cont.offsetWidth;
+        let maxY = cont.offsetHeight;
 
-        if (range) {
-            const handleW = handle.offsetWidth + 4;
-            switch (dragging) {
-                case ENUMS.MIN:
-                    maxX = offset(handles[ENUMS.MAX].current).left - handleW;
-                    minY = offset(handles[ENUMS.MAX].current).top + handleW;
-                    break;
+        if (range && direction === ENUMS.DIRECTION.HORIZONTAL) {
+            maxX =
+                dragging === ENUMS.MIN
+                    ? handles[ENUMS.MAX].current.offsetLeft - handleW
+                    : maxX;
+            minX =
+                dragging === ENUMS.MAX
+                    ? handles[ENUMS.MIN].current.offsetLeft + handleW
+                    : minX;
+        }
 
-                case ENUMS.MAX:
-                    minX = offset(handles[ENUMS.MIN].current).left + handleW;
-                    maxY = offset(handles[ENUMS.MIN].current).top - handleW;
-                    break;
-            }
+        if (range && direction === ENUMS.DIRECTION.VERTICAL) {
+            minY =
+                dragging === ENUMS.MIN
+                    ? handles[ENUMS.MAX].current.offsetTop + handleH
+                    : minY;
+            maxY =
+                dragging === ENUMS.MAX
+                    ? handles[ENUMS.MIN].current.offsetTop - handleH
+                    : maxY;
         }
 
         const x =
@@ -186,6 +199,7 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
                 const selW =
                     offset(handles[ENUMS.MAX].current).left -
                     offset(handles[ENUMS.MIN].current).left;
+
                 sel.style.left = handles[ENUMS.MIN].current.style.left;
                 sel.style.width = `${selW}px`;
             } else {
@@ -202,20 +216,18 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
 
     const _dragEnd = () => {
         setState({ dragging: null });
-        const doc = iDocument || document;
-        doc.removeEventListener('mousemove', _drag);
-        doc.removeEventListener('mouseup', _dragEnd);
-        doc.removeEventListener('touchmove', _drag);
-        doc.removeEventListener('touchend', _dragEnd);
+        iDocument.removeEventListener('mousemove', _drag);
+        iDocument.removeEventListener('mouseup', _dragEnd);
+        iDocument.removeEventListener('touchmove', _drag);
+        iDocument.removeEventListener('touchend', _dragEnd);
     };
 
     const _dragStart = e => {
         setState({ dragging: e.target.dataset.handle, focus: e.target });
-        const doc = iDocument || document;
-        doc.addEventListener('mousemove', _drag);
-        doc.addEventListener('mouseup', _dragEnd);
-        doc.addEventListener('touchmove', _drag);
-        doc.addEventListener('touchend', _dragEnd);
+        iDocument.addEventListener('mousemove', _drag);
+        iDocument.addEventListener('mouseup', _dragEnd);
+        iDocument.addEventListener('touchmove', _drag);
+        iDocument.addEventListener('touchend', _dragEnd);
     };
 
     const _move = () => {
@@ -348,9 +360,9 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         const doc = iDocument || document;
 
         if (Boolean(dragging)) {
-            doc.body.style.cursor = 'grabbing';
+            iDocument.body.style.cursor = 'grabbing';
         } else {
-            doc.body.style.cursor = 'default';
+            iDocument.body.style.cursor = 'default';
             labelRef.current.style.display = 'none';
             if (snap) {
                 _move();
@@ -366,10 +378,10 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             min,
             namespace,
             tickFormat,
-            ticks = false,
+            ticks = [],
         } = stateRef.current;
 
-        if (!ticks) {
+        if (ticks.length < 1) {
             return null;
         }
 
@@ -514,6 +526,8 @@ Slider.defaultProps = {
     tickFormat: tick => tick,
     ticks: [],
     value: 0,
+    iDocument: typeof document !== 'undefined' ? document : null,
+    iWindow: typeof window !== 'undefined' ? window : null,
 };
 
 export { Slider as default };
