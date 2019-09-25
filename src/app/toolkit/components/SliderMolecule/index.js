@@ -41,9 +41,25 @@ class SliderMolecule extends Component {
                             name='ar-slider-demo-1'
                             value={10}
                             iDocument={this.props.iDocument}
+                            iWindow={this.props.iWindow}
                             labelFormat={this.labelFormat}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.VERTICAL}
+                        />
+                    </div>
+                    <div className='col-xs-12 col-sm-6 pb-xs-20 px-xs-20 flex-center'>
+                        <Slider
+                            max={20}
+                            min={0}
+                            name='ar-slider-demo-2'
+                            value={10}
+                            iDocument={this.props.iDocument}
+                            iWindow={this.props.iWindow}
+                            labelFormat={this.labelFormat}
+                            snap
+                            ticks={true}
+                            tickFormat={this.labelFormat}
+                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
                         />
                     </div>
                     <div className='col-xs-6 mb-xs-40 flex-center'>
@@ -53,6 +69,7 @@ class SliderMolecule extends Component {
                             name='ar-slider-demo-1'
                             value={{ min: 5, max: 15 }}
                             iDocument={this.props.iDocument}
+                            iWindow={this.props.iWindow}
                             labelFormat={this.labelFormat}
                             snap
                             tickFormat={this.labelFormat}
@@ -65,22 +82,9 @@ class SliderMolecule extends Component {
                             max={20}
                             min={0}
                             name='ar-slider-demo-2'
-                            value={10}
-                            iDocument={this.props.iDocument}
-                            labelFormat={this.labelFormat}
-                            snap
-                            ticks={true}
-                            tickFormat={this.labelFormat}
-                            direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
-                        />
-                    </div>
-                    <div className='col-xs-12 col-sm-6 pb-xs-20 px-xs-20 flex-center'>
-                        <Slider
-                            max={20}
-                            min={0}
-                            name='ar-slider-demo-2'
                             value={{ min: 5, max: 15 }}
                             iDocument={this.props.iDocument}
+                            iWindow={this.props.iWindow}
                             labelFormat={this.labelFormat}
                             tickFormat={this.labelFormat}
                             direction={Slider.ENUMS.DIRECTION.HORIZONTAL}
