@@ -73,6 +73,15 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         setNewState(stateRef.current);
     };
 
+    const offset = el => {
+        let rect = el.getBoundingClientRect(),
+            scrollLeft =
+                window.pageXOffset || document.documentElement.scrollLeft,
+            scrollTop =
+                window.pageYOffset || document.documentElement.scrollTop;
+        return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
+    };
+
     const _drag = e => {
         let {
             buffer,
@@ -111,25 +120,25 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
             const handleW = handle.offsetWidth + 4;
             switch (dragging) {
                 case ENUMS.MIN:
-                    maxX = handles[ENUMS.MAX].current.offsetLeft - handleW;
-                    minY = handles[ENUMS.MAX].current.offsetTop + handleW;
+                    maxX = offset(handles[ENUMS.MAX].current).left - handleW;
+                    minY = offset(handles[ENUMS.MAX].current).top + handleW;
                     break;
 
                 case ENUMS.MAX:
-                    minX = handles[ENUMS.MIN].current.offsetLeft + handleW;
-                    maxY = handles[ENUMS.MIN].current.offsetTop - handleW;
+                    minX = offset(handles[ENUMS.MIN].current).left + handleW;
+                    maxY = offset(handles[ENUMS.MIN].current).top - handleW;
                     break;
             }
         }
 
         const x =
             direction === ENUMS.DIRECTION.HORIZONTAL
-                ? Math.min(Math.max(minX, e.clientX - cont.offsetLeft), maxX)
+                ? Math.min(Math.max(minX, e.clientX - offset(cont).left), maxX)
                 : 0;
 
         const y =
             direction === ENUMS.DIRECTION.VERTICAL
-                ? Math.min(Math.max(minY, e.clientY - cont.offsetTop), maxY)
+                ? Math.min(Math.max(minY, e.clientY - offset(cont).top), maxY)
                 : 0;
 
         const vals = _.range(min, max + 1);
@@ -175,14 +184,14 @@ let Slider = ({ labelFormat, iDocument, value, ...props }, ref) => {
         if (range) {
             if (direction === ENUMS.DIRECTION.HORIZONTAL) {
                 const selW =
-                    handles[ENUMS.MAX].current.offsetLeft -
-                    handles[ENUMS.MIN].current.offsetLeft;
+                    offset(handles[ENUMS.MAX].current).left -
+                    offset(handles[ENUMS.MIN].current).left;
                 sel.style.left = handles[ENUMS.MIN].current.style.left;
                 sel.style.width = `${selW}px`;
             } else {
                 const selH =
-                    handles[ENUMS.MIN].current.offsetTop -
-                    handles[ENUMS.MAX].current.offsetTop;
+                    offset(handles[ENUMS.MIN].current).top -
+                    offset(handles[ENUMS.MAX].current).top;
                 sel.style.top = handles[ENUMS.MAX].current.style.top;
                 sel.style.height = `${selH}px`;
             }
