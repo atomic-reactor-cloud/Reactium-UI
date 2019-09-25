@@ -358,7 +358,6 @@ let Slider = ({ labelFormat, iDocument, iWindow, value, ...props }, ref) => {
     // Side Effect: cursor and label
     useEffect(() => {
         const { dragging, snap, value } = stateRef.current;
-        const doc = iDocument || document;
 
         if (Boolean(dragging)) {
             iDocument.body.style.cursor = 'grabbing';
