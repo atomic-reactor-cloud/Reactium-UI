@@ -25,44 +25,87 @@ class CollapsibleMolecule extends Component {
     constructor(props) {
         super(props);
         this.collapsible = null;
+        this.collapsibleHorizontal = null;
     }
 
     Demo = () => (
-        <div style={{ minHeight: 200 }}>
-            <div>
-                <Button
-                    block
-                    onClick={() => this.collapsible.toggle()}
-                    style={{ borderRadius: 0 }}>
-                    Toggle Collapsible
-                </Button>
-            </div>
-            <Collapsible ref={elm => (this.collapsible = elm)}>
-                <div className='bg-blue white py-xs-20 pl-xs-20 pr-xs-32'>
-                    <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit,
-                        sed do eiusmod tempor incididunt ut labore et dolore
-                        magna aliqua. Ut enim ad minim veniam, quis nostrud
-                        exercitation ullamco laboris nisi ut aliquip ex ea
-                        commodo consequat. Duis aute irure dolor in
-                        reprehenderit in voluptate velit esse cillum dolore eu
-                        fugiat nulla pariatur. Excepteur sint occaecat cupidatat
-                        non proident, sunt in culpa qui officia deserunt mollit
-                        anim id est laborum.
-                    </p>
+        <div className='row'>
+            <div className='col-xs-12 col-lg-6 px-xs-0 px-lg-8 mb-xs-24 mb-lg-0'>
+                <div style={{ width: '100%' }}>
                     <Button
-                        size={Button.ENUMS.SIZE.XS}
-                        onClick={() => this.collapsible.collapse()}
-                        style={{
-                            width: 32,
-                            position: 'absolute',
-                            top: 0,
-                            right: 0,
-                        }}>
-                        <Icon name='Feather.X' style={{ fill: '#FFFFFF' }} />
+                        block
+                        onClick={() => this.collapsible.toggle()}
+                        style={{ borderRadius: 0 }}>
+                        Vertical Collapsible
                     </Button>
                 </div>
-            </Collapsible>
+                <Collapsible ref={elm => (this.collapsible = elm)}>
+                    <div
+                        className='bg-blue white py-xs-20 pl-xs-20 pr-xs-32'
+                        style={{ height: 271 }}>
+                        <p>
+                            Lorem ipsum dolor sit amet, consectetur adipiscing
+                            elit, sed do eiusmod tempor incididunt ut labore et
+                            dolore magna aliqua. Ut enim ad minim veniam, quis
+                            nostrud exercitation ullamco laboris nisi ut aliquip
+                            ex ea commodo consequat. Duis aute irure dolor in
+                            reprehenderit in voluptate velit esse cillum dolore
+                            eu fugiat nulla pariatur. Excepteur sint occaecat
+                            cupidatat non proident, sunt in culpa qui officia
+                            deserunt mollit anim id est laborum.
+                        </p>
+                        <Button
+                            size={Button.ENUMS.SIZE.XS}
+                            onClick={() => this.collapsible.collapse()}
+                            style={{
+                                width: 32,
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                            }}>
+                            <Icon
+                                name='Feather.X'
+                                style={{ fill: '#FFFFFF' }}
+                            />
+                        </Button>
+                    </div>
+                </Collapsible>
+            </div>
+
+            <div className='col-xs-12 col-lg-6 px-xs-0 px-lg-8'>
+                <div style={{ width: '100%' }}>
+                    <Button
+                        block
+                        onClick={() => this.collapsibleHorizontal.toggle()}
+                        style={{ borderRadius: 0 }}>
+                        Horizontal Collapsible
+                    </Button>
+                </div>
+                <Collapsible
+                    direction='horizontal'
+                    ref={elm => (this.collapsibleHorizontal = elm)}>
+                    <div
+                        className='bg-blue white py-xs-20 pl-xs-20 pr-xs-32'
+                        style={{ height: 271 }}>
+                        <Button
+                            size={Button.ENUMS.SIZE.XS}
+                            onClick={() =>
+                                this.collapsibleHorizontal.collapse()
+                            }
+                            style={{
+                                width: 32,
+                                position: 'absolute',
+                                top: 0,
+                                right: 0,
+                            }}>
+                            <Icon
+                                name='Feather.X'
+                                style={{ fill: '#FFFFFF' }}
+                            />
+                        </Button>
+                    </div>
+                </Collapsible>
+            </div>
         </div>
     );
 

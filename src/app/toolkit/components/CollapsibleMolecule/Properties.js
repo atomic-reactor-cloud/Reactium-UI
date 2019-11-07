@@ -49,6 +49,21 @@ const data = [
     {
         children: (
             <>
+                {'The orientation of the collapsible.'}
+                <br />
+                {'Valid values: '}
+                <kbd>
+                    {Object.values(Collapsible.ENUMS.DIRECTION).join(', ')}
+                </kbd>
+            </>
+        ),
+        property: 'direction',
+        type: 'String',
+        value: String(Collapsible.defaultProps.direction),
+    },
+    {
+        children: (
+            <>
                 <kbd>beforeCollapse</kbd>
                 {' event callback.'}
             </>
