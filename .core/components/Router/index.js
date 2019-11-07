@@ -1,48 +1,35 @@
-import { connect } from 'react-redux';
-import React from 'react';
-import ClientRouter from './browser';
-import actions from './Routes/actions';
-import getRoutes from './getRoutes';
+import Reactium from 'reactium-core/sdk';
+import React, { useRef, useState, useEffect, Fragment } from 'react';
+import { Router, Switch, Route } from 'react-router-dom';
+import op from 'object-path';
 
-const mapStateToProps = ({ Routes = {} }) => {
-    if (Object.values(Routes).length) {
-        return { Routes };
-    }
+export const useRouting = () => {
+    const routesRef = useRef(Reactium.Routing.get());
+    const [value, setValue] = useState(routesRef.current);
 
-    return {};
+    const setState = () => {
+        routesRef.current = Reactium.Routing.get();
+        setValue(routesRef.current);
+    };
+
+    useEffect(() => {
+        setState();
+        return Reactium.Routing.subscribe(setState);
+    }, [Reactium.Routing.updated]);
+
+    return routesRef.current;
 };
 
-const mapDispatchToProps = dispatch => ({
-    init: routes => dispatch(actions.init(routes)),
-});
+export default ({ history }) => {
+    const routes = useRouting();
 
-class Router extends React.Component {
-    constructor(props) {
-        super(props);
-        this.initRoutes = getRoutes();
-        props.init(this.initRoutes);
-    }
-
-    render() {
-        const {
-            server = false,
-            location,
-            context,
-            init,
-            Routes = {},
-        } = this.props;
-        const { routes = [], updated } = Routes;
-
-        return (
-            <ClientRouter
-                updated={updated}
-                routes={routes.length ? routes : this.initRoutes}
-            />
-        );
-    }
-}
-
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps,
-)(Router);
+    return (
+        <Router history={history}>
+            <Switch>
+                {routes.map(({ id, ...route }) => (
+                    <Route {...route} key='route' />
+                ))}
+            </Switch>
+        </Router>
+    );
+};

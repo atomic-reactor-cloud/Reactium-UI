@@ -8,10 +8,15 @@ import ENUMS from './enums';
 import React, {
     forwardRef,
     useImperativeHandle,
+    useLayoutEffect as useWindowEffect,
     useRef,
     useState,
     useEffect,
 } from 'react';
+
+// Server-Side Render safe useLayoutEffect (useEffect when node)
+const useLayoutEffect =
+    typeof window !== 'undefined' ? useWindowEffect : useEffect;
 
 const noop = () => {};
 
@@ -24,8 +29,7 @@ let Collapsible = ({ children, ...props }, ref) => {
     // Refs
     const stateRef = useRef({
         ...props,
-        width: 0,
-        height: 0,
+        init: false,
     });
 
     const containerRef = useRef();
@@ -45,6 +49,8 @@ let Collapsible = ({ children, ...props }, ref) => {
         setNewState(stateRef.current);
     };
 
+    const numberize = str => Number(String(str).replace(/[a-z]/g, ''));
+
     const collapse = () => {
         const { animation, expanded } = stateRef.current;
 
@@ -61,7 +67,8 @@ let Collapsible = ({ children, ...props }, ref) => {
             animationEase,
             animationSpeed,
             direction,
-            minSize = 0,
+            maxSize,
+            minSize,
             onBeforeCollapse,
             onCollapse,
         } = stateRef.current;
@@ -70,9 +77,13 @@ let Collapsible = ({ children, ...props }, ref) => {
         const dir =
             direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
 
-        container.style[dir] = 'auto';
+        if (!maxSize) {
+            container.style[dir] = 'auto';
+        }
         container.style.display = 'block';
         container.style.overflow = 'hidden';
+
+        const to = minSize ? numberize(minSize) : 0;
 
         onBeforeCollapse({
             target: container,
@@ -81,7 +92,7 @@ let Collapsible = ({ children, ...props }, ref) => {
 
         const tween = new Promise(resolve =>
             TweenMax.to(container, animationSpeed, {
-                [dir]: minSize,
+                [dir]: to,
                 ease: animationEase,
                 onComplete: () => {
                     const evt = {
@@ -92,6 +103,11 @@ let Collapsible = ({ children, ...props }, ref) => {
                     setState({ animation: null, expanded: false });
 
                     container.removeAttribute('style');
+
+                    if (minSize) {
+                        container.style.display = 'block';
+                        container.style[dir] = numberize(minSize) + 'px';
+                    }
 
                     onCollapse(evt);
                     resolve();
@@ -122,7 +138,8 @@ let Collapsible = ({ children, ...props }, ref) => {
             direction,
             onBeforeExpand,
             onExpand,
-            minSize = 0,
+            maxSize,
+            minSize,
         } = stateRef.current;
 
         const container = containerRef.current;
@@ -130,7 +147,7 @@ let Collapsible = ({ children, ...props }, ref) => {
             direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
 
         container.classList.add('expanded');
-        container.style[dir] = 'auto';
+        container.style[dir] = maxSize ? numberize(maxSize) + 'px' : 'auto';
         container.style.display = 'block';
         container.style.overflow = 'hidden';
 
@@ -141,7 +158,7 @@ let Collapsible = ({ children, ...props }, ref) => {
 
         const tween = new Promise(resolve =>
             TweenMax.from(container, animationSpeed, {
-                [dir]: minSize,
+                [dir]: numberize(minSize),
                 ease: animationEase,
                 onComplete: () => {
                     const evt = {
@@ -149,7 +166,13 @@ let Collapsible = ({ children, ...props }, ref) => {
                         type: ENUMS.EVENT.EXPAND,
                     };
                     setState({ expanded: true, animation: null });
+
                     container.removeAttribute('style');
+
+                    if (maxSize) {
+                        container.style[dir] = numberize(maxSize) + 'px';
+                    }
+
                     onExpand(evt);
                     resolve();
                 },
@@ -166,6 +189,25 @@ let Collapsible = ({ children, ...props }, ref) => {
         return expanded !== true ? expand(e) : collapse(e);
     };
 
+    const resized = () => {
+        const { direction, expanded, maxSize, minSize } = stateRef.current;
+
+        if (maxSize || minSize) {
+            const container = containerRef.current;
+
+            const dir =
+                direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
+
+            if (expanded && maxSize) {
+                container.style[dir] = numberize(maxSize) + 'px';
+            }
+
+            if (!expanded && minSize) {
+                container.style[dir] = numberize(minSize) + 'px';
+            }
+        }
+    };
+
     // External Interface
     useImperativeHandle(ref, () => ({
         collapse,
@@ -177,6 +219,27 @@ let Collapsible = ({ children, ...props }, ref) => {
     }));
 
     useEffect(() => setState(props), Object.values(props));
+
+    // useLayoutEffect(() => {
+    //     const { init } = stateRef.current;
+    //
+    //     if (!init) {
+    //         resized();
+    //         setState({ init: true });
+    //     }
+    //
+    //     if (typeof window === 'undefined') {
+    //         return;
+    //     }
+    //
+    //     window.addEventListener('resize', collapse);
+    //
+    //     return () => window.removeEventListener('resize', collapse);
+    // }, [
+    //     stateRef.current.init,
+    //     stateRef.current.maxSize,
+    //     stateRef.current.minSize,
+    // ]);
 
     const render = () => {
         let {
@@ -214,6 +277,7 @@ Collapsible.propTypes = {
     className: PropTypes.string,
     direction: PropTypes.oneOf(Object.values(ENUMS.DIRECTION)),
     expanded: PropTypes.bool,
+    maxSize: PropTypes.number,
     minSize: PropTypes.number,
     namespace: PropTypes.string,
     onBeforeCollapse: PropTypes.func,
@@ -229,7 +293,6 @@ Collapsible.defaultProps = {
     className: null,
     direction: ENUMS.DIRECTION.VERTICAL,
     expanded: true,
-    minSize: 0,
     namespace: 'ar-collapsible',
     onBeforeCollapse: noop,
     onBeforeExpand: noop,

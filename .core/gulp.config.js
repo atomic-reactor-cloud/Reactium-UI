@@ -75,7 +75,12 @@ const defaultConfig = {
             '!{src/assets/style,src/assets/style/**}',
             '!{src/assets/js,src/assets/js/**}',
         ],
-        compress: ['public/assets/**/*', '!public/assets/js/**'],
+        compress: [
+            'public/assets/**/*',
+            'public/assets/js/sw/**/*',
+            '!public/assets/js/*.js',
+            '!public/assets/**/*.gz',
+        ],
         includes: ['./node_modules'],
         appdir: path.resolve(__dirname, 'src/app'),
         rootdir: path.resolve(__dirname),
@@ -93,6 +98,30 @@ const defaultConfig = {
         buildCore: 'build/core',
         colors: 'src/assets/style/_scss/_colors.scss',
         startPath: '/',
+    },
+    umd: {
+        defaultWorker: path.resolve(
+            __dirname,
+            '../public/assets/js/umd/service-worker/service-worker.js',
+        ),
+        manifest: path.normalize(`${rootPath}/.tmp/umd-manifest.json`),
+        outputPath: path.resolve(__dirname, '../public/assets/js/umd'),
+    },
+    sw: {
+        globDirectory: 'public',
+        globPatterns: ['**/*.{html,js,css,js.gz,css.gz}'],
+        globIgnores: ['**/index-static.html'],
+        swDest: 'public/assets/js/sw/sw.js',
+        clientsClaim: true,
+        skipWaiting: true,
+        modifyURLPrefix: {
+            assets: '/assets',
+        },
+    },
+    docs: {
+        src: '.core,src/app',
+        dest: 'public/docs',
+        verbose: false,
     },
 };
 

@@ -6,7 +6,7 @@
 
 import _ from 'underscore';
 import React, { Component } from 'react';
-import { Button, Icon } from 'components/common-ui';
+import Icon from 'components/common-ui/Icon';
 
 /**
  * -----------------------------------------------------------------------------
@@ -14,7 +14,7 @@ import { Button, Icon } from 'components/common-ui';
  * -----------------------------------------------------------------------------
  */
 
-export default class FeatherIcons extends Component {
+export default class LinearIcons extends Component {
     static dependencies() {
         return typeof module !== 'undefined' ? module.children : [];
     }
@@ -22,9 +22,26 @@ export default class FeatherIcons extends Component {
     state = {
         filtered: [],
         icons: [],
+        inputStyle: {
+            color: '#666666',
+            width: 60,
+            textAlign: 'center',
+            paddingLeft: 12,
+            marginLeft: 10,
+            borderRadius: 4,
+            border: '1px solid #DCDCDC',
+            fontSize: 12,
+        },
         ready: false,
         search: null,
-        size: 24,
+        searchStyle: {
+            marginLeft: 10,
+            paddingLeft: 10,
+            paddingRight: 10,
+            textAlign: 'left',
+            width: 150,
+        },
+        size: 32,
     };
 
     componentDidMount() {
@@ -59,6 +76,7 @@ export default class FeatherIcons extends Component {
         const {
             filtered = [],
             icons = [],
+            inputStyle,
             ready,
             search,
             searchStyle,
@@ -67,52 +85,58 @@ export default class FeatherIcons extends Component {
         const items = search ? filtered : icons;
 
         return ready === false ? null : (
-            <div className='mb--32'>
-                <div className='flex center mb-xs-24'>
-                    <div className='btn-group'>
-                        <Button
-                            readOnly
-                            size={Button.ENUMS.SIZE.MD}
-                            style={{ padding: '0 16px' }}
-                            color={Button.ENUMS.COLOR.SECONDARY}>
-                            Icon Size:
-                        </Button>
-                        <div className='form-group'>
-                            <input
-                                type='number'
-                                value={size}
-                                id='size'
-                                onChange={this.onSizeChange.bind(this)}
-                                max={120}
-                                min={10}
-                                style={{ textAlign: 'center' }}
-                            />
-                        </div>
-                        <div className='form-group'>
-                            <input
-                                type='search'
-                                placeholder='Search'
-                                value={search || ''}
-                                id='search'
-                                autoComplete='off'
-                                onChange={this.onSearchChange.bind(this)}
-                            />
-                        </div>
-                    </div>
+            <div className={'mb--32'}>
+                <div className='flex right middle pb-xs-20'>
+                    <label
+                        htmlFor='size'
+                        style={{
+                            color: '#666666',
+                            flexGrow: 0,
+                            textAlign: 'right',
+                        }}>
+                        Icon Size:
+                    </label>
+                    <input
+                        type='number'
+                        placeholder='Icon Size'
+                        value={size}
+                        id='size'
+                        onChange={this.onSizeChange.bind(this)}
+                        style={inputStyle}
+                        max={120}
+                        min={10}
+                    />
+                    <input
+                        type='search'
+                        placeholder='Search'
+                        value={search || ''}
+                        id='search'
+                        onChange={this.onSearchChange.bind(this)}
+                        style={{
+                            ...inputStyle,
+                            ...searchStyle,
+                        }}
+                    />
                 </div>
-                <div className='row'>
-                    {items.map((item, i) => (
-                        <div
-                            key={`icon-feather-${i}`}
-                            className='col-xs-6 col-sm-4 col-lg-3 col-xl-2'>
-                            <div className='text-center'>
-                                <Icon size={size} name={`Feather.${item}`} />
-                                <div className='text-center small mt-16 mb-32'>
-                                    {item}
+                <div className={'row'}>
+                    {items.map((item, i) => {
+                        const Ico = Icon.Feather[item];
+                        return (
+                            <div
+                                key={`icon-${i}`}
+                                className={'col-xs-4 col-sm-2 col-xl-1'}>
+                                <div className={'text-center'}>
+                                    <Ico width={size} height={size} />
+                                    <div
+                                        className={
+                                            'text-center small mt-16 mb-32'
+                                        }>
+                                        {item}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
         );

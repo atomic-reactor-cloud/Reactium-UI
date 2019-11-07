@@ -1,12 +1,14 @@
 import deps from 'dependencies';
-import queryString from 'querystring-browser';
+import op from 'object-path';
 
 export default {
-    updateRoute: ({ history, location, match, route = {}, params }) => (
+    updateRoute: ({ history, location, match, route = {}, params, search }) => (
         dispatch,
         getState,
     ) => {
-        const { Router } = getState();
+        const state = getState();
+        const Router = op.get(state, 'Router', {});
+        const prevLocation = op.get(Router, 'location', {});
 
         const defaultOnRouteChange = () => {
             if (
@@ -27,16 +29,11 @@ export default {
             onRouteChange(defaultOnRouteChange);
         }
 
-        // load route data
-        let search = queryString.parse(location.search.replace(/^\?/, ''));
-        if ('load' in route) {
-            dispatch(route.load(params, search));
-        }
-
         dispatch({
             type: deps().actionTypes.UPDATE_ROUTE,
             history,
             location,
+            prevLocation,
             match,
             params,
             search,

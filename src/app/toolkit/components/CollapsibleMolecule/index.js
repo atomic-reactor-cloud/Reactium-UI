@@ -8,8 +8,9 @@ import Events from './Events';
 import Methods from './Methods';
 import Code from 'toolkit/Code';
 import Properties from './Properties';
-import React, { Component } from 'react';
 import { Button, Collapsible, Icon } from 'components/common-ui';
+
+import React, { Component } from 'react';
 
 /**
  * -----------------------------------------------------------------------------
@@ -83,6 +84,8 @@ class CollapsibleMolecule extends Component {
                 </div>
                 <Collapsible
                     direction='horizontal'
+                    minSize='50px'
+                    maxSize='300px'
                     ref={elm => (this.collapsibleHorizontal = elm)}>
                     <div
                         className='bg-blue white py-xs-20 pl-xs-20 pr-xs-32'

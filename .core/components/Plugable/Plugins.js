@@ -36,70 +36,120 @@ const findComponent = (type, path, paths) => {
     return Component;
 };
 
-const resolveZone = ({
-    zone,
-    plugins,
-    providedFilter,
-    localFilterOverride,
-    providedMapper,
-    localMapperOverride,
-    providedSort,
-    localSortOverride,
-    props,
-}) => {
-    let pluginFilter = _ => true;
-    if (typeof providedFilter === 'function') {
-        pluginFilter = providedFilter;
-    }
-    if (typeof localFilterOverride === 'function') {
-        pluginFilter = localFilterOverride;
-    }
+const usePluginControls = ({ zone, ...defaults }) => {
+    const defaultControls = Object.entries({
+        mapper: [
+            _ => _,
+            op.get(defaults, 'globalMapper'),
+            op.get(defaults, 'localMapperOverride'),
+        ],
+        filter: [
+            () => true,
+            op.get(defaults, 'globalFilter'),
+            op.get(defaults, 'localFilterOverride'),
+        ],
+        sort: [
+            { sortBy: 'order', reverse: false },
+            op.get(defaults, 'globalSort'),
+            op.get(defaults, 'localSortOverride'),
+        ],
+    }).reduce((defaultControls, [type, options]) => {
+        let defaultControl = _.last(_.compact(options));
+        op.set(defaultControls, `${type}s.default`, {
+            order: 0,
+            [type]: defaultControl,
+        });
+        return defaultControls;
+    }, {});
 
-    let pluginMapper = _ => _;
-    if (typeof providedMapper === 'function') {
-        pluginMapper = providedMapper;
-    }
-    if (typeof localMapperOverride === 'function') {
-        pluginMapper = localMapperOverride;
-    }
+    const allPluginControls = useSelect({
+        select: state => op.get(state, 'Plugable.controls', {}),
+    });
 
-    let pluginSort = _ => 0;
-    if (typeof providedSort === 'function') {
-        pluginSort = providedSort;
-    }
-    if (typeof localSortOverride === 'function') {
-        pluginSort = localSortOverride;
-    }
-
-    const combined = useCombinedZonePlugins(plugins, zone);
-
-    const PluginComponents = combined
-        .filter(pluginFilter)
-        .map(pluginMapper)
-        .sort(pluginSort)
-        .reduce(
-            (
-                PluginComponents,
-                { id, component, path, paths, ...pluginProps },
-            ) => {
-                let Component = component;
-                let name = id;
-                if (typeof component === 'string') {
-                    name = component;
-                    Component = findComponent(component, path, paths);
+    // add addons controls for this zone
+    let controls = Object.entries(allPluginControls).reduce(
+        (controls, [name, addonControls], index) => {
+            Object.entries({
+                mapper: op.get(addonControls, 'pluginMappers', []),
+                filter: op.get(addonControls, 'pluginFilters', []),
+                sort: op.get(addonControls, 'pluginSorts', []),
+            }).forEach(([type, items]) => {
+                const control = items.find(
+                    ({ zone: pluginZone }) => zone === pluginZone,
+                );
+                op.set(
+                    controls,
+                    `${type}s.default`,
+                    op.get(defaultControls, `${type}s.default`),
+                );
+                if (control) {
+                    op.set(controls, [`${type}s`, name], control);
                 }
-                PluginComponents[name] = {
-                    Component,
-                    id,
-                    key: id,
-                    ...pluginProps,
-                    ...props,
-                };
+            });
 
-                return PluginComponents;
+            return controls;
+        },
+        {},
+    );
+
+    const controlSorter = (controls = {}) => {
+        let controlsEntries = Object.entries(controls);
+        // remove default if controls added by plugin
+        controlsEntries = controlsEntries.filter(
+            ([name, control]) =>
+                controlsEntries.length === 1 || name !== 'default',
+        );
+
+        return _.sortBy(controlsEntries, ([, control]) => control.order).reduce(
+            (controls, [name, control]) => {
+                controls[name] = control;
+                return controls;
             },
             {},
         );
+    };
+
+    controls.mappers = controlSorter(controls.mappers);
+    controls.filters = controlSorter(controls.filters);
+    controls.sorts = controlSorter(controls.sorts);
+
+    return controls;
+};
+
+const resolveZone = ({ zone, plugins, controls, props }) => {
+    let PluginComponents = useCombinedZonePlugins(plugins, zone);
+    Object.values(controls.mappers).forEach(
+        ({ mapper }) => (PluginComponents = PluginComponents.map(mapper)),
+    );
+    Object.values(controls.filters).forEach(
+        ({ filter }) => (PluginComponents = PluginComponents.filter(filter)),
+    );
+    Object.values(controls.sorts).forEach(({ sort }) => {
+        PluginComponents = _.sortBy(PluginComponents, sort.sortBy);
+        if (sort.reverse) PluginComponents = PluginComponents.reverse();
+        return PluginComponents;
+    });
+
+    PluginComponents = PluginComponents.reduce(
+        (PluginComponents, { id, component, path, paths, ...pluginProps }) => {
+            let Component = component;
+            let name = id;
+            if (typeof component === 'string') {
+                name = component;
+                Component = findComponent(component, path, paths);
+            }
+            PluginComponents[name] = {
+                Component,
+                id,
+                key: id,
+                ...pluginProps,
+                ...props,
+            };
+
+            return PluginComponents;
+        },
+        {},
+    );
 
     return PluginComponents;
 };
@@ -107,9 +157,9 @@ const resolveZone = ({
 export const usePlugins = props => {
     const {
         plugins,
-        filter: providedFilter,
-        mapper: providedMapper,
-        sort: providedSort,
+        filter: globalFilter,
+        mapper: globalMapper,
+        sort: globalSort,
     } = useContext(Context) || {};
 
     const {
@@ -121,15 +171,20 @@ export const usePlugins = props => {
         ...otherProps
     } = props;
 
+    const controls = usePluginControls({
+        zone,
+        globalFilter,
+        localFilterOverride,
+        globalMapper,
+        localMapperOverride,
+        globalSort,
+        localSortOverride,
+    });
+
     return resolveZone({
         zone,
         plugins,
-        providedFilter,
-        localFilterOverride,
-        providedMapper,
-        localMapperOverride,
-        providedSort,
-        localSortOverride,
+        controls,
         props: otherProps,
     });
 };
@@ -141,7 +196,7 @@ const pluginZones = ({ zone }) => {
     } else {
         zones.push(zone);
     }
-    return zones.filter(_ => _);
+    return _.compact(zones);
 };
 
 const useCombinedZonePlugins = (plugins = [], zone) => {

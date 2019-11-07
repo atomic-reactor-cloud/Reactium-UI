@@ -7,7 +7,7 @@ const globby = require('globby');
 const webpack = require('webpack');
 const browserSync = require('browser-sync');
 const gulpif = require('gulp-if');
-const gulpwatch = require('gulp-watch');
+const gulpwatch = require('@atomic-reactor/gulp-watch');
 const run = require('gulp-run');
 const prefix = require('gulp-autoprefixer');
 const sass = require('gulp-sass');
@@ -22,8 +22,10 @@ const chalk = require('chalk');
 const moment = require('moment');
 const reactiumConfig = require('./reactium-config');
 const regenManifest = require('./manifest/manifest-tools');
+const umdWebpackGenerator = require('./umd.webpack.config');
 const rootPath = path.resolve(__dirname, '..');
-const { fork } = require('child_process');
+const { fork, spawn } = require('child_process');
+const workbox = require('workbox-build');
 
 // For backward compatibility with gulp override tasks using run-sequence module
 // make compatible with gulp4
@@ -171,11 +173,40 @@ const reactium = (gulp, config, webpackConfig) => {
         task('preBuild'),
         task('clean'),
         task('manifest'),
-        gulp.parallel(task('scripts'), task('assets'), task('styles')),
         gulp.parallel(task('markup'), task('json')),
+        gulp.parallel(task('assets'), task('styles')),
+        task('scripts'),
+        task('umdLibraries'),
+        task('serviceWorker'),
         task('compress'),
+        task('apidocs'),
         task('postBuild'),
     );
+
+    const apidocs = done => {
+        if (!isDev) done();
+
+        const args = ['docs', '-s', config.docs.src, '-d', config.docs.dest];
+
+        const verbose = config.docs.verbose || process.env.VERBOSE_API_DOCS;
+        if (verbose) args.push('-V');
+
+        const ps = spawn('arcli', args);
+        ps.stderr.on('data', data => {
+            console.error(data.toString());
+        });
+
+        if (verbose) {
+            ps.stdout.on('data', data => {
+                console.log(data.toString());
+            });
+        }
+
+        ps.on('close', code => {
+            if (code !== 0) console.log('Error creating apidocs.');
+            done();
+        });
+    };
 
     const clean = done => {
         // Remove build files
@@ -188,18 +219,34 @@ const reactium = (gulp, config, webpackConfig) => {
     const json = () =>
         gulp.src(config.src.json).pipe(gulp.dest(config.dest.build));
 
-    const manifest = done => {
+    const manifest = gulp.series(
+        gulp.parallel(task('mainManifest'), task('umdManifest')),
+    );
+
+    const mainManifest = done => {
         // Generate manifest.js file
         regenManifest({
             manifestFilePath: config.src.manifest,
-            manifestConfig: require('./manifest.config')(
-                reactiumConfig.manifest,
-            ),
+            manifestConfig: reactiumConfig.manifest,
             manifestTemplateFilePath: path.resolve(
                 __dirname,
                 'manifest/templates/manifest.hbs',
             ),
             manifestProcessor: require('./manifest/processors/manifest'),
+        });
+        done();
+    };
+
+    const umdManifest = done => {
+        // Generate manifest all all umd libraries
+        regenManifest({
+            manifestFilePath: config.umd.manifest,
+            manifestConfig: reactiumConfig.manifest.umd,
+            manifestTemplateFilePath: path.resolve(
+                __dirname,
+                'manifest/templates/umd.hbs',
+            ),
+            manifestProcessor: require('./manifest/processors/umd'),
         });
         done();
     };
@@ -236,6 +283,73 @@ const reactium = (gulp, config, webpackConfig) => {
         } else {
             done();
         }
+    };
+
+    const umdLibraries = async done => {
+        let umdConfigs = [];
+        try {
+            umdConfigs = JSON.parse(
+                fs.readFileSync(config.umd.manifest, 'utf8'),
+            );
+        } catch (error) {
+            console.log(error);
+        }
+
+        for (let umd of umdConfigs) {
+            try {
+                console.log(`Generating UMD library ${umd.libraryName}`);
+                await new Promise((resolve, reject) => {
+                    webpack(umdWebpackGenerator(umd), (err, stats) => {
+                        if (err) {
+                            reject(err());
+                            return;
+                        }
+
+                        let result = stats.toJson();
+                        if (result.errors.length > 0) {
+                            result.errors.forEach(error => {
+                                console.log(error);
+                            });
+
+                            reject(result.errors);
+                            return;
+                        }
+
+                        resolve();
+                    });
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        done();
+    };
+
+    const serviceWorker = () => {
+        let method = 'generateSW';
+        let swConfig = {
+            ...config.sw,
+        };
+
+        if (fs.existsSync(config.umd.defaultWorker)) {
+            method = 'injectManifest';
+            swConfig.swSrc = config.umd.defaultWorker;
+            delete swConfig.clientsClaim;
+            delete swConfig.skipWaiting;
+        }
+
+        return workbox[method](swConfig)
+            .then(({ warnings }) => {
+                // In case there are any warnings from workbox-build, log them.
+                for (const warning of warnings) {
+                    console.warn(warning);
+                }
+                console.info('Service worker generation completed.');
+            })
+            .catch(error => {
+                console.warn('Service worker generation failed:', error);
+            });
     };
 
     const staticTask = task('static:copy');
@@ -346,12 +460,16 @@ const reactium = (gulp, config, webpackConfig) => {
         gulpwatch(config.watch.assets, watcher);
         const scriptWatcher = gulp.watch(
             config.watch.js,
-            gulp.task('manifest'),
+            gulp.parallel(
+                task('manifest'),
+                gulp.series(task('umdManifest'), task('umdLibraries')),
+            ),
         );
         done();
     };
 
     const tasks = {
+        apidocs,
         local: local(),
         'local:ssr': local({ ssr: true }),
         assets,
@@ -364,10 +482,14 @@ const reactium = (gulp, config, webpackConfig) => {
         default: defaultTask,
         json,
         manifest,
+        mainManifest,
+        umdManifest,
+        umdLibraries,
         markup,
         scripts,
         serve: serve(),
         'serve-restart': serve({ open: false }),
+        serviceWorker,
         static: staticTask,
         'static:copy': staticCopy,
         'styles:colors': stylesColors,

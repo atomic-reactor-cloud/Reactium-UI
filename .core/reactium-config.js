@@ -1,7 +1,14 @@
+const fs = require('fs');
+const path = require('path');
+const rootPath = path.resolve(__dirname, '..');
+const gulpConfig = require('./gulp.config');
+
+const version = '3.1.12';
+
 const contextMode = () => {
     if (
-        process.env.NODE_ENV !== 'development' ||
-        process.env.LAZY_GET_COMPONENTS === 'on'
+        process.env.NODE_ENV !== 'development' &&
+        process.env.LAZY_GET_COMPONENTS !== 'off'
     ) {
         return 'lazy-once';
     }
@@ -9,7 +16,61 @@ const contextMode = () => {
     return 'sync';
 };
 
-const gulpConfig = require('./gulp.config');
+const defaultLibraryExternals = {
+    Reactium: {
+        externalName: '/sdk$/',
+        // relative to src/manifest.js
+        requirePath: 'reactium-core/sdk',
+        // to provide both es6 named exports and Reactium default alias
+        defaultAlias: 'Reactium',
+    },
+    react: {
+        externalName: 'react',
+        requirePath: 'react',
+        // to provide both es6 named exports and React default alias
+        defaultAlias: 'React',
+    },
+    redux: {
+        externalName: 'redux',
+        requirePath: 'redux',
+    },
+    'gsap/umd/TweenMax': {
+        externalName: '/^gsap.*$/',
+        requirePath: 'gsap/umd/TweenMax',
+    },
+    underscore: {
+        externalName: 'underscore',
+        requirePath: 'underscore',
+    },
+    'object-path': {
+        externalName: 'object-path',
+        requirePath: 'object-path',
+    },
+    semver: {
+        externalName: 'semver',
+        requirePath: 'semver',
+    },
+    moment: {
+        externalName: 'moment',
+        requirePath: 'moment',
+    },
+    classnames: {
+        externalName: 'classnames',
+        requirePath: 'classnames',
+    },
+    'prop-types': {
+        externalName: 'prop-types',
+        requirePath: 'prop-types',
+    },
+    'react-router-dom': {
+        externalName: 'react-router-dom',
+        requirePath: 'react-router-dom',
+    },
+    'redux-super-thunk': {
+        externalName: 'redux-super-thunk',
+        requirePath: 'redux-super-thunk',
+    },
+};
 
 const defaultManifestConfig = {
     patterns: [
@@ -17,6 +78,7 @@ const defaultManifestConfig = {
             name: 'allActions',
             type: 'actions',
             pattern: /actions.jsx?$/,
+            ignore: /\.cli/,
         },
         {
             name: 'allActionTypes',
@@ -59,6 +121,11 @@ const defaultManifestConfig = {
             type: 'plugin',
             pattern: /plugin.jsx?$/,
         },
+        {
+            name: 'allHooks',
+            type: 'hooks',
+            pattern: /reactium-hooks.js$/,
+        },
     ],
     sourceMappings: [
         {
@@ -70,6 +137,7 @@ const defaultManifestConfig = {
             to: 'reactium-core/',
         },
     ],
+    pluginExternals: defaultLibraryExternals,
     contexts: {
         components: {
             modulePath: 'components',
@@ -92,16 +160,53 @@ const defaultManifestConfig = {
             mode: contextMode(),
         },
     },
+    umd: {
+        defaultLibraryExternals,
+        patterns: [
+            {
+                name: 'allUmdEntries',
+                type: 'umd',
+                pattern: /umd.js$/,
+                ignore: /assets/,
+            },
+            {
+                name: 'allUmdConfig',
+                type: 'config',
+                pattern: /umd-config.json$/,
+                ignore: /assets/,
+            },
+        ],
+        sourceMappings: [
+            {
+                from: 'src/',
+                to: path.resolve(rootPath, 'src') + '/',
+            },
+        ],
+        searchParams: {
+            extensions: /\.(js|json)$/,
+            exclude: [
+                /.ds_store/i,
+                /.core/i,
+                /.cli\//i,
+                /src\/assets/,
+                /src\/app\/toolkit/,
+            ],
+        },
+    },
 };
 
-const manifestConfig = require('./manifest.config')(defaultManifestConfig);
+let manifestConfigOverride = _ => _;
+if (fs.existsSync(`${rootPath}/manifest.config.override.js`)) {
+    manifestConfigOverride = require(`${rootPath}/manifest.config.override.js`);
+}
+const manifestConfig = manifestConfigOverride(defaultManifestConfig);
 
 /**
  * Use liberally for additional core configuration.
  * @type {Object}
  */
 module.exports = {
-    version: '3.0.17',
+    version,
     semver: '^3.0.0',
     build: gulpConfig,
     update: {
@@ -157,6 +262,12 @@ module.exports = {
             add: [
                 {
                     overwrite: true,
+                    version: '>=3.1.0',
+                    destination: '/apidoc.json',
+                    source: '/tmp/update/apidoc.json',
+                },
+                {
+                    overwrite: true,
                     version: '>=3.0.0',
                     destination: '/Dockerfile',
                     source: '/tmp/update/Dockerfile',
@@ -164,8 +275,8 @@ module.exports = {
                 {
                     overwrite: true,
                     version: '>=2.3.16',
-                    destination: '/src/app/plugable',
-                    source: '/tmp/update/src/app/plugable',
+                    destination: '/src/app/plugable/index.js',
+                    source: '/tmp/update/src/app/plugable/index.js',
                 },
                 {
                     overwrite: false,
@@ -212,6 +323,12 @@ module.exports = {
                     version: '>=3.0.3',
                     destination: '/src/app/components/Fallback',
                     source: '/tmp/update/src/app/components/Fallback',
+                },
+                {
+                    overwrite: false,
+                    version: '>=3.0.19',
+                    destination: '/jest.config.js',
+                    source: '/tmp/update/jest.config.js',
                 },
             ],
             remove: [],
