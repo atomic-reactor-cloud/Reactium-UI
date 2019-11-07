@@ -82,3 +82,4 @@ src/app/toolkit/.tmp
 
 # Manifest
 src/manifest.js
+.tmp
