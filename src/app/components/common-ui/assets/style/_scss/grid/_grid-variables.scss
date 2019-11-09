@@ -1,10 +1,19 @@
 // Grid
 $grid-columns: 12 !default; // Set number of columns in the grid
 
-$xs-max: 640px !default; // Set xs breakpoint's max width
-$sm-max: 991px !default; // Set sm breakpoint's max width
-$md-max: 1024px !default; // Set md breakpoint's max width
-$lg-max: 1500px !default; // Set lg breakpoint's max width
+// smallest to largest
+$breakpoints-max: (
+    'xs': 640,
+    'sm': 990,
+    'md': 1280,
+    'lg': 1440,
+    'xl': 1600,
+) !default;
+
+$xs-max: '#{map-get($breakpoints-max, 'xs')}px' !default; // Set xs breakpoint's max width
+$sm-max: '#{map-get($breakpoints-max, 'sm')}px' !default; // Set sm breakpoint's max width
+$md-max: '#{map-get($breakpoints-max, 'md')}px' !default; // Set md breakpoint's max width
+$lg-max: '#{map-get($breakpoints-max, 'lg')}px' !default; // Set lg breakpoint's max width
 
 $gutter: 0 !default;
 
@@ -83,5 +92,14 @@ body {
         overflow: hidden;
         visibility: hidden;
         content: json-encode($breakpoints);
+    }
+
+    &::after {
+        display: block;
+        height: 0;
+        width: 0;
+        overflow: hidden;
+        visibility: hidden;
+        content: json-encode($breakpoints-max);
     }
 }
