@@ -25,7 +25,7 @@ const noop = () => {};
  * Hook Component: Collapsible
  * -----------------------------------------------------------------------------
  */
-let Collapsible = ({ children, ...props }, ref) => {
+let Collapsible = ({ debug, children, ...props }, ref) => {
     // Refs
     const stateRef = useRef({
         ...props,
@@ -143,6 +143,10 @@ let Collapsible = ({ children, ...props }, ref) => {
         } = stateRef.current;
 
         const container = containerRef.current;
+        if (!container) {
+            return Promise.resolve();
+        }
+
         const dir =
             direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
 
@@ -189,22 +193,69 @@ let Collapsible = ({ children, ...props }, ref) => {
         return expanded !== true ? expand(e) : collapse(e);
     };
 
-    const resized = () => {
+    const setSize = () => {
         const { direction, expanded, maxSize, minSize } = stateRef.current;
 
+        if (debug) {
+            console.log({ expanded, minSize, maxSize, direction });
+        }
+
+        if (debug) {
+            console.log({ step: 1 });
+        }
+
         if (maxSize || minSize) {
+            if (debug) {
+                console.log({ step: 2 });
+            }
             const container = containerRef.current;
 
+            if (debug) {
+                console.log({ step: 3 });
+            }
             const dir =
                 direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
 
+            if (debug) {
+                console.log({ step: 4 });
+            }
+
             if (expanded && maxSize) {
+                if (debug) {
+                    console.log({ step: 4.1 });
+                }
                 container.style[dir] = numberize(maxSize) + 'px';
             }
 
-            if (!expanded && minSize) {
-                container.style[dir] = numberize(minSize) + 'px';
+            if (expanded !== true && minSize) {
+                if (debug) {
+                    console.log({ step: 5.1 });
+                }
+
+                let size = numberize(minSize);
+                size = size === 1 ? 0 : size;
+
+                if (debug) {
+                    console.log({ step: 5.2, size });
+                }
+
+                if (debug) {
+                    console.log({ step: 5.3, dir, container });
+                }
+                container.style[dir] = size + 'px';
+                if (debug) {
+                    console.log({ step: 5.4, size });
+                }
+                container.style.display = size !== 0 ? 'block' : 'none';
             }
+
+            if (debug) {
+                console.log({ step: 6 });
+            }
+        }
+
+        if (debug) {
+            console.log({ step: 7 });
         }
     };
 
@@ -220,26 +271,26 @@ let Collapsible = ({ children, ...props }, ref) => {
 
     useEffect(() => setState(props), Object.values(props));
 
-    // useLayoutEffect(() => {
-    //     const { init } = stateRef.current;
-    //
-    //     if (!init) {
-    //         resized();
-    //         setState({ init: true });
-    //     }
-    //
-    //     if (typeof window === 'undefined') {
-    //         return;
-    //     }
-    //
-    //     window.addEventListener('resize', collapse);
-    //
-    //     return () => window.removeEventListener('resize', collapse);
-    // }, [
-    //     stateRef.current.init,
-    //     stateRef.current.maxSize,
-    //     stateRef.current.minSize,
-    // ]);
+    useEffect(() => {
+        const { init, maxSize } = stateRef.current;
+
+        if (!init) {
+            setSize();
+            setState({ init: true });
+        }
+
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        window.addEventListener('resize', setSize);
+
+        return () => window.removeEventListener('resize', setSize);
+    }, [
+        op.get(stateRef, 'current.init'),
+        Number(op.get(stateRef, 'current.maxSize', 0)),
+        Number(op.get(stateRef, 'current.minSize', 0)),
+    ]);
 
     const render = () => {
         let {
@@ -275,9 +326,10 @@ Collapsible.propTypes = {
     animationEase: PropTypes.object,
     animationSpeed: PropTypes.number,
     className: PropTypes.string,
+    debug: PropTypes.bool,
     direction: PropTypes.oneOf(Object.values(ENUMS.DIRECTION)),
     expanded: PropTypes.bool,
-    maxSize: PropTypes.number,
+    maxSize: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     minSize: PropTypes.number,
     namespace: PropTypes.string,
     onBeforeCollapse: PropTypes.func,
@@ -291,6 +343,7 @@ Collapsible.defaultProps = {
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
     className: null,
+    debug: false,
     direction: ENUMS.DIRECTION.VERTICAL,
     expanded: true,
     namespace: 'ar-collapsible',
