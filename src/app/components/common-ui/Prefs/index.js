@@ -13,10 +13,10 @@ const clear = key => {
     return prefs;
 };
 
-const get = key => {
+const get = (key, defaultValue) => {
     let ls = localStorage.getItem('ar-prefs') || {};
     ls = typeof ls === 'string' ? JSON.parse(ls) : ls;
-    return key ? op.get(ls, key, {}) : ls;
+    return key ? op.get(ls, key, defaultValue) : ls;
 };
 
 const set = (key, value) => {
