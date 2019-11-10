@@ -24,24 +24,21 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
     const stateRef = useRef({
-        prevState: {},
         timer: null,
         ...props,
     });
 
     // State
-    const [state, setNewState] = useState(stateRef.current);
+    const [, setNewState] = useState(stateRef.current);
 
     // Internal Interface
     const setState = newState => {
         // Get the previous state
-        const prevState = { ...stateRef.current };
 
         // Update the stateRef
         stateRef.current = {
-            ...prevState,
+            ...stateRef.current,
             ...newState,
-            prevState,
         };
 
         // Trigger useEffect()
@@ -124,68 +121,77 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     const show = e => {
         const dataset = e.target.dataset;
         const element = e.target;
-        const title = element.getAttribute('title');
+
+        if (!element) {
+            return;
+        }
+
         const { tooltip } = dataset;
 
-        if (title && tooltip) {
-            let {
-                align: defaultAlign,
-                autohide: defaultAutohide,
-                timer,
-                verticalAlign: defaultVerticalAlign,
-            } = stateRef.current;
+        let title = element.getAttribute('title') || tooltip;
+        title = typeof title === 'boolean' ? null : title;
 
-            if (timer) {
-                clearTimeout(timer);
-            }
-
-            const align = op.get(dataset, 'align', defaultAlign);
-            const autohide = op.get(dataset, 'autohide', defaultAutohide);
-            const verticalAlign = op.get(
-                dataset,
-                'verticalAlign',
-                defaultVerticalAlign,
-            );
-
-            // Give screen readers a chance to read the title before we clip it off.
-            setTimeout(() => element.removeAttribute('title'), 1);
-
-            const newState = { visible: true, children: title };
-
-            if (align && Object.values(ENUMS.ALIGN).includes(align)) {
-                newState.align = align;
-            }
-
-            if (
-                verticalAlign &&
-                Object.values(ENUMS.VERTICAL_ALIGN).includes(verticalAlign)
-            ) {
-                newState.verticalAlign = verticalAlign;
-            }
-
-            dataset.tooltip = title;
-
-            // position the tooltip to the target element
-            const pos = getPosition({ align, verticalAlign, element, e });
-
-            containerRef.current.style.left = `${pos.x}px`;
-            containerRef.current.style.top = `${pos.y}px`;
-
-            element.addEventListener('mouseleave', hide);
-            element.addEventListener('focus', hide);
-
-            if (autohide) {
-                timer = setTimeout(
-                    () => hide({ target: element, autohide: true }),
-                    autohide,
-                );
-                newState.timer = timer;
-            }
-
-            onShow({ event: ENUMS.EVENT.SHOW, target: e.target, ref });
-
-            setState(newState);
+        if (!title || !tooltip) {
+            return;
         }
+
+        let {
+            align: defaultAlign,
+            autohide: defaultAutohide,
+            timer,
+            verticalAlign: defaultVerticalAlign,
+        } = stateRef.current;
+
+        if (timer) {
+            clearTimeout(timer);
+        }
+
+        const align = op.get(dataset, 'align', defaultAlign);
+        const autohide = op.get(dataset, 'autohide', defaultAutohide);
+        const verticalAlign = op.get(
+            dataset,
+            'verticalAlign',
+            defaultVerticalAlign,
+        );
+
+        // Give screen readers a chance to read the title before we clip it off.
+        setTimeout(() => element.removeAttribute('title'), 1);
+
+        const newState = { visible: true, children: title };
+
+        if (align && Object.values(ENUMS.ALIGN).includes(align)) {
+            newState.align = align;
+        }
+
+        if (
+            verticalAlign &&
+            Object.values(ENUMS.VERTICAL_ALIGN).includes(verticalAlign)
+        ) {
+            newState.verticalAlign = verticalAlign;
+        }
+
+        dataset.tooltip = title;
+
+        // position the tooltip to the target element
+        const pos = getPosition({ align, verticalAlign, element, e });
+
+        containerRef.current.style.left = `${pos.x}px`;
+        containerRef.current.style.top = `${pos.y}px`;
+
+        element.addEventListener('mouseleave', hide);
+        element.addEventListener('focus', hide);
+
+        if (autohide) {
+            timer = setTimeout(
+                () => hide({ target: element, autohide: true }),
+                autohide,
+            );
+            newState.timer = timer;
+        }
+
+        onShow({ event: ENUMS.EVENT.SHOW, target: e.target, ref });
+
+        setState(newState);
     };
 
     // External Interface
@@ -207,7 +213,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         return () => {
             win.removeEventListener('mouseover', show);
         };
-    }, Object.values(props));
+    });
 
     // Renderers
     const render = () => {
@@ -245,6 +251,7 @@ Tooltip.ENUMS = ENUMS;
 Tooltip.propTypes = {
     align: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
     autohide: PropTypes.number,
+    autoshow: PropTypes.bool,
     className: PropTypes.string,
     namespace: PropTypes.string,
     onHide: PropTypes.func,
@@ -255,6 +262,7 @@ Tooltip.propTypes = {
 
 Tooltip.defaultProps = {
     align: ENUMS.ALIGN.CENTER,
+    autoshow: true,
     namespace: 'ar-tooltip',
     onHide: noop,
     onShow: noop,
