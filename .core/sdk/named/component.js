@@ -39,12 +39,15 @@ export const useHookComponent = (
     defaultComponent = () => null,
     ...params
 ) => {
-    const component = useRef(defaultComponent);
-    const [, update] = useState(component.current);
+    const component = useRef({ component: defaultComponent });
+    const [version, update] = useState(1);
     const setComponent = newComponent => {
-        if (newComponent) {
-            component.current = newComponent;
-            update(component.current);
+        if (
+            newComponent &&
+            newComponent !== op.get(component, 'current.component')
+        ) {
+            op.set(component, 'current.component', newComponent);
+            update(version + 1);
         }
     };
 
@@ -54,7 +57,7 @@ export const useHookComponent = (
             setComponent(op.get(context, 'component'));
         };
         getComponent();
-    }, [component]);
+    }, [hook, defaultComponent, ...params]);
 
-    return component.current;
+    return op.get(component, 'current.component');
 };

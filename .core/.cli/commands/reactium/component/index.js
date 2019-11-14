@@ -19,7 +19,9 @@ const pad = require(`${mod}/lib/pad`);
 
 const { error, message } = require(`${mod}/lib/messenger`);
 
-const { formatImport, topLevelStyles } = require('../style');
+const { formatImport, topLevelStyles } = require(path.normalize(
+    process.cwd() + '/.core/.cli/commands/reactium/style',
+));
 
 const formatDestination = (val, props) => {
     const { cwd } = props;
@@ -135,7 +137,7 @@ const CONFIRM = ({ props, params }) => {
                         type: 'string',
                         required: true,
                         pattern: /^y|n|Y|N/,
-                        message: ` `,
+                        message: ' ',
                         before: val => {
                             return String(val).toLowerCase() === 'y';
                         },
@@ -525,8 +527,6 @@ const SCHEMA = ({ props }) => {
  * @since 2.0.0
  */
 const ACTION = ({ opt, props }) => {
-    console.log('');
-
     const { cwd, prompt } = props;
 
     const ovr = {};
@@ -579,7 +579,7 @@ const ACTION = ({ opt, props }) => {
             return;
         }
 
-        message(`A component will be created with the following options:`);
+        message('A component will be created with the following options:');
         const preflight = { ...params };
 
         console.log(
@@ -589,13 +589,12 @@ const ACTION = ({ opt, props }) => {
         );
 
         CONFIRM({ props, params })
-            .then(() => {
+            .then(async () => {
                 console.log('');
-
-                generator({ params, props }).then(success => {
-                    console.log('');
-                });
+                await generator({ params, props });
+                console.log('');
             })
+            .then(() => prompt.stop())
             .catch(err => {
                 prompt.stop();
                 message(CANCELED);

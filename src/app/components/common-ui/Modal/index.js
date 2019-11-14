@@ -1,4 +1,5 @@
 import cn from 'classnames';
+import op from 'object-path';
 import PropTypes from 'prop-types';
 import Dismissable from '../Dismissable';
 
@@ -6,9 +7,15 @@ import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
+    useLayoutEffect as useWindowEffect,
     useRef,
     useState,
 } from 'react';
+
+import ReactDOM from 'react-dom';
+
+const useLayoutEffect =
+    typeof window !== 'undefined' ? useWindowEffect : useEffect;
 
 /**
  * -----------------------------------------------------------------------------
@@ -17,10 +24,10 @@ import React, {
  */
 let Modal = (props, ref) => {
     // Refs
+    const bodyRef = useRef();
     const dissmissableRef = useRef();
     const stateRef = useRef({
         animation: null,
-        prevState: {},
         ...props,
     });
 
@@ -29,8 +36,7 @@ let Modal = (props, ref) => {
 
     // Internal Interface
     const setState = newState => {
-        const prevState = { ...stateRef.current };
-        stateRef.current = { ...stateRef.current, ...newState, prevState };
+        stateRef.current = { ...stateRef.current, ...newState };
         setNewState(stateRef.current);
     };
 
@@ -42,26 +48,43 @@ let Modal = (props, ref) => {
         }
     };
 
-    const show = content => {
+    const update = content => {
         if (content) {
             setState({ children: content });
         }
+    };
 
+    const show = content => {
+        update(content);
         dissmissableRef.current.show();
     };
 
     // External Interface
     useImperativeHandle(ref, () => ({
         ...dissmissableRef.current,
-        state: stateRef.current,
         dismiss,
+        hide: dismiss,
         show,
+        setState,
+        state: stateRef.current,
+        update,
     }));
 
     // Side Effects
     useEffect(() => setState(props), Object.values(props));
 
+    useLayoutEffect(() => {
+        const doc = op.get(props, 'iDocument', document);
+        if (!bodyRef.current && typeof doc !== 'undefined') {
+            bodyRef.current = doc.body;
+        }
+    }, [bodyRef.current]);
+
     const render = () => {
+        if (!bodyRef.current) {
+            return null;
+        }
+
         const {
             children,
             className,
@@ -75,7 +98,7 @@ let Modal = (props, ref) => {
             visible,
         });
 
-        return (
+        return ReactDOM.createPortal(
             <Dismissable
                 {...stateRef.current}
                 ref={dissmissableRef}
@@ -91,7 +114,8 @@ let Modal = (props, ref) => {
                 <div className={`${namespace}-wrapper`}>
                     <div className={`${namespace}-content`}>{children}</div>
                 </div>
-            </Dismissable>
+            </Dismissable>,
+            bodyRef.current,
         );
     };
 

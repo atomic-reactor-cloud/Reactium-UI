@@ -4,16 +4,20 @@ import PropTypes from 'prop-types';
 
 import ENUMS from './enums';
 
+import ReactDOM from 'react-dom';
 import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
+    useLayoutEffect as useWindowEffect,
     useRef,
     useState,
 } from 'react';
 
 const noop = () => {};
+
+const useLayoutEffect =
+    typeof window !== 'undefined' ? useWindowEffect : useEffect;
 
 /**
  * -----------------------------------------------------------------------------
@@ -22,6 +26,7 @@ const noop = () => {};
  */
 let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     // Refs
+    const bodyRef = useRef();
     const containerRef = useRef();
     const stateRef = useRef({
         timer: null,
@@ -109,7 +114,6 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             });
 
             if (!autohide) {
-                element.setAttribute('title', tooltip);
                 element.removeEventListener('mouseleave', hide);
                 element.removeEventListener('focus', hide);
             }
@@ -128,7 +132,10 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
 
         const { tooltip } = dataset;
 
-        let title = element.getAttribute('title') || tooltip;
+        let title =
+            element.getAttribute('title') ||
+            element.getAttribute('aria-title') ||
+            tooltip;
         title = typeof title === 'boolean' ? null : title;
 
         if (!title || !tooltip) {
@@ -155,7 +162,11 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         );
 
         // Give screen readers a chance to read the title before we clip it off.
-        setTimeout(() => element.removeAttribute('title'), 1);
+        // setTimeout(() => element.removeAttribute('title'), 1);
+        element.removeAttribute('title');
+        if (!element.getAttribute('aria-title')) {
+            element.setAttribute('aria-title', title);
+        }
 
         const newState = { visible: true, children: title };
 
@@ -206,17 +217,33 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     useEffect(() => setState(props), Object.values(props));
 
     useLayoutEffect(() => {
-        const win = op.has(props, 'iWindow') ? props.iWindow : window;
+        // const win = op.has(props, 'iWindow') ? props.iWindow : window;
+        const win = op.get(props, 'iWindow', window);
 
         win.addEventListener('mouseover', show);
 
         return () => {
+            const { timer } = stateRef.current;
+            if (timer) {
+                clearTimeout(timer);
+            }
             win.removeEventListener('mouseover', show);
         };
     });
 
+    useLayoutEffect(() => {
+        const doc = op.get(props, 'iDocument', document);
+        if (!bodyRef.current && typeof doc !== 'undefined') {
+            bodyRef.current = doc.body;
+        }
+    }, [bodyRef.current]);
+
     // Renderers
     const render = () => {
+        if (!bodyRef.current) {
+            return null;
+        }
+
         const {
             align = ENUMS.ALIGN.CENTER,
             children,
@@ -234,10 +261,11 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             visible,
         });
 
-        return (
+        return ReactDOM.createPortal(
             <div ref={containerRef} className={cname}>
                 <div className='container'>{children}</div>
-            </div>
+            </div>,
+            bodyRef.current,
         );
     };
 

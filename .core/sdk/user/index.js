@@ -150,10 +150,49 @@ User.isRole = async (role, userId) => {
 };
 
 /**
+ * @api {Function} User.can(capabilities,userObject, strict) User.can()
+ * @apiDescription Synchronously find out if a user has a set of capabilities. This check is done on the loaded user, and will not reflect
+ * any asynch changed that have been made to the user (such as capability change on the users roles). As such, this should only be used
+ * authoritatively on a recently loaded user, or when strict enforcement of the capabilities at every moment is not necessary. For example, when
+ * it improves the user experience to not show a component when they won't be able to properly interact with it.
+ * @apiName User.canSync
+ * @apiParam {Mixed} capabilities The capability(s) to check for (string or array)
+ * @apiParam {Object} [userObject] The user object. If empty the current user object is used.
+ * @apiParam {Boolean} [strict=false] Compare capabilities where the user must have all capabilities `[true]`, or at least 1 `[false]`.
+ * @apiGroup Reactium.User
+ */
+User.canSync = (caps, user, strict) => {
+    if (caps.length < 1) {
+        return true;
+    }
+
+    const current = user || User.current();
+    const userId = op.get(current, 'objectId');
+    if (!current || !userId) {
+        return false;
+    }
+
+    if (op.has(current, ['roles', 'super-admin'])) {
+        return true;
+    }
+
+    if (strict === true) {
+        return (
+            _.intersection(caps, op.get(user, 'capabilities', [])).length ===
+            caps.length
+        );
+    } else {
+        return (
+            _.intersection(caps, op.get(user, 'capabilities', [])).length > 0
+        );
+    }
+};
+
+/**
  * @api {Function} User.can(capabilities,userId) User.can()
  * @apiDescription Asyncronously find out if a user has a set of capabilities.
  * @apiName User.can
- * @apiParam {Mixed} capabilities The capability(s) to check for (string or array). **Note: User must have all of the capabilities you are checking for.
+ * @apiParam {Mixed} capabilities The capability(s) to check for (string or array)
  * @apiParam {String} [userId] The objectId of the user. If empty the current user is used.
  * @apiParam {Boolean} [strict=false] Compare capabilities where the user must have all capabilities `[true]`, or at least 1 `[false]`.
  * @apiGroup Reactium.User
@@ -161,37 +200,14 @@ User.isRole = async (role, userId) => {
 User.can = async (caps, userId, strict) => {
     caps = _.isString(caps) ? String(caps).replace(' ', '') : caps;
     caps = Array.isArray(caps) ? caps : caps.split(',');
+    caps = _.compact(_.uniq(caps));
 
-    const current = User.current() || {};
-
-    userId = userId || op.get(current, 'objectId');
-
-    if (!userId) {
-        return Promise.resolve(false);
+    let user;
+    if (userId) {
+        user = await User.find({ userId });
     }
 
-    const u = await User.find({ userId });
-
-    if (!u) {
-        return Promise.resolve(false);
-    }
-
-    if (op.has(u, ['roles', 'super-admin'])) {
-        return Promise.resolve(true);
-    }
-
-    await Hook.run('user.can', caps, u);
-
-    if (strict === true) {
-        return Promise.resolve(
-            _.intersection(caps, op.get(u, 'capabilities', [])).length ===
-                caps.length,
-        );
-    } else {
-        return Promise.resolve(
-            _.intersection(caps, op.get(u, 'capabilities', [])).length > 0,
-        );
-    }
+    return User.canSync(caps, user, strict);
 };
 
 /**

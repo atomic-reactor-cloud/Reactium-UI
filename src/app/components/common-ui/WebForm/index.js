@@ -167,17 +167,22 @@ let WebForm = (props, ref) => {
     const errorFields = op.get(stateRef.current, 'errors.fields', []);
 
     useLayoutEffect(() => {
-        update(value);
-        Object.entries(stateRef.current.elements).forEach(
-            ([fieldName, field]) => {
-                if (errorFields.find(error => error === fieldName)) {
-                    field.classList.add('error');
-                } else {
-                    field.classList.remove('error');
-                }
-            },
-        );
-    }, Object.values(value).concat(errorFields.join(',')));
+        const { mounted } = stateRef.current;
+        if (mounted !== true) {
+            op.set(stateRef.current, 'mounted', true);
+
+            update(value);
+            Object.entries(stateRef.current.elements).forEach(
+                ([fieldName, field]) => {
+                    if (errorFields.find(error => error === fieldName)) {
+                        field.classList.add('error');
+                    } else {
+                        field.classList.remove('error');
+                    }
+                },
+            );
+        }
+    }, [op.get(stateRef.current, 'mounted')]);
 
     const getValue = k => {
         const elements = stateRef.current.elements;

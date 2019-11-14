@@ -39,7 +39,7 @@ class ModalMolecule extends Component {
                 <div className='flex-center'>
                     <Button onClick={this.showModal}>Show Modal</Button>
                 </div>
-                <Modal ref={this.modal} />
+                <Modal ref={this.modal} iDocument={this.props.iDocument} />
             </div>
         );
     }

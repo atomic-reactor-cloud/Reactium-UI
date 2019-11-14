@@ -19,7 +19,7 @@ const { error, message } = require(`${mod}/lib/messenger`);
  * @see https://www.npmjs.com/package/commander#command-specific-options
  * @since 2.0.0
  */
-const NAME = 'docs';
+const NAME = 'i18n';
 
 /**
  * DESC String
@@ -28,7 +28,7 @@ const NAME = 'docs';
  * @see https://www.npmjs.com/package/commander#automated---help
  * @since 2.0.0
  */
-const DESC = 'Generate docs';
+const DESC = 'Generate POT file.';
 
 /**
  * CANCELED String
@@ -48,32 +48,10 @@ const CONFORM = ({ input, props }) =>
         const { cwd } = props;
         let val = input[key];
         switch (key) {
-            case 'src': {
-                const paths = val.split(',').map(srcDir => {
-                    srcDir = path.normalize(srcDir);
-                    if (/^[\/\\]{1}/.test(srcDir)) {
-                        srcDir = path.relative(cwd, srcDir);
-                    }
-                    return srcDir;
-                });
-                obj.src = paths;
-                break;
-            }
-            case 'dest': {
-                let dest = path.normalize(val);
-                if (/^[\/\\]{1}/.test(dest)) {
-                    dest = path.relative(cwd, dest);
-                }
-                obj.dest = dest;
-                break;
-            }
             default:
                 obj[key] = val;
                 break;
         }
-
-        if (!('verbose' in obj)) obj.verbose = false;
-        else obj.verbose = !!obj.verbose;
 
         return obj;
     }, {});
@@ -87,7 +65,7 @@ const CONFORM = ({ input, props }) =>
 const HELP = () =>
     console.log(`
 Example:
-  $ arcli docs -h
+  $ arcli i18n -h
 `);
 
 /**
@@ -95,7 +73,7 @@ Example:
  * @description Array of flags passed from the commander options.
  * @since 2.0.18
  */
-const FLAGS = ['src', 'dest', 'verbose'];
+const FLAGS = [];
 
 /**
  * FLAGS_TO_PARAMS Function
@@ -124,20 +102,7 @@ const SCHEMA = ({ props }) => {
     const { prompt } = props;
 
     return {
-        properties: {
-            src: {
-                description: chalk.white(
-                    'Source directories, comma separated:',
-                ),
-                required: true,
-                default: 'src,.core',
-            },
-            dest: {
-                description: chalk.white('Documentation destination:'),
-                required: true,
-                default: 'public/apidocs',
-            },
-        },
+        properties: {},
     };
 };
 
@@ -150,8 +115,6 @@ const SCHEMA = ({ props }) => {
  * @since 2.0.0
  */
 const ACTION = ({ opt, props }) => {
-    console.log('');
-
     const { cwd, prompt } = props;
     const schema = SCHEMA({ props });
     const ovr = FLAGS_TO_PARAMS({ opt });
@@ -193,12 +156,6 @@ const COMMAND = ({ program, props }) =>
         .command(NAME)
         .description(DESC)
         .action(opt => ACTION({ opt, props }))
-        .option('-s, --src [src]', 'Comma separated src directories to scan.')
-        .option(
-            '-d, --dest [dest]',
-            'Dest directories to output documentation.',
-        )
-        .option('-V, --verbose', 'Verbose logging during generation.')
         .on('--help', HELP);
 
 /**
