@@ -25,10 +25,12 @@ const useLayoutEffect =
 let Modal = (props, ref) => {
     // Refs
     const bodyRef = useRef();
+    const windowRef = useRef();
     const dissmissableRef = useRef();
     const stateRef = useRef({
         animation: null,
         ...props,
+        overflow: 'auto',
     });
 
     // State
@@ -40,7 +42,23 @@ let Modal = (props, ref) => {
         setNewState(stateRef.current);
     };
 
+    const toggleWindow = (locked = false) => {
+        const body = bodyRef.current;
+        const window = windowRef.current;
+
+        if (locked === true) {
+            window.scroll(window.scrollX, window.scrollY);
+            body.style.overflowY = 'hidden';
+        } else {
+            const { overflow } = stateRef.current;
+            body.style.overflow = overflow;
+        }
+
+        const style = body.style;
+    };
+
     const dismiss = () => {
+        toggleWindow(false);
         const { dismissable } = stateRef.current;
 
         if (dismissable) {
@@ -55,6 +73,7 @@ let Modal = (props, ref) => {
     };
 
     const show = content => {
+        toggleWindow(true);
         update(content);
         dissmissableRef.current.show();
     };
@@ -75,10 +94,19 @@ let Modal = (props, ref) => {
 
     useLayoutEffect(() => {
         const doc = op.get(props, 'iDocument', document);
-        if (!bodyRef.current && typeof doc !== 'undefined') {
+        const win = op.get(props, 'iWindow', window);
+
+        if (!bodyRef.current) {
             bodyRef.current = doc.body;
+            const overflow = op.get(doc.body, 'style.overflow', 'auto');
+
+            setState({ overflow });
         }
-    }, [bodyRef.current]);
+
+        if (!windowRef.current) {
+            windowRef.current = win;
+        }
+    }, [bodyRef.current, windowRef.current]);
 
     const render = () => {
         if (!bodyRef.current) {

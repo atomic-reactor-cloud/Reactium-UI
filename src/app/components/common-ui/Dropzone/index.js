@@ -1,17 +1,34 @@
+import uuid from 'uuid/v4';
 import dz from 'dropzone';
+import _ from 'underscore';
 import cn from 'classnames';
+import op from 'object-path';
 import PropTypes from 'prop-types';
 
 import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
-    useLayoutEffect,
+    useLayoutEffect as useWindowEffect,
     useRef,
     useState,
 } from 'react';
 
+const useLayoutEffect =
+    typeof window === 'undefined' ? useEffect : useWindowEffect;
+
 const noop = () => {};
+
+const ENUMS = {
+    DEBUG: false,
+    EVENT: {
+        ADD: 'add',
+        CHANGE: 'change',
+        ERROR: 'error',
+        INIT: 'init',
+        REMOVE: 'remove',
+    },
+};
 
 /**
  * -----------------------------------------------------------------------------
@@ -32,171 +49,289 @@ let Dropzone = (
 ) => {
     // Refs
     const containerRef = useRef();
-    const dzRef = useRef();
-    const initRef = useRef(false);
-    const prevStateRef = useRef({});
+    const inputContainerRef = useRef();
     const stateRef = useRef({
         ...props,
         config: { ...Dropzone.defaultProps.config, ...props.config },
-        initialized: initRef.current,
+        dropzone: null,
+        initialized: false,
+        input: null,
     });
 
     // State
-    const [state, setNewState] = useState(stateRef.current);
-    const [prevState, setPrevState] = useState(prevStateRef.current);
-
-    const [updated, setUpdated] = useState(Date.now());
+    const [, setNewState] = useState(stateRef.current);
 
     // Internal Interface
     const setState = (newState, caller) => {
-        const { debug } = stateRef.current;
-
-        newState = { ...stateRef.current, ...newState };
-
-        if (debug === true) {
-            console.log('setState()', caller, newState);
+        if (ENUMS.DEBUG && caller) {
+            console.log(caller, {
+                state: stateRef.current,
+                newState,
+                merged: { ...stateRef.current, ...newState },
+            });
         }
 
-        prevStateRef.current = { ...stateRef.current };
-        stateRef.current = newState;
+        // Update the stateRef
+        stateRef.current = {
+            ...stateRef.current,
+            ...newState,
+            updated: Date.now(),
+        };
 
+        // Trigger useEffect()
         setNewState(stateRef.current);
-        setPrevState(prevStateRef.current);
-        //setTimeout(() => setUpdated(Date.now()), 1);
-        setUpdated(Date.now());
     };
 
-    const _onFileAdded = file => {
-        const { config, max = 0 } = stateRef.current;
-        const { maxFiles = 0 } = config;
+    const state = (key, defaultValue) =>
+        key ? op.get(stateRef.current, key, defaultValue) : stateRef.current;
 
-        if (maxFiles > 0 && max >= maxFiles) {
+    const cname = () => {
+        const { className, namespace } = state();
+        return cn({ [className]: !!className, [namespace]: !!namespace });
+    };
+
+    const cx = cls => {
+        const { namespace } = state();
+        return _.compact([namespace, cls]).join('-');
+    };
+
+    const clearPreviousInput = () => {
+        const container = inputContainerRef.current;
+        const input = container.querySelector('.dz-hidden-input');
+        if (input) {
+            input.parentNode.removeChild(input);
+        }
+    };
+
+    const mapconfig = () => {};
+
+    const _onFileAdded = file => addFiles([file]);
+
+    const _onFileRemoved = file => removeFiles([file]);
+
+    const _onFileError = (file, error) => {
+        const reader = new FileReader();
+
+        reader.onload = ({ target }) => {
+            removeFiles(file);
+
+            const files = state('files', {});
+
+            onError({
+                type: ENUMS.EVENT.ERROR,
+                file,
+                files,
+                message: String(error).toLowerCase(),
+            });
+
+            onChange({
+                type: ENUMS.EVENT.CHANGE,
+                added: null,
+                removed: null,
+                files,
+            });
+        };
+
+        reader.readAsDataURL(file);
+    };
+
+    const addFiles = files => {
+        let Q = state('files', {});
+        files = !Array.isArray(files) ? [files] : files;
+        files = _.compact(files);
+
+        if (files.length < 1) {
+            return Promise.resolve(Q);
+        }
+
+        const dropzone = state('dropzone');
+        const added = [];
+
+        return new Promise(resolve => {
+            const ival = setInterval(() => {
+                if (added.length === files.length) {
+                    clearInterval(ival);
+
+                    Q = state('files', {});
+
+                    setState({ files: Q }, 'addFiles');
+
+                    if (_.compact(added).length > 0) {
+                        onFileAdded({
+                            type: ENUMS.EVENT.ADD,
+                            added: _.compact(added),
+                            files: Q,
+                        });
+
+                        onChange({
+                            type: ENUMS.EVENT.CHANGE,
+                            added: _.compact(added),
+                            removed: null,
+                            files: Q,
+                        });
+                    }
+
+                    resolve(Q);
+                }
+            }, 1);
+
+            files.forEach(file => {
+                if (file.status === ENUMS.EVENT.ERROR) {
+                    added.push(null);
+                    return;
+                }
+
+                if (file.ID && file.dataURL) {
+                    Q[file.ID] = file;
+
+                    added.push(file);
+                    return;
+                }
+
+                const obj = file;
+                const reader = new FileReader();
+
+                reader.onload = ({ target }) => {
+                    const ID = uuid();
+                    obj['ID'] = ID;
+                    obj['dataURL'] = target.result;
+                    obj['statusAt'] = Date.now();
+
+                    Q[ID] = obj;
+
+                    added.push(obj);
+                };
+
+                reader.readAsDataURL(file);
+            });
+        });
+    };
+
+    const removeFiles = files => {
+        files = !Array.isArray(files) ? [files] : files;
+        files = _.compact(files);
+
+        if (files.length < 1) {
             return;
         }
 
-        // setTimeout(() => {
-        setState({ files: dzRef.current.getAcceptedFiles() }, '_onFileAdded()');
+        const Q = state('files', {});
+        const dropzone = state('dropzone');
 
-        const evt = {
-            type: 'added',
-            file,
-            files: dzRef.current.getAcceptedFiles(),
-        };
+        files.forEach(file => {
+            const ID = file.ID;
 
-        onFileAdded(evt);
-        //}, 100);
+            if (!Q[ID]) {
+                return;
+            }
+
+            delete Q[ID];
+            stateRef.current.files = Q;
+
+            try {
+                dropzone.removeFile(file);
+            } catch (err) {}
+        });
+
+        setState({ files: Q }, 'removeFiles');
+
+        onFileRemoved({
+            type: ENUMS.EVENT.REMOVE,
+            removed: files,
+            files: Q,
+        });
+
+        onChange({
+            type: ENUMS.EVENT.CHANGE,
+            added: null,
+            removed: files,
+            files: Q,
+        });
     };
 
-    const _onFileRemoved = file => {
-        setState(
-            { max: dzRef.current.getAcceptedFiles().length },
-            '_onFileRemoved()',
+    const browseFiles = () => {
+        const container = inputContainerRef.current;
+        const input = container.querySelector('.dz-hidden-input');
+
+        if (input) {
+            input.click();
+        }
+    };
+
+    const initialize = () => {
+        const initialized = state('initialized');
+        if (initialized === true) {
+            return;
+        }
+
+        clearPreviousInput();
+
+        const config = state('config');
+        const files = state('files', {});
+        const container = containerRef.current;
+
+        if (!state('config.previewsContainer')) {
+            config.previewsContainer = `.${cx('preview')}`;
+        }
+
+        if (!state('config.hiddenInputContainer')) {
+            config.hiddenInputContainer = `.${cx('input')}`;
+        }
+
+        const dropzone = new dz(container, config);
+
+        dropzone.on('addedfile', _onFileAdded);
+        dropzone.on('error', _onFileError);
+        dropzone.on('removedfile', _onFileRemoved);
+
+        const inputContainer = inputContainerRef.current;
+        const input = inputContainer.querySelector('.dz-hidden-input');
+
+        setState({ config, dropzone, initialized: true, input }, 'initialize');
+
+        addFiles(Object.values(files)).then(files => {
+            onInitialize({
+                type: ENUMS.EVENT.INIT,
+                dropzone,
+                files,
+            });
+        });
+    };
+
+    // Renderers
+    const render = () => (
+        <div ref={containerRef} className={cname()}>
+            <div className={cx('input')} ref={inputContainerRef} />
+            <div className={cx('preview')} />
+            {children}
+        </div>
+    );
+
+    // Side Effects
+    useLayoutEffect(() => initialize(), [containerRef.current]);
+
+    useEffect(() => {
+        // Remove any errored files
+        const staged = Object.values(state('files')).filter(file =>
+            Boolean(file.status === ENUMS.EVENT.ERROR),
         );
-
-        const evt = {
-            type: 'removed',
-            file,
-            files: dzRef.current.getAcceptedFiles(),
-        };
-
-        onFileRemoved(evt);
-    };
-
-    const _onFileError = (file, error) => {
-        const { files } = stateRef.current;
-
-        const evt = {
-            type: 'error',
-            file,
-            files,
-            error,
-        };
-
-        onError(evt);
-    };
-
-    const _onMaxFilesReached = () => {
-        setState(
-            { max: dzRef.current.getAcceptedFiles().length },
-            '_onMaxFilesReached()',
-        );
-    };
+        if (staged.length > 0) {
+            removeFiles(staged);
+        }
+    }, [state('updated')]);
 
     // External Interface
     useImperativeHandle(ref, () => ({
+        ...ref,
+        addFiles,
+        browseFiles,
         container: containerRef.current,
-        prevState: prevStateRef.current,
+        dropzone: state('dropzone'),
         props,
+        removeFiles,
         setState,
-        state: stateRef.current,
-        files: {
-            list: stateRef.current.files,
-            remove: file => dzRef.current.removeFile(file),
-        },
+        state: state(),
     }));
-
-    // Side Effects
-    useEffect(() => {
-        const { initialized } = stateRef.current;
-
-        // Dispatch onChange event
-        const { files: currFiles } = stateRef.current;
-        const { files: prevFiles } = prevState;
-
-        if (
-            JSON.stringify(currFiles) !== JSON.stringify(prevFiles) &&
-            initialized === true
-        ) {
-            const evt = { type: 'change', ...state };
-            onChange(evt);
-        }
-    }, [updated]);
-
-    useLayoutEffect(() => {
-        if (!dzRef.current) {
-            const { config, files } = stateRef.current;
-            let { maxFiles } = config;
-            maxFiles = maxFiles < 1 ? null : maxFiles;
-
-            try {
-                const dzs = document.querySelector('.dz-hidden-input');
-                if (dzs) {
-                    dzs.parentNode.removeChild(dzs);
-                }
-            } catch (err) {}
-
-            const dzone = new dz(containerRef.current, { ...config, maxFiles });
-
-            dzRef.current = dzone;
-            initRef.current = true;
-
-            setState({ initialized: initRef.current }, 'useLayoutEffect()');
-
-            onInitialize({
-                type: 'initialize',
-                dropzone: dzRef.current,
-                files,
-            });
-
-            dzRef.current.on('maxfilesreached', _onMaxFilesReached);
-            dzRef.current.on('addedfile', _onFileAdded);
-            dzRef.current.on('removedfile', _onFileRemoved);
-            dzRef.current.on('error', _onFileError);
-        }
-    });
-
-    const render = () => {
-        const { className, namespace } = stateRef.current;
-
-        return (
-            <div
-                ref={containerRef}
-                className={cn({ [className]: !!className, [namespace]: true })}>
-                <div className='dropzone-preview' />
-                {children}
-            </div>
-        );
-    };
 
     return render();
 };
@@ -208,6 +343,10 @@ Dropzone.propTypes = {
         acceptedFiles: PropTypes.string,
         autoProcessQueue: PropTypes.bool,
         clickable: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+        hiddenInputContainer: PropTypes.oneOfType([
+            PropTypes.string,
+            PropTypes.element,
+        ]),
         maxFiles: PropTypes.number,
         method: PropTypes.oneOfType([PropTypes.string, PropTypes.func]),
         parallelUploads: PropTypes.number,
@@ -217,8 +356,8 @@ Dropzone.propTypes = {
         uploadMultiple: PropTypes.bool,
     }),
     className: PropTypes.string,
-    debug: PropTypes.bool,
     disabled: PropTypes.bool,
+    files: PropTypes.oneOfType([PropTypes.object, PropTypes.string]),
     namespace: PropTypes.string,
     onChange: PropTypes.func,
     onError: PropTypes.func,
@@ -231,19 +370,19 @@ Dropzone.defaultProps = {
     config: {
         acceptedFiles: null,
         autoProcessQueue: false,
-        clickable: false,
-        maxFiles: 0,
+        clickable: true,
+        hiddenInputContainer: null,
+        maxFiles: null,
         method: 'post',
         parallelUploads: 1,
         paramName: 'file',
-        previewsContainer: '.ar-dropzone-preview',
+        previewsContainer: null,
         timeout: 30000,
         uploadMultiple: false,
         url: '#',
     },
-    className: 'fullwidth',
-    debug: true,
     disabled: false,
+    files: {},
     namespace: 'ar-dropzone',
     onChange: noop,
     onError: noop,
