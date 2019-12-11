@@ -56,7 +56,7 @@ $ar-progress-shadow-inner: inset 0 0 5px 1px rgba($color-black, 0.05) !default;
         $pb: nth($size-codes, 4);
 
         &.#{$size-name} {
-            height: auto;
+            height: $pt + $pb + $ft;
 
             .label {
                 margin-top: -1px;

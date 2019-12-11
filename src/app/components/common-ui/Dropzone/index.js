@@ -105,6 +105,14 @@ let Dropzone = (
 
     const mapconfig = () => {};
 
+    const getType = filename =>
+        String(filename)
+            .split('.')
+            .pop();
+
+    const isImage = filename =>
+        ['png', 'svg', 'gif', 'jpg', 'jpeg'].includes(getType(filename));
+
     const _onFileAdded = file => addFiles([file]);
 
     const _onFileRemoved = file => removeFiles([file]);
@@ -181,28 +189,29 @@ let Dropzone = (
                     return;
                 }
 
-                if (file.ID && file.dataURL) {
-                    Q[file.ID] = file;
-
-                    added.push(file);
-                    return;
-                }
-
                 const obj = file;
-                const reader = new FileReader();
 
-                reader.onload = ({ target }) => {
-                    const ID = uuid();
-                    obj['ID'] = ID;
-                    obj['dataURL'] = target.result;
-                    obj['statusAt'] = Date.now();
+                const ID = uuid();
+                obj['ID'] = ID;
+                obj['statusAt'] = Date.now();
 
+                if (isImage(file.name)) {
+                    const reader = new FileReader();
+
+                    reader.onload = ({ target }) => {
+                        obj['dataURL'] = target.result;
+                        obj['statusAt'] = Date.now();
+
+                        Q[ID] = obj;
+
+                        added.push(obj);
+                    };
+
+                    reader.readAsDataURL(file);
+                } else {
                     Q[ID] = obj;
-
                     added.push(obj);
-                };
-
-                reader.readAsDataURL(file);
+                }
             });
         });
     };

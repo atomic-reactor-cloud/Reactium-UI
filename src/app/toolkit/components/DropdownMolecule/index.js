@@ -25,11 +25,13 @@ class DropdownMolecule extends Component {
         this.state = {
             selection: 'Dropdown 1',
         };
-        this.typeahead;
+
+        this.typeahead = null;
     }
 
     onTypeAhead = e => {
         this.setState({ typeahead: e.target.value });
+        this.typeahead.setState({ filter: e.target.value });
     };
 
     onSelect = e => {
@@ -72,11 +74,14 @@ class DropdownMolecule extends Component {
                     <Dropdown
                         data={data}
                         multiSelect
+                        ref={elm => {
+                            if (elm) this.typeahead = elm;
+                        }}
                         expandEvent={[
-                            Dropdown.ENUMS.EVENT.MOUSE_DOWN,
-                            Dropdown.ENUMS.EVENT.FOCUS,
+                            Dropdown.ENUMS.TOGGLE.MOUSE_DOWN,
+                            Dropdown.ENUMS.TOGGLE.FOCUS,
                         ]}
-                        collapseEvent={Dropdown.ENUMS.EVENT.BLUR}
+                        collapseEvent={Dropdown.ENUMS.TOGGLE.BLUR}
                         filter={typeahead}
                         iWindow={iWindow}
                         iDocument={iDocument}>

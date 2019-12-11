@@ -54,7 +54,7 @@ $buttons: (
     'default': (
         darken($color-white, 2%),
         darken($color-white, 2%),
-        $color-grey,
+        $color-gray,
         rgba($color-white, 0),
     ),
     'error': (
@@ -132,6 +132,7 @@ $button-sizes: (
 
             svg {
                 fill: nth($clr-codes, 3);
+                fill: currentColor;
                 stroke: nth($clr-codes, 3);
                 flex-shrink: 0;
             }
@@ -315,6 +316,7 @@ a, button {
 
     svg {
         fill: $color-white;
+        fill: currentColor;
         stroke: $color-white;
     }
 

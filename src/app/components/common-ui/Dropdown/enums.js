@@ -14,6 +14,15 @@ const ENUMS = {
         MOUSE_DOWN: 'onmousedown',
         MOUSE_UP: 'onmouseup',
     },
+    TOGGLE: {
+        BLUR: 'blur',
+        CLICK: 'click',
+        FOCUS: 'focus',
+        KEY_DOWN: 'keydown',
+        KEY_UP: 'keyup',
+        MOUSE_DOWN: 'mousedown',
+        MOUSE_UP: 'mouseup',
+    },
 };
 
 export default ENUMS;

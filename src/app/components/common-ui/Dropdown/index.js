@@ -1,5 +1,3 @@
-// TODO: Refactor to use newer hook template. 8/22/19
-
 import lunr from 'lunr';
 import _ from 'underscore';
 import uuid from 'uuid/v4';
@@ -28,361 +26,65 @@ const noop = () => {};
  * Hook Component: Dropdown
  * -----------------------------------------------------------------------------
  */
-let Dropdown = (props, ref) => {
-    let animation = null;
-    let animating = false;
-    let ElementComponent = null;
-    const id = uuid();
-
-    // State
-    const [data, setData] = useState(props.data || []);
-    const [expanded, setExpanded] = useState(props.expanded);
-    const [selection, setSelection] = useState(props.selection || []);
-    const [tabIndex, setTabIndex] = useState(-1);
-
+let Dropdown = (
+    {
+        children,
+        iDocument,
+        iWindow,
+        menuRenderer,
+        onBeforeCollapse,
+        onBeforeExpand,
+        onChange,
+        onCollapse,
+        onExpand,
+        onItemClick,
+        onItemSelect,
+        onItemUnselect,
+        ...props
+    },
+    ref,
+) => {
     // Refs
-    const activeButton = useRef();
     const containerRef = useRef();
     const menuRef = useRef();
-
-    // Internal Interface
-    const cname = suffix => _.compact([props.namespace, suffix]).join('-');
-
-    const collapse = () => {
-        setTabIndex(-1);
-
-        if (expanded !== true || animating === true) {
-            animation = null;
-            return Promise.resolve();
-        }
-
-        if (animation) {
-            return animation;
-        }
-
-        animating = true;
-
-        const {
-            animationEase,
-            animationSpeed,
-            onBeforeCollapse,
-            onCollapse,
-        } = props;
-
-        const menu = menuRef.current;
-
-        menu.style.height = 'auto';
-        menu.style.display = 'block';
-        menu.style.overflow = 'hidden';
-        menu.classList.remove('expanded');
-
-        onBeforeCollapse({
-            type: ENUMS.EVENT.BEFORE_COLLAPSE,
-            menu,
-            target: ElementComponent,
-        });
-
-        animation = new Promise(resolve =>
-            TweenMax.to(menu, animationSpeed, {
-                ease: animationEase,
-                height: 0,
-                onComplete: () => {
-                    const evt = {
-                        type: ENUMS.EVENT.COLLAPSE,
-                        menu,
-                        target: ElementComponent,
-                    };
-
-                    menu.removeAttribute('style');
-                    setExpanded(false);
-                    onCollapse(evt);
-                    animation = null;
-                    animating = false;
-                    resolve();
-                },
-            }),
-        );
-
-        return animation;
-    };
-
-    const dismiss = e => {
-        if (!e) {
-            return true;
-        }
-
-        const { dismissable } = props;
-
-        if (dismissable === true && !isChild(e.target)) {
-            return collapse(e);
-        } else {
-            return Promise.resolve(e);
-        }
-    };
-
-    const expand = () => {
-        if (expanded === true) {
-            animation = null;
-            return Promise.resolve();
-        }
-        if (animation) {
-            return animation;
-        }
-
-        const {
-            animationEase,
-            animationSpeed,
-            onBeforeExpand,
-            onExpand,
-        } = props;
-
-        const menu = menuRef.current;
-
-        menu.style.height = 'auto';
-        menu.style.display = 'block';
-        menu.style.overflow = 'hidden';
-        menu.classList.remove('expanded');
-
-        onBeforeExpand({
-            type: ENUMS.EVENT.BEFORE_EXPAND,
-            menu,
-            target: ElementComponent,
-        });
-
-        animation = new Promise(resolve =>
-            TweenMax.from(menu, animationSpeed, {
-                ease: animationEase,
-                height: 0,
-                onComplete: () => {
-                    const evt = {
-                        type: ENUMS.EVENT.EXPAND,
-                        menu,
-                        target: ElementComponent,
-                    };
-
-                    menu.removeAttribute('style');
-                    setExpanded(true);
-                    onExpand(evt);
-                    animation = null;
-                    resolve();
-                },
-            }),
-        );
-
-        return animation;
-    };
-
-    const isChild = child => {
-        if (!child) {
-            return true;
-        }
-
-        const parent = containerRef.current;
-        let node = child.parentNode;
-        while (node !== null) {
-            if (node == parent) {
-                return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
-    };
-
-    const toggle = e => {
-        return expanded !== true ? expand(e) : collapse(e);
-    };
-
-    // External Interface
-    useImperativeHandle(ref, () => ({
-        collapse,
-        container: containerRef.current,
-        expand,
-        toggle,
-        value: selected,
-    }));
-
-    // Before Render
-    useEffect(() => setData(props.data), [props.data]);
-
-    useEffect(() => {
-        const win = op.get(props, 'iWindow', window) || window;
-        const doc = op.get(props, 'iDocument', document) || document;
-
-        if (win && doc) {
-            doc.addEventListener('mousedown', dismiss);
-            win.addEventListener('keydown', _onKeyDown);
-
-            return function cleanup() {
-                doc.removeEventListener('mousedown', dismiss);
-                win.removeEventListener('keydown', _onKeyDown);
-            };
-        }
+    const stateRef = useRef({
+        ...props,
+        uuid: uuid(),
+        init: false,
+        tabIndex: -1,
     });
 
-    // After Render
-    useLayoutEffect(() => {
-        let { collapseEvent, expandEvent, toggleEvent } = props;
-        const selector = op.get(props, 'selector') || 'button';
+    // State
+    const [state, setNewState] = useState(stateRef.current);
 
-        ElementComponent = containerRef.current.querySelector(selector);
+    // Internal Interface
+    const setState = (newState, caller) => {
+        // Update the stateRef
+        stateRef.current = {
+            ...stateRef.current,
+            ...newState,
+        };
 
-        if (collapseEvent || expandEvent) {
-            if (collapseEvent) {
-                collapseEvent = _.flatten([collapseEvent]);
-                collapseEvent.forEach(evt => {
-                    if (evt === ENUMS.EVENT.BLUR) {
-                        ElementComponent[evt] = e => {
-                            if (!isChild(e.relatedTarget)) {
-                                collapse(e);
-                            }
-                        };
-                    } else {
-                        ElementComponent[evt] = e => collapse(e);
-                    }
-                });
-            }
-
-            if (expandEvent) {
-                expandEvent = _.flatten([expandEvent]);
-                expandEvent.forEach(evt => {
-                    if (evt === ENUMS.EVENT.FOCUS) {
-                        ElementComponent[evt] = e => {
-                            if (!isChild(e.relatedTarget)) {
-                                expand(e);
-                            }
-                        };
-                    } else {
-                        ElementComponent[evt] = e => expand(e);
-                    }
-                });
-            }
-        } else {
-            toggleEvent = _.flatten([toggleEvent]);
-            toggleEvent.forEach(evt => {
-                ElementComponent[evt] = e => toggle(e);
+        if (ENUMS.DEBUG && caller) {
+            console.log('setState()', caller, {
+                state: stateRef.current,
             });
         }
 
-        const buttons = menuRef.current.querySelectorAll('button');
-        if (buttons && tabIndex > -1) {
-            try {
-                buttons[tabIndex].focus();
-            } catch (err) {}
-        }
-    });
-
-    // Event Handlers
-    const _onItemClick = (e, val) => {
-        const {
-            data,
-            iconField,
-            labelField,
-            multiSelect,
-            onChange,
-            onItemClick,
-            onItemSelect,
-            onItemUnselect,
-            valueField,
-        } = props;
-        const idx = _.findIndex(data, { [valueField]: val });
-
-        let action;
-        let sel = _.uniq(Array.from(selection));
-
-        if (sel.includes(val)) {
-            action = ENUMS.EVENT.ITEM_UNSELECT;
-            sel = _.without(sel, val);
-        } else {
-            sel = multiSelect === true ? sel : [];
-            action = ENUMS.EVENT.ITEM_SELECT;
-            sel.push(val);
-        }
-
-        sel = _.uniq(sel);
-
-        const dataSelected = data.filter(item =>
-            sel.includes(item[valueField]),
-        );
-        const labels = _.compact(_.pluck(dataSelected, labelField));
-        const icons = _.compact(_.pluck(dataSelected, iconField));
-
-        const evt = {
-            icons,
-            index: idx,
-            item: data[idx],
-            labels,
-            selection: sel,
-            type: action,
-        };
-
-        setSelection(sel);
-        setTabIndex(idx);
-
-        onItemClick({ ...evt, type: ENUMS.EVENT.ITEM_CLICK });
-
-        if (action === ENUMS.EVENT.ITEM_SELECT) {
-            onItemSelect(evt);
-        }
-
-        if (action === ENUMS.EVENT.ITEM_UNSELECT) {
-            onItemUnselect(evt);
-        }
-
-        if (multiSelect !== true) {
-            collapse().then(() => ElementComponent.focus());
-        }
-
-        onChange({ ...evt, type: ENUMS.EVENT.CHANGE });
+        // Trigger useEffect()
+        setNewState(stateRef.current);
     };
 
-    const _onKeyDown = e => {
-        switch (e.keyCode) {
-            case 27:
-                e.preventDefault();
-                _onEsc(e);
-                break;
+    // Prefixed className
+    const cname = cls =>
+        _.compact([
+            op.get(stateRef.current, 'namespace', 'ar-dropdown'),
+            cls,
+        ]).join('-');
 
-            case 38:
-            case 40:
-                e.preventDefault();
-                if (isChild(e.target)) {
-                    expand().then(() => _onNav(e));
-                }
-                break;
-
-            default:
-                if (isChild(e.target)) {
-                    expand();
-                }
-        }
-    };
-
-    const _onEsc = e => {
-        if (isChild(e.target)) {
-            collapse().then(() => ElementComponent.focus());
-        }
-    };
-
-    const _onNav = e => {
-        const inc = e.keyCode === 38 ? -1 : 1;
-        const max = data.length;
-        let idx = tabIndex + inc;
-        idx = Math.max(idx, -2);
-        idx = Math.min(idx, max);
-        idx = idx === max ? -1 : idx;
-        idx = idx < -1 ? max - 1 : idx;
-
-        setTabIndex(idx);
-        if (idx === -1) {
-            ElementComponent.focus();
-        }
-    };
-
-    // Renderers
-    const renderMenuItems = () => {
-        const { iconField, labelField, menuRenderer, name, valueField } = props;
-        const filter = op.get(props, 'filter');
-
+    // Filtered data
+    const filteredData = () => {
+        const { data = [], filter, labelField } = stateRef.current;
         const idx = !filter
             ? []
             : lunr(function() {
@@ -396,7 +98,7 @@ let Dropdown = (props, ref) => {
 
         let ranked = -1;
 
-        const filteredData = !filter
+        return !filter
             ? data
             : idx.search(filter).map((result, i) => {
                   const item = _.findWhere(data, {
@@ -411,60 +113,330 @@ let Dropdown = (props, ref) => {
 
                   return item;
               });
+    };
 
-        return menuRenderer ? (
-            menuRenderer(filteredData)
-        ) : (
+    const collapse = () => {
+        let { animation, element, expanded } = stateRef.current;
+
+        if (expanded !== true) return Promise.resolve();
+
+        if (animation) return animation;
+
+        const { animationEase, animationSpeed } = stateRef.current;
+
+        const menu = menuRef.current;
+
+        menu.style.height = 'auto';
+        menu.style.display = 'block';
+        menu.style.overflow = 'hidden';
+        menu.classList.remove('expanded');
+
+        onBeforeCollapse({
+            type: ENUMS.EVENT.BEFORE_COLLAPSE,
+            menu,
+            target: handle,
+            currentTarget: element,
+        });
+
+        animation = new Promise(resolve =>
+            TweenMax.to(menu, animationSpeed, {
+                ease: animationEase,
+                height: 0,
+                onComplete: () => {
+                    menu.removeAttribute('style');
+
+                    onCollapse({
+                        type: ENUMS.EVENT.COLLAPSE,
+                        menu,
+                        target: handle,
+                        currentTarget: element,
+                    });
+
+                    setState({ animation: null, expanded: false });
+
+                    resolve();
+                },
+            }),
+        );
+
+        setState({ animation });
+
+        return animation;
+    };
+
+    const expand = () => {
+        let { animation, element, expanded } = stateRef.current;
+
+        if (expanded === true) return Promise.resolve();
+
+        if (animation) return animation;
+
+        const { animationEase, animationSpeed } = stateRef.current;
+
+        const menu = menuRef.current;
+
+        menu.style.height = 'auto';
+        menu.style.display = 'block';
+        menu.style.overflow = 'hidden';
+        menu.classList.remove('expanded');
+
+        onBeforeExpand({
+            type: ENUMS.EVENT.BEFORE_EXPAND,
+            menu,
+            target: handle,
+            currentTarget: element,
+        });
+
+        animation = new Promise(resolve =>
+            TweenMax.from(menu, animationSpeed, {
+                ease: animationEase,
+                height: 0,
+                onComplete: () => {
+                    menu.removeAttribute('style');
+
+                    onExpand({
+                        type: ENUMS.EVENT.EXPAND,
+                        menu,
+                        target: handle,
+                        currentTarget: element,
+                    });
+
+                    setState({ animation: null, expanded: true });
+
+                    resolve();
+                },
+            }),
+        );
+
+        setState({ animation });
+
+        return animation;
+    };
+
+    const toggle = () => {
+        const { expanded } = stateRef.current;
+        return expanded === true ? collapse() : expand();
+    };
+
+    // Determin if an element is a child
+    const isChild = child => {
+        const { element, uuid } = stateRef.current;
+        const { instance } = child.dataset;
+        return uuid === instance || element === child;
+    };
+
+    const dismiss = e => {
+        const { animation, expanded } = stateRef.current;
+
+        if (!expanded) return animation ? animation : Promise.resolve();
+
+        if (!isChild(e.target)) {
+            e.stopImmediatePropagation();
+            return collapse();
+        }
+
+        return animation ? animation : Promise.resolve();
+    };
+
+    const _onChange = () => {
+        const { init, event, selection } = stateRef.current;
+        if (!init) return;
+        onChange({ ...event, type: ENUMS.EVENT.CHANGE });
+        setState({ event: null });
+    };
+
+    const _onItemClick = async (e, val) => {
+        let action;
+        let {
+            data,
+            iconField,
+            labelField,
+            multiSelect,
+            selection = [],
+            valueField,
+        } = stateRef.current;
+        let sel = _.uniq(Array.from(selection));
+        sel = multiSelect === true ? sel : [];
+
+        if (sel.includes(val)) {
+            action = ENUMS.EVENT.ITEM_UNSELECT;
+            sel = _.without(sel, val);
+        } else {
+            action = ENUMS.EVENT.ITEM_SELECT;
+            sel.push(val);
+        }
+
+        sel = _.uniq(sel);
+
+        const dataSelected = data.filter(item =>
+            sel.includes(item[valueField]),
+        );
+        const index = _.findIndex(data, { [valueField]: val });
+        const labels = _.compact(_.pluck(dataSelected, labelField));
+        const icons = _.compact(_.pluck(dataSelected, iconField));
+
+        const evt = {
+            icons,
+            index,
+            item: data[index],
+            labels,
+            selection: sel,
+            type: action,
+        };
+
+        const complete = () => {
+            onItemClick({ ...evt, type: ENUMS.EVENT.ITEM_CLICK });
+            if (action === ENUMS.EVENT.ITEM_SELECT) onItemSelect(evt);
+            if (action === ENUMS.EVENT.ITEM_UNSELECT) onItemUnselect(evt);
+            setState({ selection: sel, event: evt });
+        };
+
+        if (!multiSelect) {
+            collapse().then(() => complete());
+        } else {
+            //e.target.blur();
+            complete();
+        }
+    };
+
+    const _onKey = e => {
+        const { element } = stateRef.current;
+        const child = isChild(e.target);
+
+        if (!child) return;
+
+        switch (e.keyCode) {
+            case 27:
+                e.preventDefault();
+                collapse();
+                break;
+
+            case 38:
+            case 40:
+                const inc = e.keyCode === 38 ? -1 : 1;
+                nav(inc);
+                break;
+
+            default:
+                if (isChild(e.target)) {
+                    expand();
+                }
+        }
+
+        e.stopImmediatePropagation();
+    };
+
+    const nav = async inc => {
+        await expand();
+
+        const data = filteredData();
+
+        let { element, tabIndex } = stateRef.current;
+
+        tabIndex += inc;
+        tabIndex = tabIndex < -1 ? data.length - 1 : tabIndex;
+        tabIndex = tabIndex >= data.length ? -1 : tabIndex;
+
+        if (tabIndex === -1) element.focus();
+
+        setState({ tabIndex });
+    };
+
+    const handle = () => ({
+        children,
+        onBeforeCollapse,
+        onBeforeExpand,
+        onChange,
+        onCollapse,
+        onExpand,
+        onItemClick,
+        onItemSelect,
+        onItemUnselect,
+        props,
+        setState,
+        state,
+    });
+
+    const renderMenuItems = () => {
+        const {
+            uuid: id,
+            iconField,
+            labelField,
+            maxHeight,
+            minHeight,
+            selection = [],
+            tabIndex,
+            valueField,
+        } = stateRef.current;
+
+        const data = filteredData();
+
+        return (
             <Scrollbars
                 autoHeight
-                autoHeightMin={0}
-                autoHeightMax={220}
+                autoHeightMin={minHeight}
+                autoHeightMax={maxHeight}
                 thumbMinSize={5}>
-                <ul>
-                    {filteredData.map((item, i) => {
-                        const key = `ar-dropdown-item-${id}-${i}`;
-                        const val = op.get(item, valueField);
-                        const label = op.get(item, labelField, val);
-                        const sel = selection.includes(val);
-                        const className = cn({
-                            active: sel,
-                            ranked: i === ranked,
-                        });
+                {menuRenderer ? (
+                    menuRenderer(data, handle)
+                ) : (
+                    <ul data-instance={id}>
+                        {data.map((item, i) => {
+                            let Ico = null;
+                            const val = op.get(item, valueField);
+                            const label = op.get(item, labelField);
+                            const key = `ar-dropdown-item-${id}-${i}`;
+                            const className = cn({
+                                active: selection.includes(val),
+                            });
 
-                        let Ico = null;
-
-                        if (iconField) {
-                            const icon = op.get(item, iconField);
-                            if (icon) {
-                                Ico = op.get(Icon, icon);
+                            if (iconField) {
+                                const icon = op.get(item, iconField);
+                                if (icon) {
+                                    Ico = op.get(Icon, icon);
+                                }
                             }
-                        }
 
-                        return (
-                            <li key={key} className={className}>
-                                <button
-                                    type='button'
-                                    onClick={e => _onItemClick(e, val)}
-                                    ref={i === tabIndex ? activeButton : null}>
-                                    {Ico && (
-                                        <span className='mr-xs-8'>
-                                            <Ico width={18} height={18} />
+                            return (
+                                <li
+                                    key={key}
+                                    className={className}
+                                    data-instance={id}>
+                                    <button
+                                        type='button'
+                                        data-index={i}
+                                        data-instance={id}
+                                        onFocus={() =>
+                                            setState({ tabIndex: i })
+                                        }
+                                        onClick={e => _onItemClick(e, val)}>
+                                        <span className='checkbox'>
+                                            <Icon name='Feather.Check' />
                                         </span>
-                                    )}
-                                    {label}
-                                </button>
-                            </li>
-                        );
-                    })}
-                </ul>
+                                        {Ico && (
+                                            <span className='mr-xs-8'>
+                                                <Ico width={18} height={18} />
+                                            </span>
+                                        )}
+                                        {label || val}
+                                    </button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
             </Scrollbars>
         );
     };
 
+    // Renderers
     const render = () => {
-        const { children, namespace } = props;
+        const { className, namespace, expanded } = stateRef.current;
+        const contClassName = cn({
+            [namespace]: !!namespace,
+            [className]: !!className,
+        });
 
-        const contClassName = cn({ [namespace]: true, [cname()]: true });
         const menuClassName = cn({ [cname('menu')]: true, expanded });
 
         return (
@@ -476,6 +448,100 @@ let Dropdown = (props, ref) => {
             </div>
         );
     };
+
+    // Side Effects
+    useEffect(() => {
+        _onChange();
+    }, [stateRef.current.selection]);
+
+    useEffect(() => {
+        const { init } = stateRef.current;
+        if (init) return;
+
+        // window events
+        const win = iWindow ? iWindow : window;
+        const doc = iDocument ? iDocument : document;
+
+        if (doc && win) {
+            doc.addEventListener(ENUMS.TOGGLE.MOUSE_DOWN, e => dismiss(e));
+            win.addEventListener(ENUMS.TOGGLE.KEY_DOWN, e => _onKey(e));
+        }
+
+        return () => {
+            doc.removeEventListener(ENUMS.TOGGLE.MOUSE_DOWN, e => dismiss(e));
+            win.removeEventListener(ENUMS.TOGGLE.KEY_DOWN, e => _onKey(e));
+        };
+    }, [stateRef.current.init]);
+
+    useEffect(() => {
+        let {
+            collapseEvent,
+            expandEvent,
+            init,
+            multiSelect,
+            selector,
+            toggleEvent,
+        } = stateRef.current;
+
+        if (init) return;
+
+        const elm = containerRef.current.querySelector(selector);
+
+        if (collapseEvent || expandEvent) {
+            const collapseEvents = Array.isArray(collapseEvent)
+                ? collapseEvent
+                : [collapseEvent];
+
+            const expandEvents = Array.isArray(expandEvent)
+                ? expandEvent
+                : [expandEvent];
+
+            _.chain(collapseEvents)
+                .uniq()
+                .compact()
+                .value()
+                .forEach(evt => {
+                    elm.addEventListener(evt, e => {
+                        if (multiSelect) return;
+                        collapse(e);
+                    });
+                });
+
+            _.chain(expandEvents)
+                .uniq()
+                .compact()
+                .value()
+                .forEach(evt => {
+                    elm.addEventListener(evt, e => expand(e));
+                });
+        } else {
+            const toggleEvents = Array.isArray(toggleEvent)
+                ? toggleEvent
+                : [toggleEvent];
+
+            _.chain(toggleEvents)
+                .uniq()
+                .compact()
+                .value()
+                .forEach(evt => {
+                    elm.addEventListener(evt, e => toggle(e));
+                });
+        }
+
+        setState({ init: true, element: elm });
+    }, [stateRef.current.init]);
+
+    useLayoutEffect(() => {
+        const { element, tabIndex } = stateRef.current;
+        if (tabIndex < 0) return;
+
+        const selector = `[data-index='${tabIndex}']`;
+        const elm = containerRef.current.querySelector(selector);
+        if (elm) elm.focus();
+    }, [stateRef.current.tabIndex]);
+
+    // External Interface
+    useImperativeHandle(ref, handle);
 
     return render();
 };
@@ -490,14 +556,14 @@ Dropdown.propTypes = {
     className: PropTypes.string,
     collapseEvent: PropTypes.oneOfType([
         PropTypes.array,
-        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+        PropTypes.oneOf(Object.values(ENUMS.TOGGLE)),
     ]),
     data: PropTypes.array,
     dismissable: PropTypes.bool,
     expanded: PropTypes.bool,
     expandEvent: PropTypes.oneOfType([
         PropTypes.array,
-        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+        PropTypes.oneOf(Object.values(ENUMS.TOGGLE)),
     ]),
     filter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     iconField: PropTypes.string,
@@ -510,7 +576,7 @@ Dropdown.propTypes = {
     selector: PropTypes.string,
     toggleEvent: PropTypes.oneOfType([
         PropTypes.array,
-        PropTypes.oneOf(Object.values(ENUMS.EVENT)),
+        PropTypes.oneOf(Object.values(ENUMS.TOGGLE)),
     ]),
     onBeforeCollapse: PropTypes.func,
     onBeforeExpand: PropTypes.func,
@@ -526,7 +592,6 @@ Dropdown.propTypes = {
 Dropdown.defaultProps = {
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
-    className: 'ar-dropdown',
     collapseEvent: null,
     data: [],
     dismissable: true,
@@ -536,12 +601,14 @@ Dropdown.defaultProps = {
     iconField: 'icon',
     labelField: 'label',
     name: uuid(),
+    maxHeight: 167,
     menuRenderer: null,
+    minHeight: 0,
     multiSelect: false,
     namespace: 'ar-dropdown',
     selection: [],
     selector: '[data-dropdown-element]',
-    toggleEvent: ENUMS.EVENT.CLICK,
+    toggleEvent: ENUMS.TOGGLE.CLICK,
     onBeforeCollapse: noop,
     onBeforeExpand: noop,
     onChange: noop,
