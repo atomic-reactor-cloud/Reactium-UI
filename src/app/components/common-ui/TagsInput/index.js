@@ -42,7 +42,6 @@ let TagsInput = (
         data,
         direction,
         editable,
-        formatter,
         id,
         iDocument,
         iWindow,
@@ -230,8 +229,6 @@ let TagsInput = (
             return;
         }
 
-        val = formatter(val);
-
         const value = _value();
         value.push(val);
 
@@ -367,30 +364,13 @@ let TagsInput = (
         value: _value(),
     }));
 
-    // Side Effects
-    useEffect(() => _index(), [data]);
-
-    useEffect(() => _onChange(), [state.changed]);
-
-    useEffect(() => setState(props), Object.values(props));
-
-    useEffect(() => {
-        const doc = iDocument || document;
-
-        doc.addEventListener('mouseup', _suggestDismiss);
-
-        return function cleanup() {
-            doc.removeEventListener('mouseup', _suggestDismiss);
-        };
-    });
-
     // Renderers
     const renderTag = (label, index) => (
         <span
             key={`${namespace}-tag-${index}`}
             className={`${namespace}-tag`}
             data-value={value}>
-            <span className='label'>{label}</span>
+            <span className='label'>{stateRef.current.formatter(label)}</span>
             {editable && !props.disabled && !props.readOnly && (
                 <button type='button' onClick={() => _onRemove(index)}>
                     <Feather.X />
@@ -413,7 +393,9 @@ let TagsInput = (
                         [`${namespace}-tag`]: true,
                         dragging: snapshot.isDragging,
                     })}>
-                    <span className='label'>{label}</span>
+                    <span className='label'>
+                        {stateRef.current.formatter(label)}
+                    </span>
                     {editable && !props.disabled && !props.readOnly && (
                         <button type='button' onClick={() => _onRemove(index)}>
                             <Feather.X />
@@ -458,6 +440,8 @@ let TagsInput = (
 
     const renderTags = () => {
         const value = _value();
+        const inputProps = { ...props };
+        delete inputProps.formatter;
 
         return sortable && editable && !props.disabled && !props.readOnly ? (
             <DragDropContext onDragEnd={_onReorder}>
@@ -477,7 +461,7 @@ let TagsInput = (
                                 <input
                                     type='text'
                                     autoComplete='off'
-                                    {...props}
+                                    {...inputProps}
                                     ref={inputRef}
                                     onBlur={_onFocus}
                                     onFocus={_onFocus}
@@ -498,7 +482,7 @@ let TagsInput = (
                     <input
                         type='text'
                         autoComplete='off'
-                        {...props}
+                        {...inputProps}
                         ref={inputRef}
                         onBlur={_onFocus}
                         onFocus={_onFocus}
@@ -535,6 +519,30 @@ let TagsInput = (
             </>
         );
     };
+
+    // Side Effects
+    useEffect(() => {
+        setState({ data });
+        _index();
+    }, [data]);
+
+    useEffect(() => {
+        setState({ value });
+    }, [value]);
+
+    useEffect(() => _onChange(), [state.changed]);
+
+    useEffect(() => setState(props), Object.values(props));
+
+    useEffect(() => {
+        const doc = iDocument || document;
+
+        doc.addEventListener('mouseup', _suggestDismiss);
+
+        return function cleanup() {
+            doc.removeEventListener('mouseup', _suggestDismiss);
+        };
+    });
 
     return render();
 };

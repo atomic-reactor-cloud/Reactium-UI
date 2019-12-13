@@ -1,13 +1,12 @@
 import uuid from 'uuid/v4';
 import cn from 'classnames';
+import ENUMS from './enums';
 import PropTypes from 'prop-types';
+import Icon from 'components/common-ui/Icon';
 import Prefs from 'components/common-ui/Prefs';
 import Button from 'components/common-ui/Button';
-import { Feather } from 'components/common-ui/Icon';
 import Collapsible from 'components/common-ui/Collapsible';
 import Dismissable from 'components/common-ui/Dismissable';
-
-import ENUMS from './enums';
 
 import React, {
     forwardRef,
@@ -29,24 +28,19 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
     const containerRef = useRef();
     const contentRef = useRef();
     const stateRef = useRef({
-        prevState: {},
         ...props,
         ...Prefs.get(pref),
     });
 
     // State
-    const [state, setNewState] = useState(stateRef.current);
+    const [, setNewState] = useState(stateRef.current);
 
     // Internal Interface
     const setState = newState => {
-        // Get the previous state
-        const prevState = { ...stateRef.current };
-
         // Update the stateRef
         stateRef.current = {
-            ...prevState,
+            ...stateRef.current,
             ...newState,
-            prevState,
         };
 
         // Trigger useEffect()
@@ -72,7 +66,6 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
         hide: () => containerRef.current.hide(),
         show: () => containerRef.current.show(),
         state: stateRef.current,
-        state,
         toggle: {
             collapse: () => contentRef.current.toggle(),
             visible: () => containerRef.current.toggle(),
@@ -177,7 +170,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
                                 size={Button.ENUMS.SIZE.XS}
                                 color={Button.ENUMS.COLOR.CLEAR}
                                 className='ar-dialog-header-btn toggle'>
-                                <Feather.ChevronDown />
+                                <Icon name='Feather.ChevronDown' />
                             </Button>
                         )}
                         {dismissable === true && (
@@ -187,7 +180,7 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
                                 size={Button.ENUMS.SIZE.XS}
                                 color={Button.ENUMS.COLOR.CLEAR}
                                 className='ar-dialog-header-btn dismiss'>
-                                <Feather.X />
+                                <Icon name='Feather.X' />
                             </Button>
                         )}
                     </div>
@@ -237,22 +230,22 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
         );
     };
 
-    const render = () => {
-        const { className, dismissable, namespace, visible } = stateRef.current;
+    const Content = ({ className, dismissable, namespace, visible }) => (
+        <div
+            id={id}
+            ref={!dismissable ? containerRef : null}
+            className={cn({
+                [className]: !!className,
+                [namespace]: !!namespace,
+                visible,
+            })}>
+            {renderHeader()}
+            {renderContent()}
+        </div>
+    );
 
-        const Content = () => (
-            <div
-                id={id}
-                ref={!dismissable ? containerRef : null}
-                className={cn({
-                    [className]: !!className,
-                    [namespace]: !!namespace,
-                    visible,
-                })}>
-                {renderHeader()}
-                {renderContent()}
-            </div>
-        );
+    const render = () => {
+        const { dismissable, visible } = stateRef.current;
 
         return dismissable === true ? (
             <Dismissable
@@ -260,10 +253,10 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
                 ref={containerRef}
                 onHide={_onHide}
                 onShow={_onShow}>
-                <Content />
+                {Content(stateRef.current)}
             </Dismissable>
         ) : (
-            <Content />
+            Content(stateRef.current)
         );
     };
 

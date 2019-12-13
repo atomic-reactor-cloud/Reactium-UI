@@ -1,4 +1,3 @@
-import lunr from 'lunr';
 import _ from 'underscore';
 import uuid from 'uuid/v4';
 import cn from 'classnames';
@@ -84,35 +83,15 @@ let Dropdown = (
 
     // Filtered data
     const filteredData = () => {
-        const { data = [], filter, labelField } = stateRef.current;
-        const idx = !filter
-            ? []
-            : lunr(function() {
-                  this.ref('sortIndex');
-                  this.field(labelField);
-                  data.forEach((item, i) => {
-                      item['sortIndex'] = i;
-                      this.add(item);
-                  });
-              }, this);
+        let { data = [], filter, labelField, valueField } = stateRef.current;
 
-        let ranked = -1;
+        filter = filter ? String(filter).toLowerCase() : filter;
 
-        return !filter
-            ? data
-            : idx.search(filter).map((result, i) => {
-                  const item = _.findWhere(data, {
-                      ['sortIndex']: isNaN(result.ref)
-                          ? result.ref
-                          : Number(result.ref),
-                  });
-
-                  item.score = result.score;
-
-                  ranked = item.score >= 1 ? i : ranked;
-
-                  return item;
-              });
+        return data.filter(item => {
+            const label = String(op.get(item, labelField, '')).toLowerCase();
+            const value = String(op.get(item, valueField, ''));
+            return !filter || label.includes(filter) || value.includes(filter);
+        });
     };
 
     const collapse = () => {
@@ -239,7 +218,7 @@ let Dropdown = (
     };
 
     const _onChange = () => {
-        const { init, event, selection } = stateRef.current;
+        const { init, event, selection = [] } = stateRef.current;
         if (!init) return;
         onChange({ ...event, type: ENUMS.EVENT.CHANGE });
         setState({ event: null });
@@ -450,6 +429,16 @@ let Dropdown = (
     };
 
     // Side Effects
+    useEffect(() => {
+        const { data = [] } = props;
+        setState({ data });
+    }, [props.data]);
+
+    useEffect(() => {
+        const { filter = [] } = props;
+        setState({ filter });
+    }, [props.filter]);
+
     useEffect(() => {
         _onChange();
     }, [stateRef.current.selection]);

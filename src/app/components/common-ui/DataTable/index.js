@@ -44,7 +44,6 @@ const applyReorderProp = reorderable =>
 
 let DataTable = (
     {
-        data,
         footer,
         header,
         onChange,
@@ -66,6 +65,7 @@ let DataTable = (
         ...props,
         reorderable,
         ...applyReorderProp(reorderable),
+        updated: Date.now(),
     });
 
     // State
@@ -76,6 +76,10 @@ let DataTable = (
         if (op.get(newState, 'reorderable') === true) {
             applyReorder(true);
             return;
+        }
+
+        if (op.has(newState, 'data')) {
+            stateRef.current['updated'] = Date.now();
         }
 
         stateRef.current = { ...stateRef.current, ...newState };
@@ -93,6 +97,7 @@ let DataTable = (
         let output = [];
 
         const {
+            data = [],
             filter = defaultFilter,
             sort,
             sortable,
@@ -320,7 +325,19 @@ let DataTable = (
             pages: getPages(),
             data: getData(),
         });
-    }, [state]);
+    }, [
+        op.get(stateRef.current, 'data'),
+        op.get(stateRef.current, 'page'),
+        op.get(props, 'data'),
+    ]);
+
+    useEffect(() => {
+        setState({ data: op.get(props, 'data') });
+    }, [op.get(props, 'data')]);
+
+    useEffect(() => {
+        setState({ columns: op.get(props, 'columns') });
+    }, [op.get(props, 'columns')]);
 
     const setContentRef = elm => {
         const { height, scrollable } = stateRef.current;
@@ -335,6 +352,7 @@ let DataTable = (
         const {
             children,
             className,
+            columns,
             height,
             id,
             namespace,

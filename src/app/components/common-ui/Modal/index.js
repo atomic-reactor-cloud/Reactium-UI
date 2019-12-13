@@ -62,7 +62,9 @@ let Modal = (props, ref) => {
         const { dismissable } = stateRef.current;
 
         if (dismissable) {
-            dissmissableRef.current.hide();
+            dissmissableRef.current
+                .hide()
+                .then(() => setState({ children: null }));
         }
     };
 

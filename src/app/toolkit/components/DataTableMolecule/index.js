@@ -40,10 +40,10 @@ const labelFunction = (key, value) => {
     }
 };
 
-const Header = ({ onSearchChange, search }) => {
+const Header = ({ onSearchChange, search, title }) => {
     return (
         <>
-            <h2>House Tullos</h2>
+            <h2>{title}</h2>
             <SearchBar
                 defaultValue={search}
                 placeholder='Search'
@@ -61,19 +61,26 @@ class DataTableMolecule extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { page: this.props.page };
+        this.state = {
+            data: this.props.data,
+            page: this.props.page,
+            pages: 1,
+            title: 'House Tullos',
+        };
         this.table = null;
     }
 
     next = () => this.table.nextPage();
 
-    onChange = () => this.setState({ page: this.table.page });
+    onChange = e =>
+        this.setState({ page: this.table.page, pages: this.table.pages });
 
     prev = () => this.table.prevPage();
 
-    renderHeader = ({ search, tableData }) => (
+    renderHeader = ({ title, search, tableData }) => (
         <>
             <Header
+                title={title}
                 search={search}
                 onSearchChange={e => {
                     this.table.setState({
@@ -111,8 +118,8 @@ class DataTableMolecule extends Component {
     );
 
     renderFooter = () => {
-        const page = Number(op.get(this.table, 'page', 1));
-        const pages = Number(op.get(this.table, 'pages', 1));
+        const page = Number(op.get(this.state, 'page', 1));
+        const pages = Number(op.get(this.state, 'pages', 1));
         return (
             <Pagination
                 className='ml-xs-auto mr-xs-auto ml-sm-auto mr-sm-0'
@@ -126,8 +133,9 @@ class DataTableMolecule extends Component {
     };
 
     Demo = () => {
-        const { columns, data = [] } = this.props;
-        const tableData = op.get(this, 'table.data');
+        const { columns } = this.props;
+        const { data = [], title } = this.state;
+        const tableData = data;
         const search = op.get(this, 'table.search');
 
         return (
@@ -144,17 +152,81 @@ class DataTableMolecule extends Component {
                 data={data}
                 rowsPerPage={4}
                 footer={this.renderFooter()}
-                header={this.renderHeader({ search, tableData })}
+                header={this.renderHeader({ title, search, tableData })}
                 onChange={this.onChange}
             />
         );
     };
 
+    updateData = () => {
+        let { title } = this.state;
+
+        const newData =
+            String(title).toLowerCase() === 'house tullos'
+                ? [
+                      {
+                          name: 'Bart Simpson',
+                          dob: '1978-04-22',
+                          actions: (
+                              <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>
+                          ),
+                          id: 'ct422',
+                      },
+                      {
+                          name: 'Maggie Simpson',
+                          dob: '1977-05-26',
+                          actions: (
+                              <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>
+                          ),
+                          id: 'lt526',
+                      },
+                      {
+                          name: 'Lisa Simpson',
+                          dob: '1977-05-26',
+                          actions: (
+                              <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>
+                          ),
+                          id: 'lt526',
+                      },
+                      {
+                          name: 'Marge Simpson',
+                          dob: '1977-05-26',
+                          actions: (
+                              <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>
+                          ),
+                          id: 'lt526',
+                      },
+                      {
+                          name: 'Homer Simpson',
+                          dob: '1977-05-26',
+                          actions: (
+                              <Button size={Button.ENUMS.SIZE.XS}>Edit</Button>
+                          ),
+                          id: 'lt526',
+                      },
+                  ]
+                : this.props.data;
+
+        title =
+            String(title).toLowerCase() === 'house tullos'
+                ? 'House Simpson'
+                : 'House Tullos';
+        this.setState({ data: newData, title });
+    };
+
     render() {
         const { Demo } = this;
+        const { title } = this.state;
 
         return (
             <>
+                <div className='py-xs-40'>
+                    <Button onClick={this.updateData}>
+                        {title === 'House Tullos'
+                            ? 'House Simpson'
+                            : 'House Tullos'}
+                    </Button>
+                </div>
                 <Demo />
                 <div className='hr mx--32' />
                 <h3 className='my-xs-20'>Import</h3>
