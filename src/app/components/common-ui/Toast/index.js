@@ -1,6 +1,6 @@
 import { ToastContainer, toast } from 'react-toastify';
-import { Feather } from 'components/common-ui/Icon';
 import Button from 'components/common-ui/Button';
+import Icon from 'components/common-ui/Icon';
 import React, { forwardRef } from 'react';
 
 const CloseButton = () => (
@@ -8,7 +8,7 @@ const CloseButton = () => (
         className='Toastify__close-button'
         color={Button.ENUMS.COLOR.CLEAR}
         size={Button.ENUMS.SIZE.XS}>
-        <Feather.X className='close' width={18} height={18} />
+        <Icon name='Feather.X' className='close' size={18} />
     </Button>
 );
 
@@ -30,6 +30,13 @@ Toast.show = ({
     if (!message) {
         return;
     }
+
+    icon =
+        typeof icon === 'string' ? (
+            <Icon name={icon} style={{ marginRight: 8 }} />
+        ) : (
+            icon
+        );
 
     const Ico = icon ? () => icon : () => <span style={{ marginLeft: 4 }} />;
 
