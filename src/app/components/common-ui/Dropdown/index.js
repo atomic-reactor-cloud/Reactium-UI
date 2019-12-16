@@ -292,6 +292,7 @@ let Dropdown = (
 
             case 38:
             case 40:
+                e.preventDefault();
                 const inc = e.keyCode === 38 ? -1 : 1;
                 nav(inc);
                 break;
