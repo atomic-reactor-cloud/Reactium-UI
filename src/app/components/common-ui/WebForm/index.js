@@ -184,6 +184,11 @@ let WebForm = (props, ref) => {
         }
     }, [op.get(stateRef.current, 'mounted')]);
 
+    useEffect(() => {
+        const { value } = props;
+        update(value);
+    }, [op.get(props, 'value')]);
+
     const getValue = k => {
         const elements = stateRef.current.elements;
         const keys = Object.keys(elements);
