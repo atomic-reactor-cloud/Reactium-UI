@@ -122,8 +122,7 @@ let WebForm = (props, ref) => {
         Object.entries(elements).forEach(([, element]) => {
             const name = element.name;
             const type = element.type;
-            const val = value[name] || '';
-
+            const val = value[name];
             if (Array.isArray(val)) {
                 // Checkbox & Radio
                 if (['checkbox', 'radio'].includes(type)) {
@@ -156,6 +155,7 @@ let WebForm = (props, ref) => {
                 element.value = val;
 
                 if (isBoolean(val)) {
+                    element.value = true;
                     element.checked = Boolean(val);
                 }
             }
