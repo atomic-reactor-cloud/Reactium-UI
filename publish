@@ -1,0 +1,2 @@
+#!/bin/bash
+arcli library -s common-ui && cd lib && npm publish && cd ..
