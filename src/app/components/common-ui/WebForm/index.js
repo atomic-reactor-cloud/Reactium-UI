@@ -171,12 +171,19 @@ let WebForm = (props, ref) => {
         applyValue(value);
     };
 
+    const focus = fieldName => {
+        if (fieldName in stateRef.current.elements) {
+            stateRef.current.elements[fieldName].focus();
+        }
+    };
+
     // External Interface
     useImperativeHandle(ref, () => ({
         errors: op.get(stateRef.current, 'errors'),
         setState,
         update,
         getValue,
+        focus,
     }));
 
     // Side Effects
