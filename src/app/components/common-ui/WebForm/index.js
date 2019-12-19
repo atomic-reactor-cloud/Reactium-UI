@@ -71,10 +71,6 @@ let WebForm = (props, ref) => {
             ...newState,
         };
 
-        if (op.has(newState, 'value')) {
-            update(op.get(newState, 'value'));
-        }
-
         // Trigger useEffect()
         setNewState(stateRef.current);
     };
@@ -179,7 +175,7 @@ let WebForm = (props, ref) => {
     useImperativeHandle(ref, () => ({
         errors: op.get(stateRef.current, 'errors'),
         setState,
-        update: value => setState({ value }),
+        update,
         getValue,
     }));
 
@@ -191,7 +187,7 @@ let WebForm = (props, ref) => {
         if (mounted !== true) {
             op.set(stateRef.current, 'mounted', true);
 
-            setState({ value });
+            update(value);
             Object.entries(stateRef.current.elements).forEach(
                 ([fieldName, field]) => {
                     if (errorFields.find(error => error === fieldName)) {
@@ -206,7 +202,7 @@ let WebForm = (props, ref) => {
 
     useEffect(() => {
         const { value } = props;
-        setState({ value });
+        update(value);
     }, [op.get(props, 'value')]);
 
     const getValue = k => {
