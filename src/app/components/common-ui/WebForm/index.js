@@ -114,6 +114,11 @@ let WebForm = (props, ref) => {
             }),
         );
 
+        const isBoolean = val =>
+            typeof val === 'boolean' ||
+            String(val).toLowerCase() === 'true' ||
+            String(val).toLowerCase() === 'false';
+
         Object.entries(elements).forEach(([, element]) => {
             const name = element.name;
             const type = element.type;
@@ -126,7 +131,7 @@ let WebForm = (props, ref) => {
                         ? Number(element.value)
                         : element.value;
 
-                    if (typeof val === 'boolean') {
+                    if (isBoolean(val)) {
                         element.checked = val;
                     } else {
                         element.checked = val.includes(v);
@@ -149,6 +154,10 @@ let WebForm = (props, ref) => {
                 }
             } else {
                 element.value = val;
+
+                if (isBoolean(val)) {
+                    element.checked = Boolean(val);
+                }
             }
         });
 
