@@ -173,6 +173,7 @@ let WebForm = (props, ref) => {
 
     // External Interface
     useImperativeHandle(ref, () => ({
+        errors: op.get(stateRef.current, 'errors'),
         update,
         getValue,
     }));
