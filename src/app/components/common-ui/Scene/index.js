@@ -20,7 +20,7 @@ const noop = () => {};
  * Hook Component: Scene
  * -----------------------------------------------------------------------------
  */
-let Scene = ({ children, ...props }, ref) => {
+let Scene = (props, ref) => {
     // Refs
     const containerRef = useRef();
     const historyRef = useRef([]);
@@ -96,7 +96,7 @@ let Scene = ({ children, ...props }, ref) => {
         childs.sort();
         childs.reverse();
 
-        let { panels = {} } = stateRef.current;
+        const { panels = {} } = stateRef.current;
 
         React.Children.forEach(childs, (child, i) => {
             const { props: childProps = {} } = child;
@@ -502,60 +502,8 @@ let Scene = ({ children, ...props }, ref) => {
             .map(key => String(key))
             .indexOf(String(panel));
 
-    // External Interface
-    useImperativeHandle(ref, () => ({
-        active: () => {
-            return stateRef.current.active;
-        },
-        addChildren,
-        back,
-        clearHistory: clear,
-        history: {
-            clear,
-        },
-        index: indexOf(stateRef.current.active),
-        indexOf,
-        navTo,
-        removeChildren,
-        setState,
-        state: stateRef.current,
-    }));
-
-    // Side Effects
-    useEffect(() => {
-        setState(props, 'useEffect(props)');
-    }, _.without(Object.values(props), props.onChange, props.onBeforeChange));
-
-    useEffect(() => {
-        const { active, init, panels = {} } = stateRef.current;
-
-        if (
-            init === false &&
-            Object.keys(panels) < 1 &&
-            React.Children.count(children) > 0
-        ) {
-            stateRef.current.init = true;
-
-            if (!active) {
-                stateRef.current.active = Object.keys(panels)[0];
-            }
-
-            addChildren(children);
-        }
-    }, [children]);
-
-    // onChange Handler
-    useEffect(() => {
-        const { active, init, onChange } = stateRef.current;
-        const { active: previous } = prevStateRef.current;
-
-        if (init === true && String(active) !== String(previous)) {
-            onChange({ evt: ENUMS.EVENT.CHANGE, active, previous });
-        }
-    }, [stateRef.current.active]);
-
     const renderPanels = () => {
-        const { active, panels } = stateRef.current;
+        const { active, panels, onRendered } = stateRef.current;
 
         return Object.keys(panels).map(key => {
             key = isNaN(key) ? key : String(key);
@@ -596,6 +544,54 @@ let Scene = ({ children, ...props }, ref) => {
             </div>
         );
     };
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        active: () => {
+            return stateRef.current.active;
+        },
+        addChildren,
+        back,
+        clearHistory: clear,
+        history: {
+            clear,
+        },
+        index: indexOf(stateRef.current.active),
+        indexOf,
+        navTo,
+        removeChildren,
+        setState,
+        state: stateRef.current,
+    }));
+
+    // Side Effects
+    useEffect(() => {
+        setState(props, 'useEffect(props)');
+    }, _.without(Object.values(props), props.onChange, props.onBeforeChange));
+
+    useEffect(() => {
+        const { active, children, init, panels = {} } = stateRef.current;
+
+        if (React.Children.count(children) > 0) {
+            stateRef.current.init = true;
+
+            if (!active) {
+                stateRef.current.active = Object.keys(panels)[0];
+            }
+
+            addChildren(children);
+        }
+    }, [props.children]);
+
+    // onChange Handler
+    useEffect(() => {
+        const { active, init, onChange } = stateRef.current;
+        const { active: previous } = prevStateRef.current;
+
+        if (init === true && String(active) !== String(previous)) {
+            onChange({ evt: ENUMS.EVENT.CHANGE, active, previous });
+        }
+    }, [stateRef.current.active]);
 
     return render();
 };
