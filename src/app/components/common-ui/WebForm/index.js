@@ -125,7 +125,12 @@ let WebForm = (props, ref) => {
                     const v = !isNaN(element.value)
                         ? Number(element.value)
                         : element.value;
-                    element.checked = val.includes(v);
+
+                    if (typeof val === 'boolean') {
+                        element.checked = val;
+                    } else {
+                        element.checked = val.includes(v);
+                    }
                 }
 
                 // Select: Multiple
