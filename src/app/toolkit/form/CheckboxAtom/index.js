@@ -26,6 +26,7 @@ class CheckboxAtom extends Component {
         return (
             <Fragment>
                 <Checkbox label='Check Me' />
+                <Checkbox disabled={true} label='Disabled' />
             </Fragment>
         );
     }
