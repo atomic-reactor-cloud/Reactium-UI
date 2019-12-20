@@ -370,12 +370,6 @@ let DataTable = (
 
         const content = (
             <div ref={elm => setContentRef(elm)}>
-                <Headings
-                    data={data}
-                    {...stateRef.current}
-                    onClick={applySort}
-                    onToggleAll={onToggleAll}
-                />
                 {children}
                 <Rows
                     {...stateRef.current}
@@ -399,6 +393,12 @@ let DataTable = (
                     selectable,
                 })}>
                 <Header namespace={namespace}>{header}</Header>
+                <Headings
+                    data={data}
+                    {...stateRef.current}
+                    onClick={applySort}
+                    onToggleAll={onToggleAll}
+                />
                 {scrollable ? (
                     <Scrollbars
                         autoHeight

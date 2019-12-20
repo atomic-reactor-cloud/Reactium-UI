@@ -1,7 +1,18 @@
 import { ToastContainer, toast } from 'react-toastify';
 import Button from 'components/common-ui/Button';
 import Icon from 'components/common-ui/Icon';
-import React, { forwardRef } from 'react';
+import ReactDOM from 'react-dom';
+import op from 'object-path';
+
+import React, {
+    forwardRef,
+    useEffect,
+    useLayoutEffect as useWindowEffect,
+    useRef,
+} from 'react';
+
+const useLayoutEffect =
+    typeof window !== 'undefined' ? useWindowEffect : useEffect;
 
 const CloseButton = () => (
     <Button
@@ -12,9 +23,23 @@ const CloseButton = () => (
     </Button>
 );
 
-let Toast = (props, ref) => (
-    <ToastContainer ref={ref} {...props} closeButton={<CloseButton />} />
-);
+let Toast = (props, ref) => {
+    if (typeof window === 'undefined') return null;
+
+    const doc = op.get(props, 'iDocument', document) || document;
+    return doc
+        ? ReactDOM.createPortal(
+              <div>
+                  <ToastContainer
+                      ref={ref}
+                      {...props}
+                      closeButton={<CloseButton />}
+                  />
+              </div>,
+              doc.body,
+          )
+        : null;
+};
 
 Toast = forwardRef(Toast);
 
