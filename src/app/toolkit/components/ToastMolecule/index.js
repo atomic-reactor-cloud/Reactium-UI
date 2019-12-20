@@ -60,7 +60,7 @@ export default class ToastMolecule extends Component {
                         </Button>
                     ))}
                 </div>
-                <Toast />
+                <Toast iDocument={this.props.iDocument} />
                 <Tooltip
                     iWindow={this.props.iWindow}
                     align={Tooltip.ENUMS.ALIGN.RIGHT}
