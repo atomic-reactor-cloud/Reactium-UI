@@ -77,20 +77,8 @@ label.ar-checkbox {
 
     input:disabled + span:last-child {
         opacity: 0.5;
+        cursor: default;
     }
-
-    // input {
-    //     &:disabled,
-    //     &.disabled {
-    //         & + span:last-child {
-    //             opacity: 0.5;
-    //             cursor: default;
-    //             fill: nth($clr-codes, 2);
-    //             background: red;
-    //             pointer-events: none;
-    //         }
-    //     }
-    // }
 
     @each $clr-name, $clr-codes in $buttons {
         &-#{$clr-name} {
