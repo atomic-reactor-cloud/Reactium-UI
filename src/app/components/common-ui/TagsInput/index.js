@@ -317,6 +317,8 @@ let TagsInput = (
     };
 
     const _suggestFocus = inc => {
+        if (!suggestRef.current) return;
+
         _suggestShow();
         let { suggest = [], suggestIndex = -1 } = stateRef.current;
 
@@ -337,6 +339,8 @@ let TagsInput = (
     };
 
     const _suggestHide = () => {
+        if (!suggestRef.current) return;
+
         const { dismissable = false } = stateRef.current;
 
         if (dismissable === true) {
@@ -346,6 +350,7 @@ let TagsInput = (
     };
 
     const _suggestShow = () => {
+        if (!suggestRef.current) return;
         suggestRef.current.style.display = 'block';
     };
 
@@ -366,10 +371,7 @@ let TagsInput = (
 
     // Renderers
     const renderTag = (label, index) => (
-        <span
-            key={`${namespace}-tag-${index}`}
-            className={`${namespace}-tag`}
-            data-value={value}>
+        <span key={`${namespace}-tag-${index}`} className={`${namespace}-tag`}>
             <span className='label'>{stateRef.current.formatter(label)}</span>
             {editable && !props.disabled && !props.readOnly && (
                 <button type='button' onClick={() => _onRemove(index)}>
