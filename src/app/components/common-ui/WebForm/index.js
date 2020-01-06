@@ -178,15 +178,6 @@ let WebForm = (props, ref) => {
         }
     };
 
-    // External Interface
-    useImperativeHandle(ref, () => ({
-        errors: op.get(stateRef.current, 'errors'),
-        setState,
-        update,
-        getValue,
-        focus,
-    }));
-
     // Side Effects
     const errorFields = op.get(stateRef.current, 'errors.fields', []);
 
@@ -344,6 +335,23 @@ let WebForm = (props, ref) => {
             </form>
         );
     };
+
+    const getFormRef = () => formRef.current;
+
+    const getChildren = () => children;
+
+    // External Interface
+    useImperativeHandle(ref, () => ({
+        children: getChildren(),
+        errors: op.get(stateRef.current, 'errors'),
+        setState,
+        update,
+        getValue,
+        focus,
+        form: getFormRef(),
+        submit,
+        validate,
+    }));
 
     return render();
 };
