@@ -233,7 +233,7 @@ let WebForm = (props, ref) => {
         return stateRef.current.value;
     };
 
-    const validate = value => {
+    const validate = async value => {
         value = value || getValue();
 
         let valid = true;
@@ -252,7 +252,7 @@ let WebForm = (props, ref) => {
         }
 
         if (validator) {
-            const validatorResult = validator(value, valid, errors);
+            const validatorResult = await validator(value, valid, errors);
             valid = op.get(validatorResult, 'valid', true) && valid;
             const newErrors = op.get(validatorResult, 'errors', {});
             errors = {
@@ -270,7 +270,7 @@ let WebForm = (props, ref) => {
         onComplete({ value, error, status });
     };
 
-    const submit = e => {
+    const submit = async e => {
         if (e) {
             e.preventDefault();
         }
@@ -284,9 +284,10 @@ let WebForm = (props, ref) => {
 
         const value = getValue();
 
-        const { valid, errors } = validate(value);
+        const { valid, errors } = await validate(value);
 
-        onBeforeSubmit({ value, valid, errors });
+        await onBeforeSubmit({ value, valid, errors });
+
         if (valid !== true) {
             setState({ errors });
             onError({ errors, value });
@@ -300,7 +301,8 @@ let WebForm = (props, ref) => {
         setState({ status: ENUMS.STATUS.SENDING });
 
         try {
-            onSubmit({ value, valid });
+            await onSubmit({ value, valid });
+
             setState({ status: ENUMS.STATUS.COMPLETE });
         } catch (error) {
             setState({ error, status: ENUMS.STATUS.ERROR });
