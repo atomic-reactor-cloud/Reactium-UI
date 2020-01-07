@@ -2,7 +2,6 @@ import _ from 'underscore';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
-
 import React, {
     forwardRef,
     useEffect,
@@ -11,6 +10,7 @@ import React, {
     useRef,
     useState,
 } from 'react';
+import uuid from 'uuid/v4';
 
 const useLayoutEffect =
     typeof window !== 'undefined' ? useWindowEffect : useEffect;
@@ -61,7 +61,7 @@ let WebForm = (props, ref) => {
     });
 
     // State
-    const [, setNewState] = useState(stateRef.current);
+    const [, setNewState] = useState(uuid());
 
     // Internal Interface
     const setState = newState => {
@@ -72,7 +72,7 @@ let WebForm = (props, ref) => {
         };
 
         // Trigger useEffect()
-        setNewState(stateRef.current);
+        setNewState(uuid());
     };
 
     const getElements = () => {
@@ -122,7 +122,9 @@ let WebForm = (props, ref) => {
         Object.entries(elements).forEach(([, element]) => {
             const name = element.name;
             const type = element.type;
-            const val = op.get(value, name, '');
+
+            // if input name is formatted as object-path, don't use it as such
+            const val = op.get(value, [name], '');
 
             if (Array.isArray(val)) {
                 // Checkbox & Radio
