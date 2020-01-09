@@ -7,6 +7,7 @@
 import _ from 'underscore';
 import React, { Component } from 'react';
 import Icon from 'components/common-ui/Icon';
+import { renderToString, renderToStaticMarkup } from 'react-dom/server';
 
 /**
  * -----------------------------------------------------------------------------
@@ -21,6 +22,7 @@ export default class LinearIcons extends Component {
 
     state = {
         filtered: [],
+        logged: false,
         icons: [],
         inputStyle: {
             color: '#666666',
@@ -82,7 +84,23 @@ export default class LinearIcons extends Component {
             searchStyle,
             size = 24,
         } = this.state;
+
         const items = search ? filtered : icons;
+
+        if (ready && icons) {
+            const autoComplete = icons.map(item => {
+                return {
+                    text: `Feather.${item}`,
+                    type: 'value',
+                    rightLabel: 'Feather',
+                    iconHTML: renderToStaticMarkup(
+                        <Icon size={14} name={`Feather.${item}`} />,
+                    ),
+                };
+            });
+
+            console.log(JSON.stringify(autoComplete));
+        }
 
         return ready === false ? null : (
             <div className={'mb--32'}>
@@ -119,24 +137,19 @@ export default class LinearIcons extends Component {
                     />
                 </div>
                 <div className={'row'}>
-                    {items.map((item, i) => {
-                        const Ico = Icon.Feather[item];
-                        return (
-                            <div
-                                key={`icon-${i}`}
-                                className={'col-xs-4 col-sm-2 col-xl-1'}>
-                                <div className={'text-center'}>
-                                    <Ico width={size} height={size} />
-                                    <div
-                                        className={
-                                            'text-center small mt-16 mb-32'
-                                        }>
-                                        {item}
-                                    </div>
+                    {items.map((item, i) => (
+                        <div
+                            key={`icon-${i}`}
+                            className={'col-xs-4 col-sm-2 col-xl-1'}>
+                            <div className={'text-center'}>
+                                <Icon size={size} name={`Feather.${item}`} />
+                                <div
+                                    className={'text-center small mt-16 mb-32'}>
+                                    {item}
                                 </div>
                             </div>
-                        );
-                    })}
+                        </div>
+                    ))}
                 </div>
             </div>
         );

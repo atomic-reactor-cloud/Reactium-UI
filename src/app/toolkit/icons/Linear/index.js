@@ -7,6 +7,7 @@
 import _ from 'underscore';
 import React, { Component } from 'react';
 import { Button, Icon } from 'components/common-ui';
+import { renderToString, renderToStaticMarkup } from 'react-dom/server';
 
 /**
  * -----------------------------------------------------------------------------
@@ -65,6 +66,21 @@ export default class LinearIcons extends Component {
             size = 24,
         } = this.state;
         const items = search ? filtered : icons;
+
+        if (ready && icons) {
+            const autoComplete = icons.map(item => {
+                return {
+                    text: `Linear.${item}`,
+                    type: 'value',
+                    rightLabel: 'Linear',
+                    iconHTML: renderToStaticMarkup(
+                        <Icon size={14} name={`Linear.${item}`} />,
+                    ),
+                };
+            });
+
+            console.log(JSON.stringify(autoComplete));
+        }
 
         return ready === false ? null : (
             <div className='mb--32'>
