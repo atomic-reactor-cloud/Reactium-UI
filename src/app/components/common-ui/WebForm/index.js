@@ -45,6 +45,7 @@ let WebForm = (props, ref) => {
         showError,
         validator,
         value,
+        valueUpdated,
         name,
         id,
         children,
@@ -203,7 +204,7 @@ let WebForm = (props, ref) => {
     useEffect(() => {
         const value = op.get(props, 'value');
         update(value);
-    }, [op.get(props, 'valueUpdated')]);
+    }, [valueUpdated]);
 
     const onChange = async e => {
         const value = getValue();
