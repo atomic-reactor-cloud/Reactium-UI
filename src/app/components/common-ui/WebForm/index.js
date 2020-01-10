@@ -201,17 +201,15 @@ let WebForm = (props, ref) => {
     }, [op.get(stateRef.current, 'mounted')]);
 
     useEffect(() => {
-        const { value } = props;
+        const value = op.get(props, 'value');
         update(value);
-    }, [op.get(props, 'value')]);
+    }, [op.get(props, 'valueUpdated')]);
 
     const onChange = async e => {
         const value = getValue();
-
         if (onFormChange) {
             await onFormChange(e, value);
         }
-
         update(value);
     };
 
@@ -365,6 +363,7 @@ let WebForm = (props, ref) => {
         form: getFormRef(),
         submit,
         validate,
+        refresh: () => applyValue(),
     }));
 
     return render();
@@ -394,7 +393,6 @@ WebForm.propTypes = {
 WebForm.defaultProps = {
     className: 'webform',
     required: [],
-    onChange: noop,
     onBeforeSubmit: noop,
     onComplete: noop,
     onError: noop,
@@ -404,6 +402,7 @@ WebForm.defaultProps = {
     validator: (value, valid = true, errors) => ({ valid, errors }),
     name: 'form',
     value: {},
+    valueUpdated: null,
 };
 
 export { WebForm as default };
