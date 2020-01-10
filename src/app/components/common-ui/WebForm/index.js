@@ -229,7 +229,7 @@ let WebForm = (props, ref) => {
             v = v.length === 1 && v.length !== 0 ? v[0] : v;
             v = v.length === 0 ? null : v;
 
-            obj[key] = v;
+            op.set(obj, key, v);
 
             return obj;
         }, {});
