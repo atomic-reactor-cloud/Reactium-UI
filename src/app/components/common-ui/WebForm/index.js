@@ -36,6 +36,7 @@ let WebForm = (props, ref) => {
         className,
         namespace,
         required,
+        onChange: onFormChange,
         onBeforeSubmit,
         onComplete,
         onError,
@@ -204,6 +205,16 @@ let WebForm = (props, ref) => {
         update(value);
     }, [op.get(props, 'value')]);
 
+    const onChange = async e => {
+        const value = getValue();
+
+        if (onFormChange) {
+            await onFormChange(e, value);
+        }
+
+        update(value);
+    };
+
     const getValue = k => {
         const elements = stateRef.current.elements;
         const keys = Object.keys(elements);
@@ -322,6 +333,7 @@ let WebForm = (props, ref) => {
             <form
                 className={cname}
                 {...formProps}
+                onChange={onChange}
                 onSubmit={submit}
                 ref={formRef}>
                 {errors && showError === true && (
@@ -366,6 +378,7 @@ WebForm.propTypes = {
     className: PropTypes.string,
     namespace: PropTypes.string,
     required: PropTypes.array.isRequired,
+    onChange: PropTypes.func,
     onBeforeSubmit: PropTypes.func,
     onComplete: PropTypes.func,
     onError: PropTypes.func,
@@ -381,6 +394,7 @@ WebForm.propTypes = {
 WebForm.defaultProps = {
     className: 'webform',
     required: [],
+    onChange: noop,
     onBeforeSubmit: noop,
     onComplete: noop,
     onError: noop,
