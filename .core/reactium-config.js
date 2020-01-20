@@ -3,7 +3,7 @@ const path = require('path');
 const rootPath = path.resolve(__dirname, '..');
 const gulpConfig = require('./gulp.config');
 
-const version = '3.1.16';
+const version = '3.2.1';
 
 const contextMode = () => {
     if (
@@ -23,6 +23,12 @@ const defaultLibraryExternals = {
         requirePath: 'reactium-core/sdk',
         // to provide both es6 named exports and Reactium default alias
         defaultAlias: 'Reactium',
+    },
+    ReactDOM: {
+        externalName: 'react-dom',
+        requirePath: 'react-dom',
+        // to provide both es6 named exports and React default alias
+        defaultAlias: 'ReactDOM',
     },
     react: {
         externalName: 'react',
@@ -119,7 +125,7 @@ const defaultManifestConfig = {
         {
             name: 'allPlugins',
             type: 'plugin',
-            pattern: /plugin.jsx?$/,
+            pattern: /(plugin|zone).jsx?$/,
         },
         {
             name: 'allHooks',
@@ -313,6 +319,18 @@ module.exports = {
                     version: '>=3.1.0',
                     destination: '/src/reactium-translations',
                     source: '/tmp/update/src/reactium-translations',
+                },
+                {
+                    overwrite: false,
+                    version: '>=3.2.1',
+                    destination: '/.flowconfig',
+                    source: '/tmp/update/.flowconfig',
+                },
+                {
+                    overwrite: false,
+                    version: '>=3.2.1',
+                    destination: '/flow-typed',
+                    source: '/tmp/update/flow-typed',
                 },
             ],
             remove: [],

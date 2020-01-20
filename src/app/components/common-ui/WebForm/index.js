@@ -36,6 +36,7 @@ let WebForm = (props, ref) => {
         className,
         namespace,
         required,
+        onChange: onFormChange,
         onBeforeSubmit,
         onComplete,
         onError,
@@ -44,6 +45,7 @@ let WebForm = (props, ref) => {
         showError,
         validator,
         value,
+        valueUpdated,
         name,
         id,
         children,
@@ -200,9 +202,17 @@ let WebForm = (props, ref) => {
     }, [op.get(stateRef.current, 'mounted')]);
 
     useEffect(() => {
-        const { value } = props;
+        const value = op.get(props, 'value');
         update(value);
-    }, [op.get(props, 'value')]);
+    }, [valueUpdated]);
+
+    const onChange = async e => {
+        const value = getValue();
+        if (onFormChange) {
+            await onFormChange(e, value);
+        }
+        update(value);
+    };
 
     const getValue = k => {
         const elements = stateRef.current.elements;
@@ -219,7 +229,7 @@ let WebForm = (props, ref) => {
             v = v.length === 1 && v.length !== 0 ? v[0] : v;
             v = v.length === 0 ? null : v;
 
-            obj[key] = v;
+            op.set(obj, key, v);
 
             return obj;
         }, {});
@@ -322,6 +332,7 @@ let WebForm = (props, ref) => {
             <form
                 className={cname}
                 {...formProps}
+                onChange={onChange}
                 onSubmit={submit}
                 ref={formRef}>
                 {errors && showError === true && (
@@ -353,6 +364,7 @@ let WebForm = (props, ref) => {
         form: getFormRef(),
         submit,
         validate,
+        refresh: () => applyValue(),
     }));
 
     return render();
@@ -366,6 +378,7 @@ WebForm.propTypes = {
     className: PropTypes.string,
     namespace: PropTypes.string,
     required: PropTypes.array.isRequired,
+    onChange: PropTypes.func,
     onBeforeSubmit: PropTypes.func,
     onComplete: PropTypes.func,
     onError: PropTypes.func,
@@ -390,6 +403,7 @@ WebForm.defaultProps = {
     validator: (value, valid = true, errors) => ({ valid, errors }),
     name: 'form',
     value: {},
+    valueUpdated: null,
 };
 
 export { WebForm as default };

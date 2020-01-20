@@ -1,7 +1,9 @@
-import Hook from '../hook';
+import SDK from '@atomic-reactor/reactium-sdk-core';
 import uuid from 'uuid/v4';
 import _ from 'underscore';
 import moment from 'moment';
+
+const { Hook } = SDK;
 
 class Routing {
     loaded = false;
@@ -58,8 +60,7 @@ class Routing {
  * @apiExample Example Usage:
 import React from 'react';
 import op from 'object-path';
-import Reactium from 'reactium-core/sdk';
-import { useSelect } from 'reactium-core/easy-connect';
+import Reactium, { useSelect } from 'reactium-core/sdk';
 
 // A new component subscribing to Redux state.myPlugin.name
 const HelloYou = () => {
