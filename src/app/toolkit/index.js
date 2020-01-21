@@ -483,6 +483,17 @@ module.exports = {
             route: '/toolkit/components/alert-molecule',
             hideEmpty: false,
             elements: {
+                'editor-organism': {
+                    type: 'organism',
+                    label: 'Rich Text Editor',
+                    route: '/toolkit/components/editor-organism',
+                    dna: '/toolkit/components/EditorOrganism',
+                    component: require('appdir/toolkit/components/EditorOrganism')
+                        .default,
+                    hideCode: true,
+                    hideDna: true,
+                    hideDocs: true,
+                },
                 'alert-molecule': {
                     type: 'molecule',
                     label: 'Alert',

@@ -158,6 +158,7 @@ $button-sizes: (
 
             &.active {
                 font-weight: bold;
+                opacity: 0.95;
             }
 
             &:disabled,
@@ -202,7 +203,8 @@ $button-sizes: (
             }
 
             &.active {
-                background: nth($clr-codes, 2);
+                background: nth($clr-codes, 1);
+                opacity: 0.95;
             }
 
             &:focus,

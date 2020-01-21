@@ -57,6 +57,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
 
     const cname = () => {
         const {
+            active,
             appearance,
             block = false,
             className,
@@ -74,6 +75,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
         ]).join('-');
 
         return cn({
+            active,
             [className]: !!className,
             [c]: true,
             ['btn-block']: block,
@@ -82,6 +84,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
 
     const render = () => {
         const exclude = [
+            'active',
             'appearance',
             'block',
             'children',
@@ -142,6 +145,7 @@ Button = forwardRef(Button);
 Button.ENUMS = ENUMS;
 
 Button.propTypes = {
+    active: PropTypes.bool,
     appearance: PropTypes.oneOf(Object.values(ENUMS.APPEARANCE)),
     block: PropTypes.bool,
     color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
@@ -154,6 +158,7 @@ Button.propTypes = {
 };
 
 Button.defaultProps = {
+    active: false,
     appearance: null,
     color: ENUMS.COLOR.PRIMARY,
     outline: false,
