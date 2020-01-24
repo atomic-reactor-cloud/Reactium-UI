@@ -10,6 +10,7 @@ import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
 import PropTypes from 'prop-types';
+import { useDerivedState } from '@atomic-reactor/reactium-sdk-core';
 
 ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
 
@@ -21,39 +22,23 @@ ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
 let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
     // Refs
     const containerRef = useRef();
-    const stateRef = useRef({
+
+    // State
+    const [state, setState] = useDerivedState({
         prevState: {},
         ...props,
     });
 
-    // State
-    const [state, setNewState] = useState(stateRef.current);
-
-    // Internal Interface
-    const setState = newState => {
-        // Get the previous state
-        const prevState = { ...stateRef.current };
-
-        // Update the stateRef
-        stateRef.current = {
-            ...prevState,
-            ...newState,
-            prevState,
-        };
-
-        // Trigger useEffect()
-        setNewState(stateRef.current);
-    };
-
     // External Interface
-    useImperativeHandle(ref, () => ({
-        element: containerRef.current,
-        setState,
-        state: stateRef.current,
-    }));
-
-    // Side Effects
-    useEffect(() => setState(props), Object.values(props));
+    useImperativeHandle(
+        ref,
+        () => ({
+            element: containerRef.current,
+            setState,
+            state,
+        }),
+        [state],
+    );
 
     const cname = () => {
         const {
@@ -64,7 +49,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
             color,
             outline,
             size,
-        } = stateRef.current;
+        } = state;
 
         const c = _.compact([
             'btn',
@@ -97,7 +82,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
             'style',
         ];
 
-        const elementProps = { ...stateRef.current };
+        const elementProps = { ...state };
         exclude.forEach(key => {
             if (key === 'readOnly' && readOnly === true) {
                 delete elementProps.onClick;
