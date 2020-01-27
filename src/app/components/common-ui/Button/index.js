@@ -45,7 +45,7 @@ let Button = (
         });
     };
 
-    return useMemo(() => {
+    const render = () => {
         const exclude = [
             'active',
             'appearance',
@@ -94,7 +94,9 @@ let Button = (
                 {children}
             </button>
         );
-    });
+    };
+
+    return render();
 };
 
 Button = forwardRef(Button);
