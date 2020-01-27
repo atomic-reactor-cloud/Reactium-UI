@@ -1,16 +1,8 @@
-import React, {
-    forwardRef,
-    useEffect,
-    useImperativeHandle,
-    useRef,
-    useState,
-} from 'react';
-
 import _ from 'underscore';
 import cn from 'classnames';
 import ENUMS from './enums';
 import PropTypes from 'prop-types';
-import { useDerivedState } from '@atomic-reactor/reactium-sdk-core';
+import React, { forwardRef, useMemo } from 'react';
 
 ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
 
@@ -19,38 +11,24 @@ ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
  * Functional Component: Button
  * -----------------------------------------------------------------------------
  */
-let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
-    // Refs
-    const containerRef = useRef();
-
-    // State
-    const [state, setState] = useDerivedState({
-        prevState: {},
-        ...props,
-    });
-
-    // External Interface
-    useImperativeHandle(
-        ref,
-        () => ({
-            element: containerRef.current,
-            setState,
-            state,
-        }),
-        [state],
-    );
-
+let Button = (
+    {
+        active,
+        appearance,
+        block,
+        children,
+        className,
+        color,
+        outline,
+        readOnly,
+        size,
+        style = {},
+        type,
+        ...props
+    },
+    ref,
+) => {
     const cname = () => {
-        const {
-            active,
-            appearance,
-            block = false,
-            className,
-            color,
-            outline,
-            size,
-        } = state;
-
         const c = _.compact([
             'btn',
             color,
@@ -67,7 +45,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
         });
     };
 
-    const render = () => {
+    return useMemo(() => {
         const exclude = [
             'active',
             'appearance',
@@ -82,7 +60,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
             'style',
         ];
 
-        const elementProps = { ...state };
+        const elementProps = { ...props };
         exclude.forEach(key => {
             if (key === 'readOnly' && readOnly === true) {
                 delete elementProps.onClick;
@@ -99,11 +77,7 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
         }
 
         return readOnly ? (
-            <span
-                className={cname()}
-                {...elementProps}
-                style={s}
-                ref={containerRef}>
+            <span className={cname()} {...elementProps} style={s} ref={ref}>
                 {children}
             </span>
         ) : type === ENUMS.TYPE.LINK ? (
@@ -116,13 +90,11 @@ let Button = ({ children, readOnly, style = {}, type, ...props }, ref) => {
                 style={s}
                 type={type}
                 {...elementProps}
-                ref={containerRef}>
+                ref={ref}>
                 {children}
             </button>
         );
-    };
-
-    return render();
+    });
 };
 
 Button = forwardRef(Button);
@@ -145,6 +117,7 @@ Button.propTypes = {
 Button.defaultProps = {
     active: false,
     appearance: null,
+    block: false,
     color: ENUMS.COLOR.PRIMARY,
     outline: false,
     readOnly: false,
