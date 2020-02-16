@@ -87,21 +87,6 @@ export default class LinearIcons extends Component {
 
         const items = search ? filtered : icons;
 
-        if (ready && icons) {
-            const autoComplete = icons.map(item => {
-                return {
-                    text: `Feather.${item}`,
-                    type: 'value',
-                    rightLabel: 'Feather',
-                    iconHTML: renderToStaticMarkup(
-                        <Icon size={14} name={`Feather.${item}`} />,
-                    ),
-                };
-            });
-
-            console.log(JSON.stringify(autoComplete));
-        }
-
         return ready === false ? null : (
             <div className={'mb--32'}>
                 <div className='flex right middle pb-xs-20'>

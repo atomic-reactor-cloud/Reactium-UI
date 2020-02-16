@@ -32,6 +32,10 @@ const ENUMS = {
  * -----------------------------------------------------------------------------
  */
 let WebForm = (props, ref) => {
+    console.warn(
+        'Reactium UI -> WebForm has been deprecated. You should use the EventForm component instead.',
+    );
+
     const {
         className,
         namespace,

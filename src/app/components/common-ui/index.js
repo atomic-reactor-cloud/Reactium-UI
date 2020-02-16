@@ -13,6 +13,7 @@ import Dialog from './Dialog';
 import Dismissable from './Dismissable';
 import Dropdown from './Dropdown';
 import Dropzone from './Dropzone';
+import EventForm from './EventForm';
 import Icon from './Icon';
 import Image from './Image';
 import Modal from './Modal';
@@ -48,6 +49,7 @@ export {
     Dismissable,
     Dropdown,
     Dropzone,
+    EventForm,
     Icon,
     Image,
     Modal,

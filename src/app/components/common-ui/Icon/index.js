@@ -18,9 +18,9 @@ const ENUMS = {
 delete ENUMS.COLOR.CLEAR;
 
 const Icon = ({ size, color, name, ...props }) => {
-    const { className } = props;
+    const { className, namespace } = props;
 
-    const Ico = op.get(icons, name);
+    const Ico = op.get(Icon.icons, name);
 
     if (!Ico) {
         return null;
@@ -29,20 +29,30 @@ const Icon = ({ size, color, name, ...props }) => {
     const cx = cn({
         [className]: !!className,
         [color]: !!color,
-        'ar-icon': true,
+        [namespace]: !!namespace,
     });
 
     return Ico({ ...props, width: size, height: size, className: cx });
 };
 
 Icon.ENUMS = ENUMS;
-Icon.Feather = Feather;
-Icon.Linear = Linear;
+Icon.icons = {
+    Feather,
+    Linear,
+};
+
+Object.entries(Icon.icons).forEach(([key, value]) => {
+    Icon[key] = value;
+});
+
 Icon.propTypes = {
+    className: PropTypes.string,
     color: PropTypes.oneOf(Object.values(ENUMS.COLOR)),
+    namespace: PropTypes.string,
     size: PropTypes.number,
 };
 Icon.defaultProps = {
+    namespace: 'ar-icon',
     size: 24,
 };
 
