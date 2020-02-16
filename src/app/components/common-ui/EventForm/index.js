@@ -3,14 +3,16 @@ import uuid from 'uuid/v4';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
-import Reactium, { useDerivedState, useEventHandle } from 'reactium-core/sdk';
+import {
+    useDerivedState,
+    useEventHandle,
+} from '@atomic-reactor/reactium-sdk-core';
 
 import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
     useLayoutEffect as useWindowEffect,
-    useMemo,
     useRef,
     useState,
 } from 'react';
