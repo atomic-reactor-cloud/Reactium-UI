@@ -39,6 +39,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
 
     // Internal Interface
     const setState = newState => {
+        if (!containerRef.current) return;
+
         // Update the stateRef
         stateRef.current = {
             ...stateRef.current,
@@ -95,6 +97,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
                 [dir]: to,
                 ease: animationEase,
                 onComplete: () => {
+                    if (!containerRef.current) return;
+
                     const evt = {
                         target: container,
                         type: ENUMS.EVENT.COLLAPSE,
@@ -165,6 +169,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
                 [dir]: numberize(minSize),
                 ease: animationEase,
                 onComplete: () => {
+                    if (!containerRef.current) return;
+
                     const evt = {
                         target: container,
                         type: ENUMS.EVENT.EXPAND,

@@ -18,6 +18,8 @@ const useLayoutEffect =
 const noop = () => {};
 
 const ENUMS = {
+    DEPRECATED:
+        'Reactium UI -> WebForm has been deprecated. You should use the EventForm component instead.',
     STATUS: {
         COMPLETE: 'COMPLETE',
         READY: 'READY',
@@ -31,10 +33,12 @@ const ENUMS = {
  * Hook Component: WebForm
  * -----------------------------------------------------------------------------
  */
+let warned = false;
 let WebForm = (props, ref) => {
-    console.warn(
-        'Reactium UI -> WebForm has been deprecated. You should use the EventForm component instead.',
-    );
+    if (ENUMS.DEPRECATED) {
+        console.warn(ENUMS.DEPRECATED);
+        op.del(ENUMS.DEPRECATED);
+    }
 
     const {
         className,

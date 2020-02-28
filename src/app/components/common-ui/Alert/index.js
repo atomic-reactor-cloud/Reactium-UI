@@ -41,6 +41,7 @@ let Alert = ({ children, id, ...props }, ref) => {
     // Internal Interface
     const setState = newState => {
         stateRef.current = { ...stateRef.current, ...newState };
+        if (!containerRef.current) return;
         setNewState(stateRef.current);
     };
 
