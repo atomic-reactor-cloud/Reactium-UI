@@ -37,6 +37,9 @@ class CollapsibleMolecule extends Component {
 
     componentDidMount() {
         window.addEventListener('resize', () => this.resized());
+        // this.collapsibleHorizontal.addEventListener('resize', e => {
+        //     console.log(e.target.rect);
+        // });
     }
 
     Demo = ({ width }) => {

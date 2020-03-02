@@ -2,16 +2,17 @@ import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
+import { useEventHandle } from '@atomic-reactor/reactium-sdk-core';
 
 import ENUMS from './enums';
 
 import React, {
     forwardRef,
+    useEffect,
     useImperativeHandle,
     useLayoutEffect as useWindowEffect,
     useRef,
     useState,
-    useEffect,
 } from 'react';
 
 // Server-Side Render safe useLayoutEffect (useEffect when node)
@@ -25,6 +26,26 @@ const noop = () => {};
  * Hook Component: Collapsible
  * -----------------------------------------------------------------------------
  */
+// export class ResizeEvent extends Event {
+//     constructor(type, data) {
+//         super(type, data);
+//
+//         op.del(data, 'type');
+//         op.del(data, 'target');
+//
+//         Object.entries(data).forEach(([key, value]) => {
+//             if (!this[key]) {
+//                 try {
+//                     this[key] = value;
+//                 } catch (err) {}
+//             } else {
+//                 key = `__${key}`;
+//                 this[key] = value;
+//             }
+//         });
+//     }
+// }
+
 let Collapsible = ({ debug, children, ...props }, ref) => {
     // Refs
     const stateRef = useRef({
@@ -35,7 +56,7 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
     const containerRef = useRef();
 
     // State
-    const [, setNewState] = useState(stateRef.current);
+    const [state, setNewState] = useState(stateRef.current);
 
     // Internal Interface
     const setState = newState => {
@@ -87,6 +108,9 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
 
         const to = minSize ? numberize(minSize) : 0;
 
+        handle.rect = container.getBoundingClientRect();
+        handle.dispatchEvent(new Event('before-collapse'));
+
         onBeforeCollapse({
             target: container,
             type: ENUMS.EVENT.BEFORE_COLLAPSE,
@@ -96,6 +120,10 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
             TweenMax.to(container, animationSpeed, {
                 [dir]: to,
                 ease: animationEase,
+                onUpdate: () => {
+                    handle.rect = container.getBoundingClientRect();
+                    handle.dispatchEvent(new Event('resize'));
+                },
                 onComplete: () => {
                     if (!containerRef.current) return;
 
@@ -113,6 +141,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
                         container.style[dir] = numberize(minSize) + 'px';
                     }
 
+                    handle.rect = container.getBoundingClientRect();
+                    handle.dispatchEvent(new Event('collapse'));
                     onCollapse(evt);
                     resolve();
                 },
@@ -159,6 +189,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
         container.style.display = 'block';
         container.style.overflow = 'hidden';
 
+        handle.rect = container.getBoundingClientRect();
+        handle.dispatchEvent(new Event('before-expand'));
         onBeforeExpand({
             target: container,
             type: ENUMS.EVENT.BEFORE_EXPAND,
@@ -168,6 +200,10 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
             TweenMax.from(container, animationSpeed, {
                 [dir]: numberize(minSize),
                 ease: animationEase,
+                onUpdate: () => {
+                    handle.rect = container.getBoundingClientRect();
+                    handle.dispatchEvent(new Event('resize'));
+                },
                 onComplete: () => {
                     if (!containerRef.current) return;
 
@@ -182,7 +218,8 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
                     if (maxSize) {
                         container.style[dir] = numberize(maxSize) + 'px';
                     }
-
+                    handle.rect = container.getBoundingClientRect();
+                    handle.dispatchEvent(new Event('expand'));
                     onExpand(evt);
                     resolve();
                 },
@@ -265,15 +302,20 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
         }
     };
 
-    // External Interface
-    useImperativeHandle(ref, () => ({
+    const _handle = () => ({
         collapse,
         container: containerRef.current,
         expand,
+        rect: {},
         setState,
         state: stateRef.current,
         toggle,
-    }));
+    });
+
+    const [handle, setHandle] = useEventHandle(_handle());
+
+    // External Interface
+    useImperativeHandle(ref, () => handle, [stateRef.current]);
 
     useEffect(() => setState(props), Object.values(props));
 
@@ -297,6 +339,11 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
         Number(op.get(stateRef, 'current.maxSize', 0)),
         Number(op.get(stateRef, 'current.minSize', 0)),
     ]);
+
+    useEffect(() => {
+        if (!containerRef.current) return;
+        setHandle(_handle());
+    }, [stateRef.current]);
 
     const render = () => {
         let {
