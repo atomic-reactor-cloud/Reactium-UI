@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 import cn from 'classnames';
 import op from 'object-path';
 import PropTypes from 'prop-types';
+import Button from 'components/common-ui/Button';
 import Icon from 'components/common-ui/Icon';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { TweenMax, Power2 } from 'gsap/umd/TweenMax';
@@ -58,6 +59,8 @@ let Dropdown = (
 
     // Internal Interface
     const setState = (newState, caller) => {
+        if (!containerRef.current) return;
+
         // Update the stateRef
         stateRef.current = {
             ...stateRef.current,
@@ -337,98 +340,6 @@ let Dropdown = (
         state,
     });
 
-    const renderMenuItems = () => {
-        const {
-            uuid: id,
-            iconField,
-            labelField,
-            maxHeight,
-            minHeight,
-            selection = [],
-            tabIndex,
-            valueField,
-        } = stateRef.current;
-
-        const data = filteredData();
-
-        return (
-            <Scrollbars
-                autoHeight
-                autoHeightMin={minHeight}
-                autoHeightMax={maxHeight}
-                thumbMinSize={5}>
-                {menuRenderer ? (
-                    menuRenderer(data, handle)
-                ) : (
-                    <ul data-instance={id}>
-                        {data.map((item, i) => {
-                            let Ico = null;
-                            const val = op.get(item, valueField);
-                            const label = op.get(item, labelField);
-                            const key = `ar-dropdown-item-${id}-${i}`;
-                            const className = cn({
-                                active: selection.includes(val),
-                            });
-
-                            if (iconField) {
-                                const icon = op.get(item, iconField);
-                                if (icon) {
-                                    Ico = op.get(Icon, icon);
-                                }
-                            }
-
-                            return (
-                                <li
-                                    key={key}
-                                    className={className}
-                                    data-instance={id}>
-                                    <button
-                                        type='button'
-                                        data-index={i}
-                                        data-instance={id}
-                                        onFocus={() =>
-                                            setState({ tabIndex: i })
-                                        }
-                                        onClick={e => _onItemClick(e, val)}>
-                                        <span className='checkbox'>
-                                            <Icon name='Feather.Check' />
-                                        </span>
-                                        {Ico && (
-                                            <span className='mr-xs-8'>
-                                                <Ico width={18} height={18} />
-                                            </span>
-                                        )}
-                                        {label || val}
-                                    </button>
-                                </li>
-                            );
-                        })}
-                    </ul>
-                )}
-            </Scrollbars>
-        );
-    };
-
-    // Renderers
-    const render = () => {
-        const { className, namespace, expanded } = stateRef.current;
-        const contClassName = cn({
-            [namespace]: !!namespace,
-            [className]: !!className,
-        });
-
-        const menuClassName = cn({ [cname('menu')]: true, expanded });
-
-        return (
-            <div ref={containerRef} className={contClassName}>
-                {children}
-                <div ref={menuRef} className={menuClassName}>
-                    {renderMenuItems()}
-                </div>
-            </div>
-        );
-    };
-
     // Side Effects
     useEffect(() => {
         const { data = [] } = props;
@@ -533,6 +444,117 @@ let Dropdown = (
     // External Interface
     useImperativeHandle(ref, handle);
 
+    // Renderers
+    const renderMenuItems = () => {
+        const {
+            checkbox,
+            color,
+            uuid: id,
+            iconField,
+            labelField,
+            maxHeight,
+            minHeight,
+            selection = [],
+            size,
+            tabIndex,
+            valueField,
+        } = stateRef.current;
+
+        const data = filteredData();
+
+        return (
+            <Scrollbars
+                autoHeight
+                autoHeightMin={minHeight}
+                autoHeightMax={maxHeight}
+                thumbMinSize={5}>
+                {menuRenderer ? (
+                    menuRenderer(data, handle)
+                ) : (
+                    <ul data-instance={id}>
+                        {data.map((item, i) => {
+                            let Ico = null;
+                            const val = op.get(item, valueField);
+                            const label = op.get(item, labelField);
+                            const key = `ar-dropdown-item-${id}-${i}`;
+                            const active = selection.includes(val);
+                            const className = cn({ active });
+
+                            if (iconField) {
+                                const icon = op.get(item, iconField);
+                                if (icon) {
+                                    Ico = op.get(Icon, icon);
+                                }
+                            }
+
+                            return (
+                                <li
+                                    key={key}
+                                    className={className}
+                                    data-instance={id}>
+                                    <Button
+                                        color={color}
+                                        active={active}
+                                        type={Button.ENUMS.TYPE.LABEL}
+                                        data-index={i}
+                                        data-instance={id}
+                                        size={size}
+                                        onFocus={() =>
+                                            setState({ tabIndex: i })
+                                        }
+                                        onClick={e => _onItemClick(e, val)}>
+                                        {checkbox && (
+                                            <span className='checkbox'>
+                                                <Icon name='Feather.Check' />
+                                            </span>
+                                        )}
+                                        {Ico && (
+                                            <span className='mr-xs-8'>
+                                                <Ico width={18} height={18} />
+                                            </span>
+                                        )}
+                                        {label || val}
+                                    </Button>
+                                </li>
+                            );
+                        })}
+                    </ul>
+                )}
+            </Scrollbars>
+        );
+    };
+
+    const render = () => {
+        const {
+            align,
+            className,
+            namespace,
+            expanded,
+            veritcalAlign,
+        } = stateRef.current;
+
+        const contClassName = cn({
+            [namespace]: !!namespace,
+            [className]: !!className,
+        });
+
+        const menuClassName = cn({
+            expanded,
+            [cname('menu')]: true,
+            [cname(`menu-align-${align}`)]: true,
+            [cname(`menu-vertical-align-${veritcalAlign}`)]: true,
+        });
+
+        return (
+            <div ref={containerRef} className={contClassName}>
+                {children}
+                <div ref={menuRef} className={menuClassName}>
+                    {renderMenuItems()}
+                </div>
+            </div>
+        );
+    };
+
     return render();
 };
 
@@ -541,13 +563,16 @@ Dropdown = forwardRef(Dropdown);
 Dropdown.ENUMS = ENUMS;
 
 Dropdown.propTypes = {
+    align: PropTypes.oneOf(Object.values(ENUMS.ALIGN)),
     animationEase: PropTypes.object,
     animationSpeed: PropTypes.number,
     className: PropTypes.string,
+    checkbox: PropTypes.bool,
     collapseEvent: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.oneOf(Object.values(ENUMS.TOGGLE)),
     ]),
+    color: PropTypes.oneOf(Object.values(Button.ENUMS.COLOR)),
     data: PropTypes.array,
     dismissable: PropTypes.bool,
     expanded: PropTypes.bool,
@@ -564,6 +589,7 @@ Dropdown.propTypes = {
     namespace: PropTypes.string,
     selection: PropTypes.array,
     selector: PropTypes.string,
+    size: PropTypes.oneOf(Object.values(Button.ENUMS.SIZE)),
     toggleEvent: PropTypes.oneOfType([
         PropTypes.array,
         PropTypes.oneOf(Object.values(ENUMS.TOGGLE)),
@@ -577,12 +603,16 @@ Dropdown.propTypes = {
     onItemSelect: PropTypes.func,
     onItemUnselect: PropTypes.func,
     valueField: PropTypes.string,
+    veritcalAlign: PropTypes.oneOf(Object.values(ENUMS.VALIGN)),
 };
 
 Dropdown.defaultProps = {
+    align: ENUMS.ALIGN.CENTER,
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
+    checkbox: true,
     collapseEvent: null,
+    color: Button.ENUMS.COLOR.PRIMARY,
     data: [],
     dismissable: true,
     expanded: false,
@@ -598,6 +628,7 @@ Dropdown.defaultProps = {
     namespace: 'ar-dropdown',
     selection: [],
     selector: '[data-dropdown-element]',
+    size: Button.ENUMS.SIZE.SM,
     toggleEvent: ENUMS.TOGGLE.CLICK,
     onBeforeCollapse: noop,
     onBeforeExpand: noop,
@@ -608,6 +639,7 @@ Dropdown.defaultProps = {
     onItemSelect: noop,
     onItemUnselect: noop,
     valueField: 'value',
+    veritcalAlign: ENUMS.VALIGN.BOTTOM,
 };
 
 export { Dropdown as default };

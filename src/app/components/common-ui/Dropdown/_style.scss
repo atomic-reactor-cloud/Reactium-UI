@@ -6,10 +6,11 @@ $ar-dropdown-item-hover: $color-white !default;
 $ar-dropdown-item-hover-bg: $color-blue !default;
 $ar-dropdown-item-active: $color-gray-dark !default;
 $ar-dropdown-item-active-bg: $color-grey-light !default;
-$ar-dropdown-border-radius: 4px !default;
+$ar-dropdown-border-radius: 2px !default;
 $ar-dropdown-border-color: $color-grey-light !default;
+$ar-dropdown-ns: ar-dropdown;
 
-.ar-dropdown {
+.#{$ar-dropdown-ns} {
     position: relative;
     display: inline-flex;
     flex-direction: column;
@@ -22,15 +23,81 @@ $ar-dropdown-border-color: $color-grey-light !default;
         z-index: 1000000;
         position: absolute;
         width: 100%;
-        bottom: 0;
-        right: 0;
         transform: translateY(100%);
         display: none;
         overflow: hidden;
         box-shadow: $ar-dropdown-shadow;
-        border-radius: 0px 0px $ar-dropdown-border-radius
-            $ar-dropdown-border-radius;
         height: 0;
+
+        &-align-center {
+            left: 50%;
+
+            &.#{$ar-dropdown-ns}-menu-vertical-align {
+                &-bottom {
+                    bottom: 0;
+                    transform: translateX(-50%);
+                    border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+                }
+
+                &-middle {
+                    top: 50%;
+                    transform: translateX(-50%) translateY(-50%);
+                    border-radius: $ar-dropdown-border-radius;
+                }
+
+                &-top {
+                    top: 0;
+                    transform: translateX(-50%) translateY(-100%);
+                    border-radius: $ar-dropdown-border-radius $ar-dropdown-border-radius 0px 0px;
+                }
+            }
+        }
+
+        &-align-left {
+            left: 0;
+
+            &.#{$ar-dropdown-ns}-menu-vertical-align {
+                &-bottom {
+                    bottom: 0;
+                    border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+                }
+
+                &-middle {
+                    top: 50%;
+                    transform: translateY(-50%);
+                    border-radius: $ar-dropdown-border-radius;
+                }
+
+                &-top {
+                    top: 0;
+                    transform: translateX(-100%);
+                    border-radius: $ar-dropdown-border-radius $ar-dropdown-border-radius 0px 0px;
+                }
+            }
+        }
+
+        &-align-right {
+            right: 0;
+
+            &.#{$ar-dropdown-ns}-menu-vertical-align {
+                &-bottom {
+                    bottom: 0;
+                    border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+                }
+
+                &-middle {
+                    top: 50%;
+                    transform: translateY(-50%);
+                    border-radius: $ar-dropdown-border-radius;
+                }
+
+                &-top {
+                    top: 0;
+                    transform: translateY(-100%);
+                    border-radius: $ar-dropdown-border-radius $ar-dropdown-border-radius 0px 0px;
+                }
+            }
+        }
 
         &.expanded {
             display: block;
@@ -44,9 +111,13 @@ $ar-dropdown-border-color: $color-grey-light !default;
             list-style: none;
             padding: 0;
             margin: 0;
+            line-height: 1;
+            background-color: $color-white;
         }
 
         ul li {
+            button { border-radius: 0; }
+
             &:last-child {
                 button {
                     border-radius: 0px 0px $ar-dropdown-border-radius
@@ -64,38 +135,15 @@ $ar-dropdown-border-color: $color-grey-light !default;
                         opacity: 1;
                     }
                 }
-
-                color: $ar-dropdown-item-active;
-
-                > span,
-                a,
-                button {
-                    z-index: 2;
-                    color: $ar-dropdown-item-active;
-                }
             }
 
             > span,
             a,
             button {
                 z-index: 1;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                flex-direction: row;
-                min-height: 42px;
                 width: 100%;
-                padding: 12px 10px;
                 margin: 0;
-                border: none;
-                text-decoration: none;
-                text-align: left;
-                font-size: 12px;
                 line-height: 1;
-                color: $ar-dropdown-item-color;
-                background-color: $ar-dropdown-menu-color;
-                transition: background-color 0.25s ease-in-out,
-                    color 0.25s ease-in-out;
 
                 * {
                     pointer-events: none;
@@ -113,9 +161,8 @@ $ar-dropdown-border-color: $color-grey-light !default;
                     width: $ar-checkbox-size;
                     height: $ar-checkbox-size;
                     overflow: hidden;
-                    border: 2px solid $ar-checkbox-border-color;
+                    border: 2px solid currentColor;
                     border-radius: 2px;
-                    color: $ar-checkbox-bg-active-color;
                     margin-right: 12px;
 
                     > svg {
@@ -128,20 +175,13 @@ $ar-dropdown-border-color: $color-grey-light !default;
                 }
 
                 &:focus {
-                    color: $ar-dropdown-item-hover;
-                    background-color: $ar-dropdown-item-hover-bg;
-
                     .checkbox {
                         border-color: currentColor;
-                        color: currentColor;
                     }
                 }
 
                 &:hover {
                     z-index: 3;
-                    color: $ar-dropdown-item-hover;
-                    background-color: darken($ar-dropdown-item-hover-bg, 2%);
-
                     .checkbox {
                         border-color: currentColor;
                         color: currentColor;

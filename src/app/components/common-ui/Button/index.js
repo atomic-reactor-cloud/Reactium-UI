@@ -71,29 +71,49 @@ let Button = (
         });
 
         const s = { ...style };
+
         if (readOnly) {
             s['pointerEvents'] = 'none';
             s['userSelect'] = 'none';
+            return (
+                <span className={cname()} {...elementProps} style={s} ref={ref}>
+                    {children}
+                </span>
+            );
         }
 
-        return readOnly ? (
-            <span className={cname()} {...elementProps} style={s} ref={ref}>
-                {children}
-            </span>
-        ) : type === ENUMS.TYPE.LINK ? (
-            <ENUMS.LINK className={cname()} style={s} {...elementProps}>
-                {children}
-            </ENUMS.LINK>
-        ) : (
-            <button
-                className={cname()}
-                style={s}
-                type={type}
-                {...elementProps}
-                ref={ref}>
-                {children}
-            </button>
-        );
+        switch (type) {
+            case ENUMS.TYPE.LINK:
+                return (
+                    <ENUMS.LINK className={cname()} style={s} {...elementProps}>
+                        {children}
+                    </ENUMS.LINK>
+                );
+
+            case ENUMS.TYPE.LABEL:
+                return (
+                    <button
+                        className={cname()}
+                        style={s}
+                        type='button'
+                        {...elementProps}
+                        ref={ref}>
+                        {children}
+                    </button>
+                );
+
+            default:
+                return (
+                    <button
+                        className={cname()}
+                        style={s}
+                        type={type}
+                        {...elementProps}
+                        ref={ref}>
+                        {children}
+                    </button>
+                );
+        }
     };
 
     return render();

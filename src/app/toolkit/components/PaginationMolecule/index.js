@@ -38,6 +38,7 @@ export default class PaginationMolecule extends Component {
                     <Pagination
                         page={20}
                         pages={20}
+                        dropdown={true}
                         color={Pagination.COLOR.PRIMARY}
                     />
                 </div>

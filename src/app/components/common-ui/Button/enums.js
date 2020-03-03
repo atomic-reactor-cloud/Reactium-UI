@@ -23,6 +23,7 @@ export default {
     },
     TYPE: {
         BUTTON: 'button',
+        LABEL: 'label',
         LINK: 'link',
         SUBMIT: 'submit',
     },

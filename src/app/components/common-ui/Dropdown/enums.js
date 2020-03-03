@@ -1,4 +1,9 @@
 const ENUMS = {
+    ALIGN: {
+        CENTER: 'center',
+        LEFT: 'left',
+        RIGHT: 'right',
+    },
     EVENT: {
         BEFORE_COLLAPSE: 'beforeCollapse',
         BEFORE_EXPAND: 'beforeExpand',
@@ -22,6 +27,11 @@ const ENUMS = {
         KEY_UP: 'keyup',
         MOUSE_DOWN: 'mousedown',
         MOUSE_UP: 'mouseup',
+    },
+    VALIGN: {
+        BOTTOM: 'bottom',
+        MIDDLE: 'middle',
+        TOP: 'top',
     },
 };
 

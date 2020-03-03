@@ -239,66 +239,23 @@ let Collapsible = ({ debug, children, ...props }, ref) => {
     const setSize = () => {
         const { direction, expanded, maxSize, minSize } = stateRef.current;
 
-        if (debug) {
-            console.log({ expanded, minSize, maxSize, direction });
-        }
-
-        if (debug) {
-            console.log({ step: 1 });
-        }
-
         if (maxSize || minSize) {
-            if (debug) {
-                console.log({ step: 2 });
-            }
             const container = containerRef.current;
 
-            if (debug) {
-                console.log({ step: 3 });
-            }
             const dir =
                 direction === ENUMS.DIRECTION.HORIZONTAL ? 'width' : 'height';
 
-            if (debug) {
-                console.log({ step: 4 });
-            }
-
             if (expanded && maxSize) {
-                if (debug) {
-                    console.log({ step: 4.1 });
-                }
                 container.style[dir] = numberize(maxSize) + 'px';
             }
 
             if (expanded !== true && minSize) {
-                if (debug) {
-                    console.log({ step: 5.1 });
-                }
-
                 let size = numberize(minSize);
                 size = size === 1 ? 0 : size;
 
-                if (debug) {
-                    console.log({ step: 5.2, size });
-                }
-
-                if (debug) {
-                    console.log({ step: 5.3, dir, container });
-                }
                 container.style[dir] = size + 'px';
-                if (debug) {
-                    console.log({ step: 5.4, size });
-                }
                 container.style.display = size !== 0 ? 'block' : 'none';
             }
-
-            if (debug) {
-                console.log({ step: 6 });
-            }
-        }
-
-        if (debug) {
-            console.log({ step: 7 });
         }
     };
 
