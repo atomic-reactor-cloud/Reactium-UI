@@ -143,7 +143,14 @@ let Pagination = (
     };
 
     const Drop = ({ children }) => {
-        const { align, page, pages, size, veritcalAlign } = stateRef.current;
+        const {
+            align,
+            color,
+            page,
+            pages,
+            size,
+            veritcalAlign,
+        } = stateRef.current;
 
         const data =
             pages < 1
@@ -159,6 +166,7 @@ let Pagination = (
             <Dropdown
                 align={align}
                 checkbox={false}
+                color={color}
                 data={data}
                 onItemSelect={e => _onClick(e, e.item.value)}
                 selection={[page]}
