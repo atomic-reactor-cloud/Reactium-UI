@@ -237,6 +237,7 @@ Pagination.propTypes = {
     align: PropTypes.oneOf(Object.values(Dropdown.ENUMS.ALIGN)),
     arrows: PropTypes.bool,
     className: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    color: PropTypes.oneOf(Object.values(Button.ENUMS.COLOR)),
     dropdown: PropTypes.bool,
     namespace: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     numbers: PropTypes.number,

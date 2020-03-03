@@ -34,7 +34,7 @@ $ar-dropdown-ns: ar-dropdown;
 
             &.#{$ar-dropdown-ns}-menu-vertical-align {
                 &-bottom {
-                    bottom: 0;
+                    top: 100%;
                     transform: translateX(-50%);
                     border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
                 }
@@ -58,7 +58,7 @@ $ar-dropdown-ns: ar-dropdown;
 
             &.#{$ar-dropdown-ns}-menu-vertical-align {
                 &-bottom {
-                    bottom: 0;
+                    top: 100%;
                     border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
                 }
 
@@ -81,7 +81,7 @@ $ar-dropdown-ns: ar-dropdown;
 
             &.#{$ar-dropdown-ns}-menu-vertical-align {
                 &-bottom {
-                    bottom: 0;
+                    top: 100%;
                     border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
                 }
 
