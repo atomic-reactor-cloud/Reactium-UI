@@ -102,12 +102,26 @@ let TimePicker = ({ iDocument, iWindow, ...props }, ref) => {
     };
 
     // External Interface
-    useImperativeHandle(ref, () => ({
+    const _handle = () => ({
+        Picker: pickerRef.current,
         setState,
         state: stateRef.current,
-    }));
+    });
+
+    const [handle, setHandle] = useState(_handle());
+
+    // External Interface
+    useImperativeHandle(ref, () => handle, [handle]);
 
     // Side Effects
+    useEffect(() => {
+        if (!pickerRef.current) return;
+        if (!handle.Picker) {
+            handle.Picker = pickerRef.current;
+            setHandle(_handle());
+        }
+    }, [pickerRef.current]);
+
     useEffect(() => setState(props, 'useEffect()'), Object.values(props));
 
     useLayoutEffect(() => {
