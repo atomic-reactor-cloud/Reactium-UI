@@ -347,6 +347,18 @@ let Dropdown = (
     }, [props.data]);
 
     useEffect(() => {
+        const newState = {};
+        if (props.align !== op.get(state, 'align')) {
+            newState['align'] = props.align;
+        }
+        if (props.verticalAlign !== op.get(state, 'verticalAlign')) {
+            newState['verticalAlign'] = props.verticalAlign;
+        }
+
+        if (Object.keys(newState).length > 0) setState(newState);
+    }, [props.align, props.verticalAlign]);
+
+    useEffect(() => {
         const { filter = [] } = props;
         setState({ filter });
     }, [props.filter]);
@@ -530,7 +542,7 @@ let Dropdown = (
             className,
             namespace,
             expanded,
-            veritcalAlign,
+            verticalAlign,
         } = stateRef.current;
 
         const contClassName = cn({
@@ -542,7 +554,7 @@ let Dropdown = (
             expanded,
             [cname('menu')]: true,
             [cname(`menu-align-${align}`)]: true,
-            [cname(`menu-vertical-align-${veritcalAlign}`)]: true,
+            [cname(`menu-vertical-align-${verticalAlign}`)]: true,
         });
 
         return (
@@ -603,7 +615,7 @@ Dropdown.propTypes = {
     onItemSelect: PropTypes.func,
     onItemUnselect: PropTypes.func,
     valueField: PropTypes.string,
-    veritcalAlign: PropTypes.oneOf(Object.values(ENUMS.VALIGN)),
+    verticalAlign: PropTypes.oneOf(Object.values(ENUMS.VALIGN)),
 };
 
 Dropdown.defaultProps = {
@@ -639,7 +651,7 @@ Dropdown.defaultProps = {
     onItemSelect: noop,
     onItemUnselect: noop,
     valueField: 'value',
-    veritcalAlign: ENUMS.VALIGN.BOTTOM,
+    verticalAlign: ENUMS.VALIGN.BOTTOM,
 };
 
 export { Dropdown as default };

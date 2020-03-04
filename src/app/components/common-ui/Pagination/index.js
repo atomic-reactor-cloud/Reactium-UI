@@ -149,7 +149,7 @@ let Pagination = (
             page,
             pages,
             size,
-            veritcalAlign,
+            verticalAlign,
         } = stateRef.current;
 
         const data =
@@ -171,7 +171,7 @@ let Pagination = (
                 onItemSelect={e => _onClick(e, e.item.value)}
                 selection={[page]}
                 size={size}
-                veritcalAlign={veritcalAlign}>
+                verticalAlign={verticalAlign}>
                 {children}
             </Dropdown>
         );
@@ -254,7 +254,7 @@ Pagination.propTypes = {
     onPrevClick: PropTypes.func,
     page: PropTypes.number,
     pages: PropTypes.number,
-    veritcalAlign: PropTypes.oneOf(Object.values(Dropdown.ENUMS.VALIGN)),
+    verticalAlign: PropTypes.oneOf(Object.values(Dropdown.ENUMS.VALIGN)),
 };
 
 Pagination.defaultProps = {
@@ -270,7 +270,7 @@ Pagination.defaultProps = {
     onPrevClick: noop,
     page: 0,
     size: Button.ENUMS.SIZE.XS,
-    veritcalAlign: Dropdown.ENUMS.VALIGN.BOTTOM,
+    verticalAlign: Dropdown.ENUMS.VALIGN.BOTTOM,
 };
 
 export default Pagination;
