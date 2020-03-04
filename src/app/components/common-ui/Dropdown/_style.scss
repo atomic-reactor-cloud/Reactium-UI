@@ -36,7 +36,7 @@ $ar-dropdown-ns: ar-dropdown;
                 &-bottom {
                     top: 100%;
                     transform: translateX(-50%);
-                    border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
+                    &, button, a, border-radius: 0px 0px $ar-dropdown-border-radius $ar-dropdown-border-radius;
                 }
 
                 &-middle {
@@ -117,13 +117,6 @@ $ar-dropdown-ns: ar-dropdown;
 
         ul li {
             button { border-radius: 0; }
-
-            &:last-child {
-                button {
-                    border-radius: 0px 0px $ar-dropdown-border-radius
-                        $ar-dropdown-border-radius;
-                }
-            }
 
             &.ranked {
                 border-bottom: 1px solid $ar-dropdown-border-color;
