@@ -548,6 +548,7 @@ let Dropdown = (
         const contClassName = cn({
             [namespace]: !!namespace,
             [className]: !!className,
+            expanded,
         });
 
         const menuClassName = cn({
@@ -622,9 +623,9 @@ Dropdown.defaultProps = {
     align: ENUMS.ALIGN.CENTER,
     animationEase: Power2.easeInOut,
     animationSpeed: 0.25,
-    checkbox: true,
+    checkbox: false,
     collapseEvent: null,
-    color: Button.ENUMS.COLOR.PRIMARY,
+    color: Button.ENUMS.COLOR.CLEAR,
     data: [],
     dismissable: true,
     expanded: false,

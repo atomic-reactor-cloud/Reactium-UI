@@ -35,11 +35,6 @@ const ENUMS = {
  */
 let warned = false;
 let WebForm = (props, ref) => {
-    if (ENUMS.DEPRECATED) {
-        console.warn(ENUMS.DEPRECATED);
-        op.del(ENUMS.DEPRECATED);
-    }
-
     const {
         className,
         namespace,

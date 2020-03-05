@@ -17,7 +17,7 @@ const DEBUG = true;
 const noop = () => {};
 
 let Pagination = (
-    { onClick, onNextClick, onPrevClick, update, ...props },
+    { onChange, onClick, onNextClick, onPrevClick, update, ...props },
     ref,
 ) => {
     const containerRef = useRef();
@@ -27,50 +27,69 @@ let Pagination = (
 
     const [state, setNewState] = useState({ ...stateRef.current });
 
-    const setState = (newState, caller) => {
+    const setState = (newState, silent) => {
         if (!containerRef.current) return;
         stateRef.current = {
             ...stateRef.current,
             ...newState,
         };
 
-        if (caller && DEBUG === true) {
-            console.log(caller, stateRef.current);
-        }
-        setNewState(stateRef.current);
+        if (!silent) setNewState(stateRef.current);
+    };
+
+    const next = () => {
+        const { page, pages } = stateRef.current;
+        let p = page + 1;
+        return p > pages || p < 2 ? null : p;
+    };
+
+    const prev = () => {
+        const { page, pages } = stateRef.current;
+        let p = page - 1;
+        return p > pages || p < 1 ? null : p;
+    };
+
+    const _onChange = (e, p) => {
+        const { pages } = stateRef.current;
+        if (p > pages || p < 1) return;
+        setState({ page: p }, true);
+        setState({ next: next(), prev: prev() }, true);
+        return p;
     };
 
     const _onClick = (e, p) => {
+        if (!_onChange(e, p)) return;
+        const h = handle();
+        onChange(e, p, h);
+        onClick(e, p, h);
         setState({ page: p });
-        onClick(e, p);
+        return p;
     };
 
     const _onNextClick = e => {
-        const { page, pages } = stateRef.current;
-        const p = page + 1;
-        if (p <= pages) {
-            setState({ page: p });
-            onNextClick(e);
-        }
+        const p = next();
+        if (!p) return;
+        if (!_onClick(e, p)) return;
+        onNextClick(e, p, handle());
     };
 
     const _onPrevClick = e => {
-        const { page, pages } = stateRef.current;
-        const p = page - 1;
-        if (p > 0) {
-            setState({ page: p });
-            onPrevClick(e);
-        }
+        const p = prev();
+        if (!p) return;
+        if (!_onClick(e, p)) return;
+        onPrevClick(e, p, handle());
     };
+
+    const handle = () => ({
+        setState,
+        state: stateRef.current,
+    });
 
     useEffect(() => {
         setState(props);
     }, Object.values(props));
 
-    useImperativeHandle(ref, () => ({
-        setState,
-        state: stateRef.current,
-    }));
+    useImperativeHandle(ref, () => handle());
 
     const renderNumbers = () => {
         const {
@@ -249,6 +268,7 @@ Pagination.propTypes = {
     dropdown: PropTypes.bool,
     namespace: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     numbers: PropTypes.number,
+    onChange: PropTypes.func,
     onClick: PropTypes.func,
     onNextClick: PropTypes.func,
     onPrevClick: PropTypes.func,
@@ -265,6 +285,7 @@ Pagination.defaultProps = {
     dropdown: false,
     namespace: 'ar-pagination',
     numbers: 0,
+    onChange: noop,
     onClick: noop,
     onNextClick: noop,
     onPrevClick: noop,
