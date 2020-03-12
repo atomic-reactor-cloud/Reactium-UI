@@ -32,7 +32,7 @@ const ENUMS = {
 const useLayoutEffect =
     typeof window !== 'undefined' ? useWindowEffect : useEffect;
 
-class FormEvent extends CustomEvent {
+export class FormEvent extends CustomEvent {
     constructor(type, data) {
         super(type, data);
 
@@ -102,26 +102,26 @@ let EventForm = (initialProps, ref) => {
         onError,
         onSubmit,
         required,
-        showError,
         validator,
         value: initialValue,
         ...props
     } = initialProps;
 
-    const [state, setState] = useDerivedState({
-        errors: null,
+    const [state, update] = useDerivedState({
+        error: null,
         status: ENUMS.STATUS.READY,
     });
 
     const [value, setNewValue] = useState(initialValue || defaultValue || {});
-
-    useImperativeHandle(ref, () => handle);
+    const [count, setCount] = useState(0);
 
     /* Functions */
-    const applyValue = newValue => {
+    const applyValue = async (newValue, clear = false) => {
+        if (!formRef.current) return;
         if (controlled === true || typeof newValue === 'undefined') return;
 
-        const value = newValue;
+        newValue = clear === true ? newValue : { ...value, ...newValue };
+
         const elements = _.flatten(
             Object.values(getElements()).map(element => {
                 if (Array.isArray(element)) {
@@ -133,20 +133,22 @@ let EventForm = (initialProps, ref) => {
         );
 
         Object.entries(elements).forEach(([, element]) => {
+            if (!element.name) return;
+            if (!element.type) return;
+
             const name = element.name;
             const type = element.type;
-            const val = op.get(value, name, '');
+            const val = op.get(newValue, name);
 
             if (Array.isArray(val)) {
                 // Checkbox & Radio
                 if (['checkbox', 'radio'].includes(type)) {
-                    const v = !isNaN(element.value)
-                        ? Number(element.value)
-                        : element.value;
-
                     if (isBoolean(val)) {
                         element.checked = val;
                     } else {
+                        const v = !isNaN(element.value)
+                            ? Number(element.value)
+                            : element.value;
                         element.checked = val.includes(v);
                     }
                 }
@@ -166,7 +168,7 @@ let EventForm = (initialProps, ref) => {
                     });
                 }
             } else {
-                element.value = val;
+                if (val) element.value = val;
 
                 if (isBoolean(val)) {
                     element.value = true;
@@ -174,8 +176,20 @@ let EventForm = (initialProps, ref) => {
                 }
             }
         });
+
+        const evt = new FormEvent('apply-values', {
+            target: formRef.current,
+            value: newValue,
+        });
+
+        handle.dispatchEvent(evt);
     };
 
+    const setState = newState => {
+        if (!formRef.current) return;
+        newState = { ...state, ...newState };
+        update(newState);
+    };
     // className prefixer
     const cx = cls =>
         _.chain([className || namespace, cls])
@@ -185,6 +199,8 @@ let EventForm = (initialProps, ref) => {
             .join('-');
 
     const dispatchChange = ({ value: newValue, event = {} }) => {
+        if (!formRef.current) return;
+
         newValue = newValue || getValue();
 
         if (controlled !== true) {
@@ -202,15 +218,17 @@ let EventForm = (initialProps, ref) => {
     };
 
     const focus = name => {
+        if (!formRef.current) return;
+
         const elements = getElements();
         const element = op.get(elements, name);
         if (element) element.focus();
     };
 
     const getElements = () => {
-        const form = formRef.current;
-        if (!form) return {};
+        if (!formRef.current) return {};
 
+        const form = formRef.current;
         const elements = form.elements;
         const ids = Object.keys(elements).filter(key => !isNaN(key));
 
@@ -236,6 +254,8 @@ let EventForm = (initialProps, ref) => {
     };
 
     const getValue = k => {
+        if (!formRef.current) return {};
+
         const form = formRef.current;
         const elements = getElements(form);
         const keys = Object.keys(elements);
@@ -245,7 +265,7 @@ let EventForm = (initialProps, ref) => {
             keys.push(key);
         }
 
-        const value = keys.reduce((obj, key) => {
+        const currentValue = keys.reduce((obj, key) => {
             let v = _.compact(_.uniq(formData.getAll(key))) || [];
 
             v = v.length === 1 && v.length !== 0 ? v[0] : v;
@@ -257,56 +277,68 @@ let EventForm = (initialProps, ref) => {
         }, {});
 
         if (k) {
-            return op.get(value, k);
+            return op.get(currentValue, k);
         } else {
-            return value;
+            return currentValue;
         }
     };
 
-    const setValue = newValue =>
+    const setValue = newValue => {
+        if (!formRef.current) return;
         dispatchChange({ value: newValue, event: formRef.current });
+    };
 
-    const validate = async value => {
-        value = value || getValue();
+    const validate = async currentValue => {
+        if (!formRef.current) return;
 
-        let valid = true;
-        let errors = { focus: null, fields: [], errors: [] };
+        currentValue = currentValue || getValue();
 
-        const missing = required.filter(k => _.isEmpty(value[k]));
+        let context = {
+            error: {},
+            valid: true,
+            value: currentValue,
+        };
+
+        const missing = required.filter(k => _.isEmpty(currentValue[k]));
+        const elements = getElements();
 
         if (missing.length > 0) {
-            valid = false;
-            missing.reduce((errors, field) => {
-                errors.fields.push(field);
-                errors.errors.push(`${field} is a required field`);
-
-                return errors;
-            }, errors);
-
-            errors.focus = errors.fields.length > 0 ? errors.fields[0] : null;
+            context.valid = false;
+            missing.forEach(field => {
+                error[field] = {
+                    field,
+                    focus: elements[field],
+                    message: `${field} is a required field`,
+                };
+            });
         }
 
-        if (validator) {
-            const validatorResult = await validator(value, valid, errors);
-            valid = op.get(validatorResult, 'valid', true) && valid;
-            const newErrors = op.get(validatorResult, 'errors', {});
-            errors = {
-                focus: newErrors.focus || errors.focus,
-                fields: _.unique([...errors.fields, ...newErrors.fields]),
-                errors: _.unique([...errors.errors, ...newErrors.errors]),
-            };
-        }
-
-        return { valid, errors };
+        // Validators should return :
+        // Object: {
+        //      valid:Boolean,
+        //      error: [Object, {
+        //        field:String,
+        //        focus:Element,
+        //        message:String,
+        //        value:Mixed
+        //      }],
+        //  }
+        if (validator) context = await validator(context);
+        return context;
     };
 
     /* Event handlers */
     const _onChange = e => {
+        if (!formRef.current) return;
+        if (e.target && !e.target.name) return;
+
         e.stopPropagation();
         dispatchChange({ event: e });
     };
 
     const _onSubmit = async e => {
+        if (!formRef.current) return;
+
         if (e) {
             e.preventDefault();
             e.stopPropagation();
@@ -317,21 +349,25 @@ let EventForm = (initialProps, ref) => {
         if (isBusy(status)) return;
 
         // validate
-        setState({ errors: null, status: ENUMS.STATUS.VALIDATING });
-        const { valid, errors } = await validate(value);
+        setState({ error: null, status: ENUMS.STATUS.VALIDATING });
+        const { valid, error } = await validate(value);
 
-        if (valid !== true) {
-            setState({ errors, status: ENUMS.STATUS.ERROR });
+        if (valid !== true || Object.keys(error).length > 0) {
+            setState({ error, status: ENUMS.STATUS.ERROR });
 
             evt = new FormEvent('error', {
                 element: formRef.current,
-                errors,
+                error,
                 target: handle,
                 value,
             });
 
             handle.dispatchEvent(evt);
-            onError(evt);
+            try {
+                await onError(evt);
+            } catch (err) {}
+
+            setState({ status: ENUMS.STATUS.READY });
             return;
         }
 
@@ -344,19 +380,21 @@ let EventForm = (initialProps, ref) => {
         });
 
         handle.dispatchEvent(evt);
+        _.defer(() => setState({ status: ENUMS.STATUS.READY }));
 
         if (typeof onSubmit === 'function') {
-            await onSubmit(evt);
+            try {
+                await onSubmit(evt);
+            } catch (err) {}
         }
-
-        setState({ status: ENUMS.STATUS.READY });
     };
 
     /* Handle */
     const _handle = () => ({
         defaultValue,
         elements: getElements(),
-        errors: op.get(state, 'errors'),
+        ENUMS,
+        error: op.get(state, 'error'),
         focus,
         form: formRef.current,
         getValue,
@@ -371,15 +409,18 @@ let EventForm = (initialProps, ref) => {
 
     const [handle, setHandle] = useEventHandle(_handle());
 
+    useImperativeHandle(ref, () => handle);
+
     /* Side effects */
 
     // Apply value
     useEffect(() => {
-        applyValue(value);
+        applyValue(value, true);
     }, [value]);
 
     // Update handle on change
     useEffect(() => {
+        if (!formRef.current) return;
         setHandle(_handle());
     }, [value, op.get(state, 'errors'), formRef.current]);
 
@@ -391,6 +432,7 @@ let EventForm = (initialProps, ref) => {
 
     // status
     useEffect(() => {
+        if (!formRef.current) return;
         handle.dispatchEvent(
             new FormEvent('status', {
                 detail: op.get(state, 'status'),
@@ -402,30 +444,47 @@ let EventForm = (initialProps, ref) => {
     }, [op.get(state, 'status')]);
 
     // Children change -> applyValue
+    useAsyncEffect(
+        async mounted => {
+            const ival = setInterval(() => {
+                if (!mounted()) {
+                    clearInterval(ival);
+                    return;
+                }
+
+                const ecount = Object.keys(getElements()).length;
+                if (ecount !== count) setCount(ecount);
+            }, 1);
+
+            return () => {};
+        },
+        [children],
+    );
+
     useLayoutEffect(() => {
-        applyValue(value);
-    }, [children]);
+        if (count > 0) applyValue(value);
+    }, [count, value]);
 
     /* Renderers */
-    const render = () => {
-        const { errors } = state;
-        return (
-            <form
-                {...props}
-                className={cx()}
-                onChange={_onChange}
-                onSubmit={_onSubmit}
-                ref={formRef}>
-                <Errors cx={cx} errors={errors} showError={showError} />
-                {children}
-            </form>
-        );
-    };
+    const render = () => (
+        <form
+            {...props}
+            className={cx()}
+            onChange={_onChange}
+            onSubmit={_onSubmit}
+            ref={formRef}>
+            {children}
+        </form>
+    );
 
     return render();
 };
 
 EventForm = forwardRef(EventForm);
+
+EventForm.ENUMS = ENUMS;
+
+EventForm.Event = FormEvent;
 
 EventForm.propTypes = {
     className: PropTypes.string,
@@ -433,11 +492,11 @@ EventForm.propTypes = {
     defaultValue: PropTypes.object,
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
     required: PropTypes.array.isRequired,
+    name: PropTypes.string,
     namespace: PropTypes.string,
     onChange: PropTypes.func,
     onError: PropTypes.func,
     onSubmit: PropTypes.func,
-    showError: PropTypes.bool,
     value: PropTypes.object,
     validator: PropTypes.func,
 };
@@ -445,27 +504,14 @@ EventForm.propTypes = {
 EventForm.defaultProps = {
     controlled: false,
     id: uuid(),
+    name: 'form',
     namespace: 'ar-event-form',
     onChange: noop,
     onError: noop,
     required: [],
-    showError: false,
-    validator: (value, valid = true, errors) => ({ valid, errors }),
 };
 
 export default EventForm;
-
-const Errors = ({ errors, showError, cx }) => {
-    return errors && showError ? (
-        <ul className={cx('errors')}>
-            {errors.errors.map(error => (
-                <li className={cx('error-item')} key={error}>
-                    {error}
-                </li>
-            ))}
-        </ul>
-    ) : null;
-};
 
 const isBoolean = val =>
     typeof val === 'boolean' ||

@@ -7,20 +7,20 @@ $breakpoints-max: (
     'sm': 990,
     'md': 1280,
     'lg': 1440,
-    'xl': 1600,
+    'xl': 1920,
 ) !default;
 
 $xs-max: '#{map-get($breakpoints-max, 'xs')}px' !default; // Set xs breakpoint's max width
 $sm-max: '#{map-get($breakpoints-max, 'sm')}px' !default; // Set sm breakpoint's max width
 $md-max: '#{map-get($breakpoints-max, 'md')}px' !default; // Set md breakpoint's max width
-$lg-max: '#{map-get($breakpoints-max, 'lg')}px' !default; // Set lg breakpoint's max width
+$lg-max: '#{map-get($breakpoints-max, 'xl')}px' !default; // Set lg breakpoint's max width
 
 $gutter: 0 !default;
 
 $sm-start: '#{map-get($breakpoints-max, 'xs') + 1}px' !default; // Set sm breakpoint's min width
 $md-start: '#{map-get($breakpoints-max, 'sm') + 1}px' !default; // Set md breakpoint's min width
 $lg-start: '#{map-get($breakpoints-max, 'md') + 1}px' !default; // Set lg breakpoint's min width
-$xl-start: '#{map-get($breakpoints-max, 'lg') + 1}px' !default; // Set xl breakpoint's min width
+$xl-start: '#{map-get($breakpoints-max, 'xl') + 1}px' !default; // Set xl breakpoint's min width
 
 $content-well-max-width: 'none' !default; // Set the max-width of the content well
 
