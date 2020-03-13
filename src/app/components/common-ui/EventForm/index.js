@@ -118,7 +118,7 @@ let EventForm = (initialProps, ref) => {
     /* Functions */
     const applyValue = async (newValue, clear = false) => {
         if (!formRef.current) return;
-        if (controlled === true || typeof newValue === 'undefined') return;
+        if (controlled === true) return;
 
         newValue = clear === true ? newValue : { ...value, ...newValue };
 
@@ -215,6 +215,7 @@ let EventForm = (initialProps, ref) => {
         newState = { ...state, ...newState };
         update(newState);
     };
+
     // className prefixer
     const cx = cls =>
         _.chain([className || namespace, cls])
