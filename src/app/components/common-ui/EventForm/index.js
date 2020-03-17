@@ -118,7 +118,7 @@ let EventForm = (initialProps, ref) => {
     /* Functions */
     const applyValue = async (newValue, clear = false) => {
         if (!formRef.current) return;
-        if (controlled === true) return;
+        if (controlled === true || typeof newValue === 'undefined') return;
 
         newValue = clear === true ? newValue : { ...value, ...newValue };
 
@@ -215,7 +215,6 @@ let EventForm = (initialProps, ref) => {
         newState = { ...state, ...newState };
         update(newState);
     };
-
     // className prefixer
     const cx = cls =>
         _.chain([className || namespace, cls])
@@ -332,7 +331,7 @@ let EventForm = (initialProps, ref) => {
         if (missing.length > 0) {
             context.valid = false;
             missing.forEach(field => {
-                error[field] = {
+                context.error[field] = {
                     field,
                     focus: elements[field],
                     message: `${field} is a required field`,
