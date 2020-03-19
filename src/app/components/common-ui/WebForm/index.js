@@ -10,7 +10,6 @@ import React, {
     useRef,
     useState,
 } from 'react';
-import uuid from 'uuid/v4';
 
 const useLayoutEffect =
     typeof window !== 'undefined' ? useWindowEffect : useEffect;
@@ -66,10 +65,10 @@ let WebForm = (props, ref) => {
     });
 
     // State
-    const [, setNewState] = useState(uuid());
+    const [, setNewState] = useState(new Date());
 
     // Internal Interface
-    const setState = newState => {
+    const setState = (newState, rerender = true) => {
         // Update the stateRef
         stateRef.current = {
             ...stateRef.current,
@@ -77,7 +76,7 @@ let WebForm = (props, ref) => {
         };
 
         // Trigger useEffect()
-        setNewState(uuid());
+        if (rerender) setNewState(new Date());
     };
 
     const getElements = () => {
@@ -210,14 +209,14 @@ let WebForm = (props, ref) => {
     }, [valueUpdated]);
 
     const onChange = async e => {
-        const value = getValue();
+        const value = getValue(null, true);
         if (onFormChange) {
             await onFormChange(e, value);
         }
         update(value);
     };
 
-    const getValue = k => {
+    const getValue = (k, rerender = false) => {
         const elements = stateRef.current.elements;
         const keys = Object.keys(elements);
 
@@ -237,7 +236,7 @@ let WebForm = (props, ref) => {
             return obj;
         }, {});
 
-        setState({ value });
+        setState({ value }, rerender);
 
         if (k) {
             return stateRef.current.value[k];
