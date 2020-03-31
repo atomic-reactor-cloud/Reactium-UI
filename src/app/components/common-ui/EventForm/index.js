@@ -113,7 +113,7 @@ let EventForm = (initialProps, ref) => {
     });
 
     const [value, setNewValue] = useState(initialValue || defaultValue || {});
-    const [count, setCount] = useState(0);
+    const [count, setNewCount] = useState(0);
 
     /* Functions */
     const applyValue = async (newValue, clear = false) => {
@@ -308,6 +308,11 @@ let EventForm = (initialProps, ref) => {
         }
     };
 
+    const setCount = newCount => {
+        if (formRef.current) return;
+        setNewCount(newCount);
+    };
+
     const setValue = newValue => {
         if (!formRef.current) return;
         if (newValue === null) applyValue(newValue, true);
@@ -426,6 +431,7 @@ let EventForm = (initialProps, ref) => {
         getValue,
         props: initialProps,
         state,
+        setCount,
         setState,
         setValue,
         submit: _onSubmit,
@@ -478,8 +484,20 @@ let EventForm = (initialProps, ref) => {
                     return;
                 }
 
-                const ecount = Object.keys(getElements()).length;
-                if (ecount !== count) setCount(ecount);
+                const elms = getElements();
+                const ecount = Object.keys(elms).length;
+                if (ecount !== count) {
+                    setCount(ecount);
+
+                    const evt = new FormEvent('element-change', {
+                        target: formRef.current,
+                        element: op.get(event, 'target', formRef.current),
+                        value: newValue,
+                        elements: elms,
+                    });
+
+                    handle.dispatchEvent(evt);
+                }
             }, 1);
 
             return () => {};

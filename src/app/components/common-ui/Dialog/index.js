@@ -122,20 +122,22 @@ let Dialog = ({ children, id, pref, ...props }, ref) => {
         onShow(e);
     };
 
-    const _clone = elements =>
-        React.Children.map(elements, element => {
-            const { onClick } = element.props;
-            const key = `dialog-clone-${uuid()}`;
+    const _clone = (elements = []) =>
+        elements.map(element => {
+            const key = op.get(element, 'key');
+            const newKey = `dialog-clone-${uuid()}`;
+            const onClick = op.get(element, 'onClick');
             const newProps = {
-                ...element.props,
-                key,
+                key: key ? key : newKey,
             };
-
-            if (onClick) {
-                newProps.onClick = e => _onButtonClick(e, onClick);
-            }
-
-            return React.cloneElement(element, newProps);
+            if (onClick)
+                op.set(newProps, 'onClick', e => _onButtonClick(e, onClick));
+            // only need clone for onClick decorator
+            if (onClick) return React.cloneElement(element, newProps);
+            // if key provided, pass on through
+            if (key) return element;
+            // fragment will do if all we need is key
+            return <React.Fragment key={newKey}>{element}</React.Fragment>;
         });
 
     // Renderers
