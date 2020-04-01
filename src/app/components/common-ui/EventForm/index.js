@@ -163,7 +163,7 @@ let EventForm = (initialProps, ref) => {
 
             const name = element.name;
             const type = element.type;
-            const val = op.get(newValue, name);
+            const val = transformValue(op.get(newValue, name));
 
             if (Array.isArray(val)) {
                 // Checkbox & Radio
@@ -171,9 +171,7 @@ let EventForm = (initialProps, ref) => {
                     if (isBoolean(val)) {
                         element.checked = !!val;
                     } else {
-                        const v = !isNaN(element.value)
-                            ? Number(element.value)
-                            : element.value;
+                        const v = transformValue(element.value);
                         element.checked = val.includes(v);
                     }
                 }
@@ -186,9 +184,7 @@ let EventForm = (initialProps, ref) => {
                     const options = ids.map(i => element.options[i]);
 
                     options.forEach(option => {
-                        const v = !isNaN(option.value)
-                            ? Number(option.value)
-                            : option.value;
+                        const v = transformValue(option.value);
                         option.selected = val.includes(v);
                     });
                 }
@@ -295,6 +291,7 @@ let EventForm = (initialProps, ref) => {
 
             v = v.length === 1 && v.length !== 0 ? v[0] : v;
             v = v.length === 0 ? null : v;
+            v = transformValue(v);
 
             op.set(obj, key, v);
 
@@ -556,6 +553,13 @@ EventForm.defaultProps = {
 };
 
 export { EventForm, EventForm as default };
+
+const transformValue = val => {
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    if (!isNaN(val)) return Number(val);
+    return val;
+};
 
 const isBoolean = val =>
     typeof val === 'boolean' ||
