@@ -26,10 +26,12 @@ const set = (key, value) => {
     return prefs;
 };
 
-export default {
+const Prefs = {
     clear,
     get,
     set,
 };
+
+export { Prefs, Prefs as default };
 
 // TODO: Make it so that prefs are loaded from a user object

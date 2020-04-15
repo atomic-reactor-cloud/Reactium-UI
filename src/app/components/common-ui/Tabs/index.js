@@ -201,4 +201,4 @@ Tabs.defaultProps = {
     onChange: noop,
 };
 
-export { Tabs as default };
+export { Tabs, Tabs as default };

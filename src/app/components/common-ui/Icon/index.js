@@ -56,4 +56,4 @@ Icon.defaultProps = {
     size: 24,
 };
 
-export { Icon as default, Feather, Linear };
+export { Icon, Icon as default, Feather, Linear };

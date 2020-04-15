@@ -582,4 +582,4 @@ TagsInput.defaultProps = {
     validator: value => value.length > 0,
 };
 
-export { TagsInput as default };
+export { TagsInput, TagsInput as default };

@@ -290,4 +290,4 @@ Picker.defaultProps = {
     value: null,
 };
 
-export default Picker;
+export { Picker, Picker as default };

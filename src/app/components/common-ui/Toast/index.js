@@ -81,4 +81,4 @@ Toast.show = ({
 
 Object.keys(toast).forEach(key => (Toast[key] = toast[key]));
 
-export { Toast as default };
+export { Toast, Toast as default };

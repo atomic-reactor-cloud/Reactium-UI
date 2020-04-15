@@ -165,4 +165,4 @@ Modal.defaultProps = {
     namespace: 'ar-modal',
 };
 
-export { Modal as default };
+export { Modal, Modal as default };

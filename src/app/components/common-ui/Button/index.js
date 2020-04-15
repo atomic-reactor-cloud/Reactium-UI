@@ -149,4 +149,4 @@ Button.defaultProps = {
     type: ENUMS.TYPE.BUTTON,
 };
 
-export { Button as default, ENUMS };
+export { Button, Button as default };

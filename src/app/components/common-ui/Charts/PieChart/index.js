@@ -61,4 +61,4 @@ PieChart.defaultProps = {
     },
 };
 
-export default PieChart;
+export { PieChart, PieChart as default };

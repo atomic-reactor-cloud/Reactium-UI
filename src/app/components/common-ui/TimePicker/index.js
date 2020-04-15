@@ -421,4 +421,4 @@ TimePicker.defaultProps = {
     readOnly: false,
 };
 
-export { TimePicker as default };
+export { TimePicker, TimePicker as default };

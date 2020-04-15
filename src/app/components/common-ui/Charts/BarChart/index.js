@@ -64,4 +64,4 @@ BarChart.defaultProps = {
     },
 };
 
-export default BarChart;
+export { BarChart, BarChart as default };

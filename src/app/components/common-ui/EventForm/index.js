@@ -33,7 +33,25 @@ const ENUMS = {
 const useLayoutEffect =
     typeof window !== 'undefined' ? useWinEffect : useEffect;
 
-export class FormEvent extends CustomEvent {
+const isBoolean = val =>
+    typeof val === 'boolean' ||
+    String(val).toLowerCase() === 'true' ||
+    String(val).toLowerCase() === 'false';
+
+const isBusy = status => {
+    const statuses = [ENUMS.STATUS.SUBMITTING, ENUMS.STATUS.VALIDATING];
+    return statuses.includes(String(status).toUpperCase());
+};
+
+const transformValue = val => {
+    if (typeof val === 'boolean') return val;
+    if (val === 'true') return true;
+    if (val === 'false') return false;
+    if (!isNaN(val)) return Number(val);
+    return val;
+};
+
+class FormEvent extends CustomEvent {
     constructor(type, data) {
         super(type, data);
 
@@ -643,22 +661,4 @@ EventForm.defaultProps = {
     value: {},
 };
 
-export { EventForm, EventForm as default };
-
-const isBoolean = val =>
-    typeof val === 'boolean' ||
-    String(val).toLowerCase() === 'true' ||
-    String(val).toLowerCase() === 'false';
-
-const isBusy = status => {
-    const statuses = [ENUMS.STATUS.SUBMITTING, ENUMS.STATUS.VALIDATING];
-    return statuses.includes(String(status).toUpperCase());
-};
-
-const transformValue = val => {
-    if (typeof val === 'boolean') return val;
-    if (val === 'true') return true;
-    if (val === 'false') return false;
-    if (!isNaN(val)) return Number(val);
-    return val;
-};
+export { EventForm, EventForm as default, FormEvent };

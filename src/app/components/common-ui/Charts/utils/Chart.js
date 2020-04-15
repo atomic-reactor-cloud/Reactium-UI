@@ -187,4 +187,4 @@ Chart.defaultProps = {
 
 Chart.ENUMS = ENUMS;
 
-export default Chart;
+export { Chart, Chart as default };

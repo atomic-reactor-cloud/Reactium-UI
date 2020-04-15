@@ -182,4 +182,4 @@ Alert.defaultProps = {
     visible: true,
 };
 
-export { Alert as default };
+export { Alert, Alert as default };

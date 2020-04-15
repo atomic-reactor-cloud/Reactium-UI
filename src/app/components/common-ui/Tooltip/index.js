@@ -298,4 +298,4 @@ Tooltip.defaultProps = {
     visible: false,
 };
 
-export { Tooltip as default };
+export { Tooltip, Tooltip as default };

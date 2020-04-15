@@ -48,4 +48,4 @@ AreaChart.defaultProps = {
     opacity: 0.25,
 };
 
-export default AreaChart;
+export { AreaChart, AreaChart as default };

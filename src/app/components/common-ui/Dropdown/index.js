@@ -655,4 +655,4 @@ Dropdown.defaultProps = {
     verticalAlign: ENUMS.VALIGN.BOTTOM,
 };
 
-export { Dropdown as default };
+export { Dropdown, Dropdown as default };

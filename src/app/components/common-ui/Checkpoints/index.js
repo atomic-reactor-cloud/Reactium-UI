@@ -274,4 +274,4 @@ Checkpoints.defaultProps = {
     onComplete: noop,
 };
 
-export { Checkpoints as default, Checkpoint };
+export { Checkpoints, Checkpoints as default, Checkpoint };

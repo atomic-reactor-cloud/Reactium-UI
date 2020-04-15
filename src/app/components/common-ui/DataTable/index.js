@@ -474,4 +474,4 @@ DataTable.defaultProps = {
     style: {},
 };
 
-export { DataTable as default, Row, Column, Heading, SearchBar };
+export { DataTable, DataTable as default, Row, Column, Heading, SearchBar };

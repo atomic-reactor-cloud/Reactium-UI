@@ -361,4 +361,4 @@ DatePicker.defaultProps = {
     width: '100%',
 };
 
-export { DatePicker as default, Calendar };
+export { DatePicker, DatePicker as default, Calendar };

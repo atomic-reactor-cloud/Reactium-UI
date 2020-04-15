@@ -312,4 +312,4 @@ Dialog.defaultProps = {
     visible: true,
 };
 
-export { Dialog as default };
+export { Dialog, Dialog as default };

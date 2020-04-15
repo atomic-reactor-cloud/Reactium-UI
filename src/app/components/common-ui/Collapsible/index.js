@@ -364,4 +364,4 @@ Collapsible.defaultProps = {
     style: {},
 };
 
-export { Collapsible as default };
+export { Collapsible, Collapsible as default };

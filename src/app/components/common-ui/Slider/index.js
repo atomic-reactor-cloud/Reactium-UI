@@ -530,4 +530,4 @@ Slider.defaultProps = {
     iWindow: typeof window !== 'undefined' ? window : null,
 };
 
-export { Slider as default };
+export { Slider, Slider as default };

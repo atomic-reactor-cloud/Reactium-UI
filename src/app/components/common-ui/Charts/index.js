@@ -1,13 +1,4 @@
-import AreaChart from './AreaChart';
-import BarChart from './BarChart';
-import Chart from './utils/Chart';
-import PieChart from './PieChart';
-
-export { AreaChart, BarChart, PieChart };
-
-export default {
-    AreaChart,
-    BarChart,
-    Chart,
-    PieChart,
-};
+export * from './AreaChart';
+export * from './BarChart';
+export * from './utils/Chart';
+export * from './PieChart';

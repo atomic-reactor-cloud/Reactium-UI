@@ -32,4 +32,4 @@ const Gradient = ({
     </svg>
 );
 
-export default Gradient;
+export { Gradient, Gradient as default };

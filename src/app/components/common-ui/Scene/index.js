@@ -628,4 +628,4 @@ Scene.defaultProps = {
     width: ENUMS.SIZE.WIDTH,
 };
 
-export { Scene as default };
+export { Scene, Scene as default };

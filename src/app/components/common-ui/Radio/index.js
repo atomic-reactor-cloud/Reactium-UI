@@ -97,6 +97,6 @@ Radio.propTypes = { ...Toggle.propTypes };
 Radio.defaultProps = {
     ...Toggle.defaultProps,
     type: ENUMS.TYPE.RADIO,
- };
+};
 
-export { Radio as default, ENUMS };
+export { Radio, Radio as default };

@@ -101,4 +101,4 @@ Toggle.defaultProps = {
     type: ENUMS.TYPE.CHECKBOX,
 };
 
-export { Toggle as default, ENUMS };
+export { Toggle, Toggle as default };

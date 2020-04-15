@@ -1,8 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-export default ({ children }) => {
+const Portal = ({ children }) => {
     return typeof document !== 'undefined'
         ? ReactDOM.createPortal(children, document.body)
         : children;
 };
+
+export { Portal, Portal as default };

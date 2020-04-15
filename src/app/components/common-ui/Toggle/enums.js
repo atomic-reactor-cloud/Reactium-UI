@@ -1,13 +1,13 @@
-import { ENUMS as BUTTON_ENUMS } from 'components/common-ui/Button';
+import { Button } from 'components/common-ui/Button';
 
 export default {
     ALIGN: {
         LEFT: 'left',
         RIGHT: 'right',
     },
-    COLOR: { ...BUTTON_ENUMS.COLOR },
+    COLOR: { ...Button.ENUMS.COLOR },
     TYPE: {
         CHECKBOX: 'checkbox',
         RADIO: 'radio',
-    }
+    },
 };

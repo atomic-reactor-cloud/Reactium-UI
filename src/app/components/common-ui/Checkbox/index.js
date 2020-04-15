@@ -100,4 +100,4 @@ Checkbox.defaultProps = {
     type: ENUMS.TYPE.CHECKBOX,
 };
 
-export { Checkbox as default, ENUMS };
+export { Checkbox, Checkbox as default };

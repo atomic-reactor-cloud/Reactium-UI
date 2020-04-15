@@ -178,4 +178,4 @@ Breakpoint.defaultProps = {
 
 Breakpoint.getBreakpoints = getBreakpoints;
 
-export { Breakpoint as default, getBreakpoints };
+export { Breakpoint, Breakpoint as default, getBreakpoints };

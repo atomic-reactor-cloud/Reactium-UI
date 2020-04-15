@@ -294,4 +294,4 @@ Pagination.defaultProps = {
     verticalAlign: Dropdown.ENUMS.VALIGN.BOTTOM,
 };
 
-export default Pagination;
+export { Pagination, Pagination as default };

@@ -400,4 +400,4 @@ Dropzone.defaultProps = {
     onInitialize: noop,
 };
 
-export { Dropzone as default };
+export { Dropzone, Dropzone as default };

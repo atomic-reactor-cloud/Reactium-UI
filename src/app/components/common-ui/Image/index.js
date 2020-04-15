@@ -231,4 +231,4 @@ Img.defaultProps = {
     onResize: noop,
 };
 
-export { Img as default };
+export { Img as Image, Img as default };

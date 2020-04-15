@@ -50,4 +50,4 @@ Spinner.defaultProps = {
     namespace: 'ar-spinner',
 };
 
-export default Spinner;
+export { Spinner, Spinner as default };

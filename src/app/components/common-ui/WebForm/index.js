@@ -408,4 +408,4 @@ WebForm.defaultProps = {
     valueUpdated: null,
 };
 
-export { WebForm as default };
+export { WebForm, WebForm as default };

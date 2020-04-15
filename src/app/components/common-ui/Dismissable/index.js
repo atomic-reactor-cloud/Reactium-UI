@@ -218,4 +218,4 @@ Dismissable.defaultProps = {
     visible: false,
 };
 
-export { Dismissable as default };
+export { Dismissable, Dismissable as default };

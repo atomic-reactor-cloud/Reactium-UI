@@ -143,4 +143,4 @@ Progress.defaultProps = {
     value: 0,
 };
 
-export { Progress as default };
+export { Progress, Progress as default };
