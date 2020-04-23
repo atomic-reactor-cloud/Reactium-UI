@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
-import React from 'react';
 import PropTypes from 'prop-types';
 import { VictoryArea } from 'victory';
+import React, { forwardRef } from 'react';
 import Chart from 'components/common-ui/Charts/utils/Chart';
 
 /**
@@ -9,7 +9,7 @@ import Chart from 'components/common-ui/Charts/utils/Chart';
  * Functional Component: AreaChart
  * -----------------------------------------------------------------------------
  */
-const AreaChart = props => {
+let AreaChart = (props, ref) => {
     let { color, data, id, interpolation, opacity, style } = props;
 
     style = style || {
@@ -28,11 +28,15 @@ const AreaChart = props => {
     };
 
     return (
-        <Chart {...props}>
+        <Chart {...props} ref={ref}>
             <VictoryArea {...areaProps} />
         </Chart>
     );
 };
+
+AreaChart = forwardRef(AreaChart);
+
+AreaChart.ENUMS = Chart.ENUMS;
 
 AreaChart.propTypes = {
     ...Chart.propTypes,

@@ -1,7 +1,7 @@
 import op from 'object-path';
 import uuid from 'uuid/v4';
-import React from 'react';
 import PropTypes from 'prop-types';
+import React, { forwardRef } from 'react';
 import Colors from 'components/common-ui/colors';
 import Gradient from 'components/common-ui/Charts/utils/Gradient';
 
@@ -28,27 +28,30 @@ const ENUMS = {
  * Functional Component: Chart
  * -----------------------------------------------------------------------------
  */
-const Chart = ({
-    children,
-    color,
-    data,
-    dots,
-    dotStyle,
-    id,
-    interpolation,
-    onClick,
-    onHover,
-    tickCount,
-    tickFormat,
-    xAxis,
-    xAxisStyle,
-    xGrid,
-    xLabel,
-    yAxis,
-    yAxisStyle,
-    yGrid,
-    yLabel,
-}) => {
+let Chart = (
+    {
+        children,
+        color,
+        data,
+        dots,
+        dotStyle,
+        id,
+        interpolation,
+        onClick,
+        onHover,
+        tickCount,
+        tickFormat,
+        xAxis,
+        xAxisStyle,
+        xGrid,
+        xLabel,
+        yAxis,
+        yAxisStyle,
+        yGrid,
+        yLabel,
+    },
+    ref,
+) => {
     const renderDots = style => {
         if (!dots) {
             return;
@@ -75,7 +78,7 @@ const Chart = ({
 
         const label = {
             hide: () => null,
-            show: props => ({ text: Math.ceil(props.y) }),
+            show: props => ({ text: Math.ceil(props.datum.y) }),
             toggle: props => (!op.get(props, 'text') ? show() : hide()),
         };
 
@@ -168,7 +171,7 @@ const Chart = ({
         return (
             <>
                 <Gradient color={color} id={id} />
-                <VictoryChart>
+                <VictoryChart ref={ref}>
                     {renderX(xAxisStyle)}
                     {renderY(yAxisStyle)}
                     {children}
@@ -180,6 +183,8 @@ const Chart = ({
 
     return render();
 };
+
+Chart = forwardRef(Chart);
 
 Chart.propTypes = {
     animate: PropTypes.bool,

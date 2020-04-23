@@ -1,6 +1,6 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { VictoryPie } from 'victory';
+import React, { forwardRef } from 'react';
 
 const labelFunc = ({ label, x, y }) => label || x || y;
 
@@ -12,15 +12,10 @@ const mapData = data =>
         ...props,
     }));
 
-const PieChart = ({
-    animate,
-    colors,
-    data,
-    innerRadius,
-    labelFunc,
-    padding,
-    ...props
-}) => {
+let PieChart = (
+    { animate, colors, data, innerRadius, labelFunc, padding, ...props },
+    ref,
+) => {
     const chartProps = {
         animate,
         colorScale: colors,
@@ -33,8 +28,10 @@ const PieChart = ({
         ...props,
     };
 
-    return <VictoryPie {...chartProps} />;
+    return <VictoryPie {...chartProps} ref={ref} />;
 };
+
+PieChart = forwardRef(PieChart);
 
 // See: https://formidable.com/open-source/victory/docs/victory-pie#props
 //      for additional props
