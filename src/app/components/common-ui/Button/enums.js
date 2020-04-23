@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { forwardRef } from 'react';
 
 export default {
     APPEARANCE: {
@@ -18,10 +18,14 @@ export default {
         WARNING: 'warning',
     },
     ELEMENT: {
-        BUTTON: props => <button {...props} type='button' />,
-        LABEL: props => <label {...props} />,
-        LINK: props => <a {...props} />,
-        SUBMIT: props => <button {...props} type='submit' />,
+        BUTTON: forwardRef((props, ref) => (
+            <button {...props} type='button' ref={ref} />
+        )),
+        LABEL: forwardRef((props, ref) => <label {...props} ref={ref} />),
+        LINK: forwardRef((props, ref) => <a {...props} ref={ref} />),
+        SUBMIT: forwardRef((props, ref) => (
+            <button {...props} type='submit' ref={ref} />
+        )),
     },
     SIZE: {
         XS: 'xs',
