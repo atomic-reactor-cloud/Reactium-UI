@@ -1,7 +1,7 @@
 import uuid from 'uuid/v4';
 import PropTypes from 'prop-types';
 import { VictoryBar } from 'victory';
-import React, { fowardRef } from 'react';
+import React, { forwardRef } from 'react';
 import Colors from 'components/common-ui/colors';
 import Chart from 'components/common-ui/Charts/utils/Chart';
 
