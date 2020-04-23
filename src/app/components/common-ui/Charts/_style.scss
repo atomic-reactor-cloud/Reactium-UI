@@ -1,3 +1,7 @@
-.style {
-
+.VictoryContainer {
+    svg > g:last-child > path {
+        &:hover {
+            cursor: pointer;
+        }
+    }
 }

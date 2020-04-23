@@ -3,9 +3,9 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-import React, { Component } from 'react';
-import { AreaChart } from 'components/common-ui/Charts';
+import React from 'react';
 import moment from 'moment';
+import { AreaChart } from 'components/common-ui/Charts';
 
 /**
  * -----------------------------------------------------------------------------
@@ -13,21 +13,19 @@ import moment from 'moment';
  * -----------------------------------------------------------------------------
  */
 
-class AreaChartMolecule extends Component {
-    static dependencies() {
-        return typeof module !== 'undefined' ? module.children : [];
-    }
-
-    render() {
-        return (
-            <div className='flex-center'>
-                <div className='flex-grow' style={{ maxWidth: 700 }}>
-                    <AreaChart {...this.props} />
-                </div>
+const AreaChartMolecule = props => {
+    return (
+        <div className='flex-center'>
+            <div className='flex-grow' style={{ maxWidth: 700 }}>
+                <AreaChart {...props} />
             </div>
-        );
-    }
-}
+        </div>
+    );
+};
+
+AreaChartMolecule.dependencies = () => {
+    return typeof module !== 'undefined' ? model.children : [];
+};
 
 // Default properties
 AreaChartMolecule.defaultProps = {
@@ -61,8 +59,6 @@ AreaChartMolecule.defaultProps = {
             x: moment().format('M/DD'),
         },
     ],
-    xLabel: moment().format('YYYY'),
-    yLabel: 'Crunches',
     dots: true,
     xLabel: moment().format('YYYY'),
     yLabel: 'Crunches',

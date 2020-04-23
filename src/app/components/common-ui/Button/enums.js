@@ -1,3 +1,5 @@
+import React from 'react';
+
 export default {
     APPEARANCE: {
         CIRCLE: 'circle',
@@ -15,6 +17,12 @@ export default {
         TERTIARY: 'tertiary',
         WARNING: 'warning',
     },
+    ELEMENT: {
+        BUTTON: props => <button {...props} type='button' />,
+        LABEL: props => <label {...props} />,
+        LINK: props => <a {...props} />,
+        SUBMIT: props => <button {...props} type='submit' />,
+    },
     SIZE: {
         XS: 'xs',
         SM: 'sm',
@@ -22,9 +30,9 @@ export default {
         LG: 'lg',
     },
     TYPE: {
-        BUTTON: 'button',
-        LABEL: 'label',
-        LINK: 'link',
-        SUBMIT: 'submit',
+        BUTTON: 'BUTTON',
+        LABEL: 'LABEL',
+        LINK: 'LINK',
+        SUBMIT: 'SUBMIT',
     },
 };

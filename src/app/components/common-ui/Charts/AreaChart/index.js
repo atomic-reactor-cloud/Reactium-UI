@@ -10,8 +10,7 @@ import Chart from 'components/common-ui/Charts/utils/Chart';
  * -----------------------------------------------------------------------------
  */
 const AreaChart = props => {
-    let { style } = props;
-    const { color, data, id, interpolation, opacity } = props;
+    let { color, data, id, interpolation, opacity, style } = props;
 
     style = style || {
         data: {

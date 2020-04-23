@@ -4,12 +4,8 @@
  * -----------------------------------------------------------------------------
  */
 
-import Events from './Events';
-import Methods from './Methods';
-import Code from 'toolkit/Code';
-import Properties from './Properties';
-import React, { Component } from 'react';
-import { Button, Carousel, Icon, Slide, Toggle } from 'components/common-ui';
+import React, { useEffect, useRef, useState } from 'react';
+import { useDerivedState, useHookComponent } from 'reactium-core/sdk';
 
 /**
  * -----------------------------------------------------------------------------
@@ -17,38 +13,44 @@ import { Button, Carousel, Icon, Slide, Toggle } from 'components/common-ui';
  * -----------------------------------------------------------------------------
  */
 
-class CarouselMolecule extends Component {
-    static dependencies() {
-        return typeof module !== 'undefined' ? module.children : [];
-    }
+const CarouselMolecule = () => {
+    const carouselRef = useRef();
 
-    carousel = null;
+    const { Button, Carousel, Icon, Slide, Toggle } = useHookComponent(
+        'ReactiumUI',
+    );
 
-    state = {
+    const [carousel, setCarousel] = useState(carouselRef.current);
+
+    const [state, setState] = useDerivedState({
         autoplay: true,
         duration: 5,
         loop: true,
         speed: 0.25,
         startIndex: 0,
         swipeable: true,
+    });
+
+    const toggleAutoPlay = () => {
+        const { autoplay } = state;
+        setState({ autoplay: !autoplay });
     };
 
-    toggleAutoPlay() {
-        const { autoplay } = this.state;
-        this.setState({ autoplay: !autoplay });
-    }
+    const toggleLoop = () => {
+        const { loop } = state;
+        setState({ loop: !loop });
+    };
 
-    toggleLoop() {
-        const { loop } = this.state;
-        this.setState({ loop: !loop });
-    }
+    const toggleSwipeable = () => {
+        const { swipeable } = state;
+        setState({ swipeable: !swipeable });
+    };
 
-    toggleSwipeable() {
-        const { swipeable } = this.state;
-        this.setState({ swipeable: !swipeable });
-    }
+    useEffect(() => {
+        setCarousel(carouselRef.current);
+    }, [carouselRef.current]);
 
-    render() {
+    const render = () => {
         const {
             autoplay,
             duration,
@@ -56,35 +58,29 @@ class CarouselMolecule extends Component {
             speed,
             startIndex,
             swipeable,
-        } = this.state;
+        } = state;
 
         return (
             <>
-                <p className='pb-xs-20'>
-                    The Carousel component linearly cycles through{' '}
-                    <kbd>{'<Slide />'}</kbd> components. The children of the{' '}
-                    <kbd>{'<Slide />'}</kbd> components can be any renderable
-                    node.
-                </p>
                 <div className='flex-xs-center'>
                     <div className='col-xs-12 col-sm-3 col-lg-2 mb-xs-24'>
                         <Toggle
                             label='Autoplay'
                             checked={autoplay}
                             className='mb-xs-10'
-                            onChange={() => this.toggleAutoPlay()}
+                            onChange={() => toggleAutoPlay()}
                         />
                         <Toggle
                             label='Loop'
                             checked={loop}
                             className='mb-xs-10'
-                            onChange={() => this.toggleLoop()}
+                            onChange={() => toggleLoop()}
                         />
                         <Toggle
                             label='Swipeable'
                             checked={swipeable}
                             className='mb-xs-10'
-                            onChange={() => this.toggleSwipeable()}
+                            onChange={() => toggleSwipeable()}
                         />
                     </div>
                 </div>
@@ -97,7 +93,7 @@ class CarouselMolecule extends Component {
                         loop={loop}
                         startIndex={startIndex}
                         swipeable={swipeable}
-                        ref={elm => (this.carousel = elm)}>
+                        ref={carouselRef}>
                         <Slide>
                             <div className='bg-blue white p-xs-24 p-md-40 fullheight'>
                                 SLIDE - 0
@@ -149,78 +145,28 @@ class CarouselMolecule extends Component {
                 <div className='flex-center mt-xs-20'>
                     <div className='btn-group'>
                         <Button
-                            onClick={() => this.carousel.prev()}
+                            onClick={() => carousel.prev()}
                             size={Button.ENUMS.SIZE.XS}>
                             <Icon.Feather.ChevronLeft />
                         </Button>
                         <Button
-                            onClick={() => this.carousel.jumpTo(3)}
+                            onClick={() => carousel.jumpTo(3)}
                             size={Button.ENUMS.SIZE.SM}>
                             Slide - 3
                         </Button>
                         <Button
-                            onClick={() => this.carousel.next()}
+                            onClick={() => carousel.next()}
                             size={Button.ENUMS.SIZE.XS}>
                             <Icon.Feather.ChevronRight />
                         </Button>
                     </div>
                 </div>
-
-                <div className='hr mx--32' />
-
-                <h3 className='my-xs-20'>Import</h3>
-                <div className='ht' style={{ margin: '0 -25px' }}>
-                    <Code>
-                        {
-                            "import { Carousel, Slide } from '@atomic-reactor/reactium-ui';"
-                        }
-                    </Code>
-                </div>
-
-                <h3 className='my-xs-20'>Usage</h3>
-                <div className='ht' style={{ margin: '0 -25px' }}>
-                    <Code>
-                        {`<Carousel>
-                            <Slide>
-                                SLIDE - 0
-                            </Slide>
-                            <Slide>
-                                SLIDE - 1
-                            </Slide>
-                            <Slide>
-                                SLIDE - 2
-                            </Slide>
-                            <Slide>
-                                SLIDE - 3
-                            </Slide>
-                        </Carousel>`}
-                    </Code>
-                </div>
-
-                <h3 className='my-xs-20'>Properties</h3>
-                <div className='hr mx--32' />
-                <div className='ar-data-table'>
-                    <Properties />
-                </div>
-
-                <div className='hr mx--32' />
-
-                <h3 className='my-xs-20'>Methods</h3>
-                <div className='hr mx--32' />
-                <div className='ar-data-table'>
-                    <Methods />
-                </div>
-
-                <div className='hr mx--32' />
-                <h3 className='my-xs-20'>Events</h3>
-                <div className='hr mx--32' />
-                <div className='ar-data-table'>
-                    <Events />
-                </div>
             </>
         );
-    }
-}
+    };
+
+    return render();
+};
 
 // Default properties
 CarouselMolecule.defaultProps = {};

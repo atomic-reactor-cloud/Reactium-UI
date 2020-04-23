@@ -8,6 +8,7 @@ import Gradient from 'components/common-ui/Charts/utils/Gradient';
 import { VictoryAxis, VictoryChart, VictoryScatter } from 'victory';
 
 const ENUMS = {
+    COLORS: Colors,
     INTERPOLATION: {
         BASIS: 'basis',
         CARDINAL: 'cardinal',
@@ -35,6 +36,8 @@ const Chart = ({
     dotStyle,
     id,
     interpolation,
+    onClick,
+    onHover,
     tickCount,
     tickFormat,
     xAxis,
@@ -55,9 +58,75 @@ const Chart = ({
             data,
             interpolation,
             style,
+            name: 'dots',
         };
 
-        return <VictoryScatter {...dotProps} />;
+        const fill = {
+            hide: () => null,
+            show: props => ({
+                style: {
+                    ...style.data,
+                    fill: color,
+                },
+            }),
+            toggle: props =>
+                op.get(props, 'style.fill') === color ? hide() : show(),
+        };
+
+        const label = {
+            hide: () => null,
+            show: props => ({ text: Math.ceil(props.y) }),
+            toggle: props => (!op.get(props, 'text') ? show() : hide()),
+        };
+
+        const events = [
+            {
+                target: 'data',
+                eventHandlers: {
+                    onMouseOver: () => {
+                        return [
+                            {
+                                target: 'data',
+                                mutation: fill.show,
+                            },
+                            {
+                                target: 'labels',
+                                mutation: label.show,
+                            },
+                        ];
+                    },
+                    onMouseOut: () => {
+                        return [
+                            {
+                                target: 'data',
+                                mutation: fill.hide,
+                            },
+                            {
+                                target: 'labels',
+                                mutation: label.hide,
+                            },
+                        ];
+                    },
+                    onClick: () => {
+                        return [
+                            {
+                                target: 'data',
+                                mutation: props => {
+                                    if (typeof onClick === 'function') {
+                                        onClick(props);
+                                    }
+                                    return fill.show(props);
+                                },
+                            },
+                        ];
+                    },
+                },
+            },
+        ];
+
+        return (
+            <VictoryScatter {...dotProps} events={events} labels={() => null} />
+        );
     };
 
     const renderX = style => {
@@ -120,6 +189,8 @@ Chart.propTypes = {
     dotStyle: PropTypes.object,
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     interpolation: PropTypes.oneOf(Object.values(ENUMS.INTERPOLATION)),
+    onClick: PropTypes.func,
+    onHover: PropTypes.func,
     style: PropTypes.object,
     tickCount: PropTypes.number,
     tickFormat: PropTypes.func,
@@ -142,6 +213,10 @@ Chart.defaultProps = {
             stroke: Colors['color-blue'],
             strokeWidth: 2,
         },
+        labels: {
+            fontSize: 8,
+            fill: Colors['color-black'],
+        },
     },
     id: uuid(),
     interpolation: ENUMS.INTERPOLATION.CARDINAL,
@@ -150,9 +225,7 @@ Chart.defaultProps = {
     xAxis: true,
     xAxisStyle: {
         axis: { opacity: 0 },
-        axisLabel: {
-            fontSize: 9,
-        },
+        axisLabel: { fontSize: 9 },
         grid: { stroke: Colors['color-grey-light'], opacity: 0.75 },
         ticks: {
             stroke: Colors['color-grey-light'],
@@ -169,9 +242,7 @@ Chart.defaultProps = {
     yGrid: true,
     yAxisStyle: {
         axis: { opacity: 0 },
-        axisLabel: {
-            fontSize: 9,
-        },
+        axisLabel: { fontSize: 9 },
         grid: { stroke: Colors['color-grey-light'], opacity: 0.75 },
         ticks: {
             stroke: Colors['color-grey-light'],

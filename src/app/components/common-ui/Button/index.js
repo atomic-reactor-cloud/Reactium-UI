@@ -4,8 +4,6 @@ import ENUMS from './enums';
 import PropTypes from 'prop-types';
 import React, { forwardRef, useMemo } from 'react';
 
-ENUMS.LINK = ({ children, ...props }) => <a {...props}>{children}</a>;
-
 /**
  * -----------------------------------------------------------------------------
  * Functional Component: Button
@@ -82,38 +80,12 @@ let Button = (
             );
         }
 
-        switch (type) {
-            case ENUMS.TYPE.LINK:
-                return (
-                    <ENUMS.LINK className={cname()} style={s} {...elementProps}>
-                        {children}
-                    </ENUMS.LINK>
-                );
-
-            case ENUMS.TYPE.LABEL:
-                return (
-                    <button
-                        className={cname()}
-                        style={s}
-                        type='button'
-                        {...elementProps}
-                        ref={ref}>
-                        {children}
-                    </button>
-                );
-
-            default:
-                return (
-                    <button
-                        className={cname()}
-                        style={s}
-                        type={type}
-                        {...elementProps}
-                        ref={ref}>
-                        {children}
-                    </button>
-                );
-        }
+        const Element = ENUMS.ELEMENT[String(type).toUpperCase()];
+        return (
+            <Element className={cname()} {...elementProps} style={s} ref={ref}>
+                {children}
+            </Element>
+        );
     };
 
     return render();
@@ -133,7 +105,12 @@ Button.propTypes = {
     size: PropTypes.oneOf(Object.values(ENUMS.SIZE)),
     style: PropTypes.object,
     tabIndex: PropTypes.number,
-    type: PropTypes.oneOf(Object.values(ENUMS.TYPE)),
+    type: PropTypes.oneOf(
+        _.flatten([
+            Object.values(ENUMS.TYPE),
+            Object.values(ENUMS.TYPE).map(val => String(val).toLowerCase()),
+        ]),
+    ),
 };
 
 Button.defaultProps = {
