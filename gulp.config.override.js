@@ -15,5 +15,11 @@ module.exports = config => {
         'dest.colors',
         'src/app/components/common-ui/assets/style/_scss/_colors.scss',
     );
+
+    op.set(config, 'port', {
+        browsersync: 3070,
+        proxy: 3080,
+    });
+
     return config;
 };

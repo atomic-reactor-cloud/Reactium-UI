@@ -32,6 +32,7 @@ let Chart = (
     {
         children,
         color,
+        debug,
         data,
         dots,
         dotStyle,
@@ -49,6 +50,7 @@ let Chart = (
         yAxisStyle,
         yGrid,
         yLabel,
+        ...props
     },
     ref,
 ) => {
@@ -142,7 +144,13 @@ let Chart = (
             delete style.ticks;
         }
 
-        return <VictoryAxis label={xLabel} style={style} />;
+        const xProps = typeof xAxis !== 'boolean' ? xAxis : {};
+
+        if (debug === true) {
+            console.log('renderX', { xLabel, xProps });
+        }
+
+        return <VictoryAxis label={xLabel} style={style} {...xProps} />;
     };
 
     const renderY = style => {
@@ -155,6 +163,12 @@ let Chart = (
             delete style.ticks;
         }
 
+        const yProps = typeof yAxis !== 'boolean' ? yAxis : {};
+
+        if (debug === true) {
+            console.log('renderY', { yLabel, tickCount, tickFormat, yProps });
+        }
+
         return (
             <VictoryAxis
                 crossAxis
@@ -163,6 +177,7 @@ let Chart = (
                 style={style}
                 tickCount={tickCount}
                 tickFormat={tickFormat}
+                {...yProps}
             />
         );
     };
@@ -171,7 +186,7 @@ let Chart = (
         return (
             <>
                 <Gradient color={color} id={id} />
-                <VictoryChart ref={ref}>
+                <VictoryChart ref={ref} {...props}>
                     {renderX(xAxisStyle)}
                     {renderY(yAxisStyle)}
                     {children}
@@ -190,20 +205,22 @@ Chart.propTypes = {
     animate: PropTypes.bool,
     color: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     data: PropTypes.array,
+    debug: PropTypes.bool,
     dots: PropTypes.bool,
     dotStyle: PropTypes.object,
     id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     interpolation: PropTypes.oneOf(Object.values(ENUMS.INTERPOLATION)),
     onClick: PropTypes.func,
     onHover: PropTypes.func,
+    padding: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
     style: PropTypes.object,
     tickCount: PropTypes.number,
     tickFormat: PropTypes.func,
-    xAxis: PropTypes.bool,
+    xAxis: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
     xAxisStyle: PropTypes.object,
     xGrid: PropTypes.bool,
     xLabel: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    yAxis: PropTypes.bool,
+    yAxis: PropTypes.oneOfType([PropTypes.bool, PropTypes.object]),
     yAxisStyle: PropTypes.object,
     yGrid: PropTypes.bool,
     yLabel: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
@@ -211,6 +228,7 @@ Chart.propTypes = {
 
 Chart.defaultProps = {
     color: Colors['color-blue'],
+    debug: false,
     dots: false,
     dotStyle: {
         data: {
@@ -225,6 +243,7 @@ Chart.defaultProps = {
     },
     id: uuid(),
     interpolation: ENUMS.INTERPOLATION.CARDINAL,
+    padding: 50,
     tickFormat: t => Math.ceil(t),
     tickCount: 3,
     xAxis: true,
