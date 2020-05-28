@@ -464,6 +464,7 @@ let Dropdown = (
             uuid: id,
             iconField,
             labelField,
+            labelType,
             maxHeight,
             minHeight,
             selection = [],
@@ -507,7 +508,7 @@ let Dropdown = (
                                     <Button
                                         color={color}
                                         active={active}
-                                        type={Button.ENUMS.TYPE.LABEL}
+                                        type={labelType}
                                         data-index={i}
                                         data-instance={id}
                                         size={size}
@@ -596,6 +597,7 @@ Dropdown.propTypes = {
     filter: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     iconField: PropTypes.string,
     labelField: PropTypes.string,
+    labelType: PropTypes.oneOf(Object.values(Button.ENUMS.TYPE)),
     menuRenderer: PropTypes.func,
     multiSelect: PropTypes.bool,
     name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
@@ -633,6 +635,7 @@ Dropdown.defaultProps = {
     filter: null,
     iconField: 'icon',
     labelField: 'label',
+    labelType: Button.ENUMS.TYPE.BUTTON,
     name: uuid(),
     maxHeight: 167,
     menuRenderer: null,

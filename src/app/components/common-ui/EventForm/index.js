@@ -126,6 +126,7 @@ let EventForm = (initialProps, ref) => {
         onError,
         onSubmit,
         required,
+        throttleChanges: throttle,
         validator,
         value: initialValue,
         ...props
@@ -136,6 +137,7 @@ let EventForm = (initialProps, ref) => {
         error: null,
         status: ENUMS.STATUS.READY,
         ready: false,
+        throttleChanges: throttle,
     });
 
     const [value, setNewValue] = useState(initialValue || defaultValue || {});
@@ -264,20 +266,34 @@ let EventForm = (initialProps, ref) => {
         }
     };
 
-    const dispatchChange = ({ value: newValue, event = {} }) => {
+    const throttled = () => {
+        const { throttleChanges } = state;
+        if (throttleChanges === false) return false;
+        if (throttleChanges <= 0) return false;
+        return true;
+    };
+
+    const dispatchChange = (args = {}) => {
+        let newValue = op.get(args, 'value', getValue());
+        let event = op.get(args, 'event', {});
+
         if (unMounted()) return;
 
         newValue = newValue || getValue();
-
-        if (controlled !== true) {
-            setNewValue(newValue);
-        }
 
         const evt = new FormEvent('change', {
             target: formRef.current,
             element: op.get(event, 'target', formRef.current),
             value: newValue,
         });
+
+        if (controlled !== true) {
+            if (throttled() === true) {
+                setNewValue(newValue);
+            } else {
+                _.defer(setNewState, newValue);
+            }
+        }
 
         handle.dispatchEvent(evt);
         onChange(evt);
@@ -463,6 +479,12 @@ let EventForm = (initialProps, ref) => {
         if (e.target && !e.target.name) return;
 
         e.stopPropagation();
+
+        if (throttled() === false) {
+            dispatchChange();
+            return;
+        }
+
         queue(getValue(), e.target);
     };
 
@@ -565,8 +587,13 @@ let EventForm = (initialProps, ref) => {
 
     // Update handle on change
     useEffect(() => {
-        setHandle(_handle());
-    }, [formRef.current, state.count, state.errors, value]);
+        const newHandle = { ...handle };
+        op.set(newHandle, 'value', getValue());
+        op.set(newHandle, 'elements', getElements());
+        op.set(newHandle, 'error', op.get(state, 'error'));
+        op.set(newHandle, 'form', formRef.current);
+        setHandle(newHandle);
+    }, [formRef.current, state.count, state.errors, Object.values(value)]);
 
     // update value from props
     useEffect(() => {
@@ -592,20 +619,35 @@ let EventForm = (initialProps, ref) => {
     useEffect(() => {
         if (isEmpty()) return;
 
-        const { id } = temp.current;
-        Reactium.Pulse.register(`eventform-flush-${id}`, () => flush(), {
-            delay: 1000,
-            repeate: -1,
-        });
-        Reactium.Pulse.register(
-            `eventform-children-${id}`,
-            () => childWatch(),
-            { delay: 1, repeat: -1 },
-        );
-        return () => {
-            Reactium.Pulse.unregister(`eventform-flush-${id}`);
-            Reactium.Pulse.unregister(`eventform-children-${id}`);
+        const { throttleChanges } = state;
+
+        const watch = {
+            children: setInterval(() => childWatch(), 1),
+            flush: setInterval(() => flush(), throttleChanges),
         };
+
+        if (throttled() === true) {
+            clearInterval(watch.flush);
+        }
+
+        return () => {
+            Object.keys(watch).forEach(clearInterval);
+        };
+
+        // const { id } = temp.current;
+        // Reactium.Pulse.register(`eventform-flush-${id}`, () => flush(), {
+        //     delay: 1000,
+        //     repeat: -1,
+        // });
+        // Reactium.Pulse.register(
+        //     `eventform-children-${id}`,
+        //     () => childWatch(),
+        //     { delay: 1, repeat: -1 },
+        // );
+        // return () => {
+        //     Reactium.Pulse.unregister(`eventform-flush-${id}`);
+        //     Reactium.Pulse.unregister(`eventform-children-${id}`);
+        // };
     });
 
     // initial value change
@@ -645,6 +687,7 @@ EventForm.propTypes = {
     onChange: PropTypes.func,
     onError: PropTypes.func,
     onSubmit: PropTypes.func,
+    throttleChanges: PropTypes.oneOfType([PropTypes.bool, PropTypes.number]),
     value: PropTypes.object,
     validator: PropTypes.func,
 };
@@ -657,6 +700,7 @@ EventForm.defaultProps = {
     namespace: 'ar-event-form',
     onChange: noop,
     onError: noop,
+    throttleChanges: 1500,
     required: [],
     value: {},
 };
