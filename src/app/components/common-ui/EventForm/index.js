@@ -155,7 +155,6 @@ let EventForm = (initialProps, ref) => {
         newValue = clear === true ? newValue : { ...value, ...newValue };
 
         Object.entries(elements).forEach(([name, element]) => {
-            if (op.has(elements, 'taxonomy')) console.log(name, element);
             let val = op.get(newValue, name);
 
             if (Array.isArray(element)) {
