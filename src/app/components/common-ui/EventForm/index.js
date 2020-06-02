@@ -142,97 +142,67 @@ let EventForm = (initialProps, ref) => {
 
     const [value, setNewValue] = useState(initialValue || defaultValue || {});
 
+    const isToggle = type => ['checkbox', 'radio'].includes(type);
+
     // -------------------------------------------------------------------------
     // Functions
     // -------------------------------------------------------------------------
     const applyValue = async (newValue, clear = false) => {
         if (unMounted()) return;
         if (controlled === true || typeof newValue === 'undefined') return;
-
+        const elements = getElements();
+        if (clear === true) clearForm(elements);
         newValue = clear === true ? newValue : { ...value, ...newValue };
 
-        const { focus } = temp.current;
+        Object.entries(elements).forEach(([name, element]) => {
+            if (op.has(elements, 'taxonomy')) console.log(name, element);
+            let val = op.get(newValue, name);
 
-        const elements = _.flatten(
-            Object.values(getElements()).map(element => {
-                if (Array.isArray(element)) {
-                    return element;
-                } else {
-                    return [element];
-                }
-            }),
-        );
-
-        if (clear === true) {
-            Object.entries(elements).forEach(([, element]) => {
-                if (!element.name) return;
-                if (!element.type) return;
-
-                const type = element.type;
-
-                if (['checkbox', 'radio'].includes(type)) {
-                    element.checked = false;
-                    return;
-                }
-
-                if (type === 'select-multiple') {
-                    const ids = Object.keys(element.options).filter(
-                        key => !isNaN(key),
-                    );
-                    const options = ids.map(i => element.options[i]);
-                    options.forEach(option => (option.selected = false));
-                    return;
-                }
-
-                element.value = null;
-            });
-        }
-
-        Object.entries(elements).forEach(([, element]) => {
-            if (!element.name) return;
-            if (!element.type) return;
-            if (focus === element) return;
-
-            const name = element.name;
-            const type = element.type;
-            const defaultValue = op.get(element, 'defaultValue');
-            const val = op.get(newValue, name) || defaultValue;
-
-            if (Array.isArray(val)) {
-                // Checkbox & Radio
-                if (['checkbox', 'radio'].includes(type)) {
-                    if (isBoolean(val)) {
-                        element.checked = !!val;
+            if (Array.isArray(element)) {
+                element.forEach((elm, i) => {
+                    const type = elm.type;
+                    if (isToggle(type)) {
+                        // checkbox & radio
+                        elm.checked = _.flatten([val]).includes(elm.value);
                     } else {
-                        const v = !isNaN(element.value)
-                            ? Number(element.value)
-                            : element.value;
-                        element.checked = val.includes(v);
+                        elm.value = op.get(val, i, elm.defaultValue);
                     }
+                });
+            } else {
+                const type = element.type;
+                if (element.value === val) return;
+
+                if (isToggle(type)) {
+                    // checkbox & radio
+                    if (!val) {
+                        element.checked = element.defaultChecked;
+                        return;
+                    }
+
+                    element.checked = isBoolean(val)
+                        ? Boolean(val)
+                        : val === element.value;
+
+                    return;
                 }
 
-                // Select: Multiple
                 if (type === 'select-multiple') {
-                    const ids = Object.keys(element.options).filter(
-                        key => !isNaN(key),
-                    );
-                    const options = ids.map(i => element.options[i]);
+                    const options = Object.keys(element.options)
+                        .filter(key => !isNaN(key))
+                        .map(i => element.options[i]);
 
                     options.forEach(option => {
                         const v = !isNaN(option.value)
                             ? Number(option.value)
                             : option.value;
-                        option.selected = val.includes(v);
+                        option.selected = _.flatten([val]).includes(v);
                     });
-                }
-            } else {
-                if (element.value === val) return;
-                if (val) element.value = val;
 
-                if (isBoolean(val)) {
-                    element.value = true;
-                    element.checked = Boolean(val);
+                    return;
                 }
+
+                val = val || element.defaultValue;
+                element.value = val ? val : null;
             }
         });
 
@@ -242,6 +212,33 @@ let EventForm = (initialProps, ref) => {
         });
 
         handle.dispatchEvent(evt);
+    };
+
+    const clearForm = elements => {
+        elements = elements || getElements();
+        Object.entries(elements).forEach(([name, element]) =>
+            _.flatten([element]).forEach(elm => {
+                if (!elm.type) return;
+
+                const type = elm.type;
+
+                if (isToggle(type)) {
+                    elm.checked = false;
+                    return;
+                }
+
+                if (type === 'select-multiple') {
+                    const ids = Object.keys(elm.options).filter(
+                        key => !isNaN(key),
+                    );
+                    const options = ids.map(i => elm.options[i]);
+                    options.forEach(option => (option.selected = false));
+                    return;
+                }
+
+                elm.value = null;
+            }),
+        );
     };
 
     const cx = Reactium.Utils.cxFactory(namespace);
@@ -333,27 +330,21 @@ let EventForm = (initialProps, ref) => {
     const getElements = () => {
         if (unMounted()) return {};
 
-        const form = formRef.current;
-        const elements = form.elements;
-        const ids = Object.keys(elements).filter(key => !isNaN(key));
+        const elements = formRef.current.elements;
 
-        const elms = ids.reduce((obj, i) => {
-            const element = elements[i];
-            const name = element.getAttribute('name');
-
-            if (!name) return obj;
-
-            if (op.has(obj, name)) {
-                if (!Array.isArray(obj[name])) {
-                    obj[name] = [obj[name]];
-                }
-                obj[name].push(element);
-            } else {
-                obj[name] = element;
+        let elms = [];
+        for (const element of elements) {
+            if (element.type) {
+                const name = element.name || element.getAttribute('name');
+                if (name) elms.push({ name, element });
             }
+        }
 
-            return obj;
-        }, {});
+        elms = _.groupBy(elms, 'name');
+        Object.entries(elms).forEach(([key, val]) => {
+            val = _.pluck(val, 'element');
+            elms[key] = val.length > 1 ? val : val[0];
+        });
 
         return elms;
     };
