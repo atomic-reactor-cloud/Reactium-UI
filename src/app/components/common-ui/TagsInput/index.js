@@ -23,11 +23,13 @@ const ENUMS = {
         VERTICAL: 'vertical',
     },
     EVENT: {
+        ADD: 'add',
         BLUR: 'blur',
         CHANGE: 'change',
         ERROR: 'error',
         FOCUS: 'focus',
         INIT: 'init',
+        REMOVE: 'remove',
     },
 };
 
@@ -47,12 +49,14 @@ let TagsInput = (
         iWindow,
         name,
         namespace,
+        onAdd,
         onBlur,
         onChange,
         onError,
         onFocus,
         onKeyDown,
         onInit,
+        onRemove,
         sortable,
         validator,
         value,
@@ -183,14 +187,24 @@ let TagsInput = (
     };
 
     const _onRemove = index => {
-        if (index < 0) {
-            return;
-        }
+        if (index < 0) return;
 
         const value = _value();
         const list = Array.from(value);
+        const item = list[index];
         list.splice(index, 1);
         setState({ value: list, changed: Date.now(), backspace: false });
+
+        const evt = {
+            type: ENUMS.EVENT.REMOVE,
+            value: _value(),
+            item,
+            target: valueRef.current,
+        };
+
+        try {
+            onRemove(evt);
+        } catch (err) {}
 
         inputRef.current.focus();
     };
@@ -216,9 +230,10 @@ let TagsInput = (
         val = isNaN(val) ? val : Number(val);
 
         const isValid = validator(val, { state, ref });
+        let evt;
 
         if (isValid !== true) {
-            const evt = {
+            evt = {
                 type: ENUMS.EVENT.ERROR,
                 value: val,
                 error: isValid,
@@ -232,7 +247,19 @@ let TagsInput = (
         const value = _value();
         value.push(val);
 
+        evt = {
+            type: ENUMS.EVENT.ADD,
+            value: _value(),
+            item: val,
+            target: valueRef.current,
+        };
+
         setState({ value, changed: Date.now(), suggest: [], suggestIndex: -1 });
+
+        try {
+            onAdd(evt);
+        } catch (err) {}
+
         inputRef.current.value = '';
         inputRef.current.focus();
     };
@@ -557,12 +584,14 @@ TagsInput.propTypes = {
     formatter: PropTypes.func,
     namespace: PropTypes.string,
     sortable: PropTypes.bool,
+    onAdd: PropTypes.func,
     onBlur: PropTypes.func,
     onChange: PropTypes.func,
     onError: PropTypes.func,
     onFocus: PropTypes.func,
     onKeyDown: PropTypes.func,
     onInit: PropTypes.func,
+    onRemove: PropTypes.func,
     validator: PropTypes.func,
 };
 
@@ -572,12 +601,14 @@ TagsInput.defaultProps = {
     id: uuid(),
     formatter: value => value,
     namespace: 'ar-tags-input',
+    onAdd: noop,
     onBlur: noop,
     onChange: noop,
     onError: noop,
     onFocus: noop,
     onKeyDown: noop,
     onInit: noop,
+    onRemove: noop,
     sortable: false,
     validator: value => value.length > 0,
 };
