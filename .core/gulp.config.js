@@ -31,7 +31,9 @@ const defaultConfig = {
             'src/**/assets/style/*.scss',
             'src/**/assets/style/*.sass',
             '.core/components/Toolkit/style.scss',
-            '!src/**/assets/style/_plugin-assets.scss',
+            '!src/**/assets/style/_*.less',
+            '!src/**/assets/style/_*.scss',
+            '!src/**/assets/style/_*.sass',
         ],
         style: [
             'src/**/*.less',
@@ -88,6 +90,7 @@ const defaultConfig = {
         appdir: path.resolve(__dirname, 'src/app'),
         rootdir: path.resolve(__dirname),
         manifest: path.normalize(`${rootPath}/src/manifest.js`),
+        reactiumModules: path.normalize(`${rootPath}/reactium_modules`),
     },
     dest: {
         dist: 'public',
@@ -123,7 +126,7 @@ const defaultConfig = {
     },
     docs: {
         src: '.core,src/app,node_modules/@atomic-reactor',
-        dest: 'public/docs',
+        dest: ['public/docs', 'docs'],
         verbose: false,
     },
 };

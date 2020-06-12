@@ -67,9 +67,43 @@ const find = (searches = [], sourceMappings = [], searchParams = {}) => {
                 .map(p => path.resolve(path.dirname(p), 'package.json'))
                 .find(packagePath => fs.existsSync(packagePath));
 
-            Object.keys(
+            let modules = Object.keys(
                 op.get(require(packagePath), 'dependencies', {}),
-            ).forEach(mod => {
+            );
+
+            const reactiumModules = Object.keys(
+                op.get(require(packagePath), 'reactiumDependencies', {}),
+            );
+
+            // Special exception for reactium_modules dependencies, which will be considered
+            if (reactiumModules.length) {
+                const reactiumModuleDir = path.resolve(
+                    path.dirname(packagePath),
+                    'reactium_modules',
+                );
+                reactiumModules.forEach(reactiumModule => {
+                    const subPackage = path.resolve(
+                        reactiumModuleDir,
+                        reactiumModule,
+                        '_npm/package.json',
+                    );
+                    if (fs.existsSync(subPackage)) {
+                        modules = _.uniq(
+                            modules.concat(
+                                Object.keys(
+                                    op.get(
+                                        require(subPackage),
+                                        'dependencies',
+                                        {},
+                                    ),
+                                ),
+                            ),
+                        );
+                    }
+                });
+            }
+
+            modules.forEach(mod => {
                 let from;
                 try {
                     from = path.dirname(require.resolve(mod));
@@ -99,7 +133,8 @@ const find = (searches = [], sourceMappings = [], searchParams = {}) => {
             )
                 return;
 
-            searches.forEach(({ name, pattern, ignore }) => {
+            searches.forEach(search => {
+                const { name, pattern, ignore } = search;
                 if (ignore && isRegExp(ignore) && ignore.test(file)) return;
 
                 if (pattern.test(file)) {
@@ -111,14 +146,17 @@ const find = (searches = [], sourceMappings = [], searchParams = {}) => {
                         );
                     }
 
-                    file.replace(/\\/g, '/');
+                    normalized = normalized.replace(/\\/g, '/');
                     if (op.has(sourceMapping, 'from')) {
                         normalized = normalized.replace(
                             sourceMapping.from,
                             op.get(sourceMapping, 'to', sourceMapping.from),
                         );
                     }
-                    normalized = normalized.replace(fileObj.extension, '');
+
+                    if (op.get(search, 'stripExtension', true)) {
+                        normalized = normalized.replace(fileObj.extension, '');
+                    }
 
                     mappings[name].originals[normalized] = file;
                     mappings[name].imports.push(normalized);

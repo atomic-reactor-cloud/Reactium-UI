@@ -6,21 +6,23 @@ module.exports = {
         return `<!DOCTYPE html>
         <html>
             <head>
-                <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+                ${req.headTags}
                 ${req.styles}
             </head>
             <body>
-                <Component type="DevTools"></Component>
-                <div id="router"></div>
+                ${req.headerScripts}
+                ${req.appBindings}
 
                 <script>
                     window.ssr = false;
                     window.defines = ${serialize(defines)};
                     window.restAPI = '/api';
-                    window.parseAppId = '${parseAppId}';
+                    window.actiniumAppId = '${actiniumAppId}';
+                    ${req.appGlobals}
                 </script>
                 ${req.scripts}
+                ${req.appAfterScripts}
             </body>
         </html>`;
-    }
+    },
 };

@@ -70,6 +70,11 @@ module.exports = config => {
         ),
     );
     plugins.push(
+        new webpack.ContextReplacementPlugin(/^reactium_modules/, context => {
+            context.request = path.resolve('./reactium_modules');
+        }),
+    );
+    plugins.push(
         new webpack.ContextReplacementPlugin(
             /reactium-translations$/,
             context => {
@@ -147,6 +152,8 @@ module.exports = config => {
                         /\.core\/.cli\//,
                         /\.cli/,
                         /src\/app\/server/,
+                        /arcli-install.js$/,
+                        /reactium-boot.js$/,
                     ],
                     use: [
                         {

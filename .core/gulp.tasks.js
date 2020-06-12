@@ -2,6 +2,7 @@
 
 const del = require('del');
 const fs = require('fs-extra');
+const op = require('object-path');
 const path = require('path');
 const globby = require('globby');
 const webpack = require('webpack');
@@ -47,10 +48,25 @@ const reactium = (gulp, config, webpackConfig) => {
         }
     };
 
+    // PORT setup:
+    let port = config.port.proxy;
+    let pvar = op.get(process.env, 'PORT_VAR', false);
+
+    if (pvar) {
+        port = op.get(process.env, pvar, port);
+    } else {
+        port = op.get(process.env, 'APP_PORT', port);
+        port = op.get(process.env, 'PORT', port);
+    }
+    port = Number(port);
+
     // Update config from environment variables
-    config.port.browsersync = process.env.hasOwnProperty('APP_PORT')
-        ? Number(process.env.APP_PORT)
-        : Number(config.port.browsersync);
+    config.port.proxy = port;
+
+    // Update config from environment variables
+    config.port.browsersync = Number(
+        op.get(process.env, 'BROWSERSYNC_PORT', config.port.browsersync),
+    );
 
     const noop = done => done();
 
@@ -94,25 +110,25 @@ const reactium = (gulp, config, webpackConfig) => {
     };
 
     const serve = ({ open } = { open: config.open }) => done => {
-        // Serve locally
-        // Delay to allow server time to start
+        const proxy = `localhost:${config.port.proxy}`;
+        require('axios')
+            .get(`http://${proxy}`)
+            .then(() => {
+                browserSync({
+                    notify: false,
+                    timestamps: true,
+                    logPrefix: '00:00:00',
+                    port: config.port.browsersync,
+                    ui: { port: config.port.browsersync + 1 },
+                    proxy,
+                    open: open,
+                    ghostMode: false,
+                    startPath: config.dest.startPath,
+                    ws: true,
+                });
 
-        setTimeout(() => {
-            browserSync({
-                notify: false,
-                timestamps: true,
-                logPrefix: '00:00:00',
-                port: config.port.browsersync,
-                ui: { port: config.port.browsersync + 1 },
-                proxy: `localhost:${config.port.proxy}`,
-                open: open,
-                ghostMode: false,
-                startPath: config.dest.startPath,
-                ws: true,
+                done();
             });
-
-            done();
-        }, 5000);
     };
 
     const watch = (done, restart = false) => {
@@ -213,6 +229,7 @@ const reactium = (gulp, config, webpackConfig) => {
 
     const build = gulp.series(
         task('preBuild'),
+        task('ensureReactiumModules'),
         task('clean'),
         task('manifest'),
         gulp.parallel(task('markup'), task('json')),
@@ -229,7 +246,7 @@ const reactium = (gulp, config, webpackConfig) => {
         if (!isDev) done();
 
         const arcliBin = path.resolve(
-            path.dirname(require.resolve('atomic-reactor-cli')),
+            path.dirname(require.resolve('@atomic-reactor/cli')),
             'arcli.js',
         );
         const args = [
@@ -252,6 +269,11 @@ const reactium = (gulp, config, webpackConfig) => {
         done();
     };
 
+    const ensureReactiumModules = done => {
+        fs.ensureDirSync(config.src.reactiumModules);
+        done();
+    };
+
     const defaultTask = env === 'development' ? task('watch') : task('build');
 
     const json = () =>
@@ -260,6 +282,8 @@ const reactium = (gulp, config, webpackConfig) => {
     const manifest = gulp.series(
         gulp.parallel(task('mainManifest'), task('umdManifest')),
     );
+
+    const umd = gulp.series(task('umdManifest'), task('umdLibraries'));
 
     const mainManifest = done => {
         // Generate manifest.js file
@@ -566,10 +590,7 @@ $assets: (
         gulpwatch(config.watch.assets, watcher);
         const scriptWatcher = gulp.watch(
             config.watch.js,
-            gulp.parallel(
-                task('manifest'),
-                gulp.series(task('umdManifest'), task('umdLibraries')),
-            ),
+            gulp.parallel(task('manifest')),
         );
         done();
     };
@@ -585,10 +606,12 @@ $assets: (
         postBuild: noop,
         postServe: noop,
         clean,
+        ensureReactiumModules,
         default: defaultTask,
         json,
         manifest,
         mainManifest,
+        umd,
         umdManifest,
         umdLibraries,
         markup,

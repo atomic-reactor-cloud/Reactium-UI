@@ -111,7 +111,10 @@ let EventForm = (initialProps, ref) => {
     // Refs
     // -------------------------------------------------------------------------
     const formRef = useRef();
-    const temp = useRef({ changes: [], id: uuid(), focus: null });
+    const temp = useRef({
+        id: uuid(),
+        watch: {},
+    });
 
     // -------------------------------------------------------------------------
     // State
@@ -140,7 +143,15 @@ let EventForm = (initialProps, ref) => {
         throttleChanges: throttle,
     });
 
-    const [value, setNewValue] = useState(initialValue || defaultValue || {});
+    const valueRef = useRef(initialValue || defaultValue || {});
+    const value = valueRef.current;
+    const setNewValue = newValue => {
+        if (unMounted()) return;
+        newValue = newValue === null ? {} : newValue;
+        Object.entries(newValue).forEach(([key, val]) =>
+            op.set(valueRef.current, key, val),
+        );
+    };
 
     const isToggle = type => ['checkbox', 'radio'].includes(type);
 
@@ -204,13 +215,6 @@ let EventForm = (initialProps, ref) => {
                 element.value = val ? val : null;
             }
         });
-
-        const evt = new FormEvent('apply-values', {
-            target: formRef.current,
-            value: newValue,
-        });
-
-        handle.dispatchEvent(evt);
     };
 
     const clearForm = elements => {
@@ -262,19 +266,11 @@ let EventForm = (initialProps, ref) => {
         }
     };
 
-    const throttled = () => {
-        const { throttleChanges } = state;
-        if (throttleChanges === false) return false;
-        if (throttleChanges <= 0) return false;
-        return true;
-    };
-
-    const dispatchChange = (args = {}) => {
-        let newValue = op.get(args, 'value', getValue());
-        let event = op.get(args, 'event', {});
-
+    const _dispatchChange = (args = {}) => {
         if (unMounted()) return;
 
+        let event = op.get(args, 'event', {});
+        let newValue = op.get(args, 'value', getValue());
         newValue = newValue || getValue();
 
         const evt = new FormEvent('change', {
@@ -283,40 +279,15 @@ let EventForm = (initialProps, ref) => {
             value: newValue,
         });
 
-        if (controlled !== true) {
-            if (throttled() === true) {
-                setNewValue(newValue);
-            } else {
-                _.defer(setNewState, newValue);
-            }
-        }
+        if (controlled !== true) setNewValue(newValue);
 
         handle.dispatchEvent(evt);
         onChange(evt);
     };
 
-    const flush = () => {
-        if (unMounted()) return;
-        if (temp.current.changes.length < 1) return;
-
-        // squash changes
-        let event = {};
-        let newValue = {};
-
-        temp.current.changes.forEach(item => {
-            const { target, value } = item;
-
-            op.set(event, 'target', target);
-
-            Object.entries(value).forEach(([key, val]) => {
-                op.set(newValue, key, val);
-            });
-        });
-
-        dispatchChange({ value: newValue, event });
-        temp.current.changes = [];
-        temp.current.focus = null;
-    };
+    const dispatchChange = _.throttle(_dispatchChange, state.throttleChanges, {
+        leading: false,
+    });
 
     const focus = name => {
         if (unMounted()) return;
@@ -392,12 +363,6 @@ let EventForm = (initialProps, ref) => {
         return empty;
     };
 
-    const queue = (value, target) => {
-        if (!op.get(temp, 'current.changes')) temp.current.changes = [];
-        temp.current.changes.push({ target, value });
-        temp.current.focus = target;
-    };
-
     const setCount = count => {
         setState({ count });
     };
@@ -414,7 +379,14 @@ let EventForm = (initialProps, ref) => {
 
     const setValue = newValue => {
         if (unMounted()) return;
-        if (newValue === null) applyValue(newValue, true);
+        if (newValue === null) {
+            applyValue(newValue, true);
+        } else {
+            applyValue(newValue);
+        }
+
+        setNewValue(newValue);
+
         dispatchChange({ value: newValue, event: formRef.current });
     };
 
@@ -465,17 +437,11 @@ let EventForm = (initialProps, ref) => {
     // Event Handlers
     // -------------------------------------------------------------------------
     const _onChange = e => {
+        if (!e.target.name) return;
         if (unMounted()) return;
-        if (e.target && !e.target.name) return;
-
         e.stopPropagation();
-
-        if (throttled() === false) {
-            dispatchChange();
-            return;
-        }
-
-        queue(getValue(), e.target);
+        //applyValue();
+        dispatchChange();
     };
 
     const _onSubmit = async e => {
@@ -607,37 +573,17 @@ let EventForm = (initialProps, ref) => {
 
     // change flush
     useEffect(() => {
-        if (isEmpty()) return;
-
-        const { throttleChanges } = state;
-
-        const watch = {
-            children: setInterval(() => childWatch(), 1),
-            flush: setInterval(() => flush(), throttleChanges),
-        };
-
-        if (throttled() === true) {
-            clearInterval(watch.flush);
+        if (op.get(temp.current, 'watch.children')) {
+            clearInterval(temp.current.watch.children);
         }
 
-        return () => {
-            Object.keys(watch).forEach(clearInterval);
+        temp.current['watch'] = {
+            children: setInterval(() => childWatch(), 1),
         };
 
-        // const { id } = temp.current;
-        // Reactium.Pulse.register(`eventform-flush-${id}`, () => flush(), {
-        //     delay: 1000,
-        //     repeat: -1,
-        // });
-        // Reactium.Pulse.register(
-        //     `eventform-children-${id}`,
-        //     () => childWatch(),
-        //     { delay: 1, repeat: -1 },
-        // );
-        // return () => {
-        //     Reactium.Pulse.unregister(`eventform-flush-${id}`);
-        //     Reactium.Pulse.unregister(`eventform-children-${id}`);
-        // };
+        return () => {
+            Object.keys(temp.current.watch).forEach(clearInterval);
+        };
     });
 
     // initial value change

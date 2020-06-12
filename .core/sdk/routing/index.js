@@ -31,6 +31,9 @@ class Routing {
         if (typeof cb === 'function') {
             const id = uuid();
             this.subscriptions[id] = cb;
+
+            // initial callback
+            cb();
             return () => {
                 delete this.subscriptions[id];
             };
@@ -100,8 +103,9 @@ Reactium.Plugin.register('myPlugin').then(() => {
     Reactium.Reducer.register('myPlugin', myReducer);
 })
      */
-    register(route = {}) {
+    async register(route = {}) {
         route.id = uuid();
+        await Hook.run('register-route', route);
         this.routes.push(route);
         this._update();
         return route.id;
