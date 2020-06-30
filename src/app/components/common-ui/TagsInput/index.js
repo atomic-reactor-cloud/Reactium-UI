@@ -7,12 +7,16 @@ import { Feather } from 'components/common-ui/Icon';
 import { Scrollbars } from 'react-custom-scrollbars';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
+import {
+    useDerivedState,
+    useIsContainer,
+} from '@atomic-reactor/reactium-sdk-core';
+
 import React, {
     forwardRef,
     useEffect,
     useImperativeHandle,
     useRef,
-    useState,
 } from 'react';
 
 const noop = () => {};
@@ -45,8 +49,6 @@ let TagsInput = (
         direction,
         editable,
         id,
-        iDocument,
-        iWindow,
         name,
         namespace,
         onAdd,
@@ -67,7 +69,13 @@ let TagsInput = (
     // Refs
     const containerRef = useRef();
     const inputRef = useRef();
-    const stateRef = useRef({
+    const suggestRef = useRef();
+    const valueRef = useRef();
+
+    const isContainer = useIsContainer();
+
+    // State
+    const [state, setState] = useDerivedState({
         prevState: {},
         data,
         dismissable: true,
@@ -81,22 +89,10 @@ let TagsInput = (
         value,
         ...props,
     });
-    const suggestRef = useRef();
-    const valueRef = useRef();
-
-    // State
-    const [state, setNewState] = useState(stateRef.current);
-
-    // Internal Interface
-    const setState = newState => {
-        const prevState = { ...stateRef.current };
-        stateRef.current = { prevState, ...stateRef.current, ...newState };
-        setNewState(stateRef.current);
-    };
 
     const _onArrowKey = e => {
         if (e.keyCode === 40 || e.keyCode === 38 || e.keyCode === 9) {
-            const { suggest = [], suggestIndex = -1 } = stateRef.current;
+            const { suggest = [], suggestIndex = -1 } = state;
             if (suggestIndex >= suggest.length - 1 && e.keyCode === 9) {
                 setState({ dismissable: true });
                 setTimeout(_suggestHide, 1);
@@ -121,7 +117,7 @@ let TagsInput = (
     };
 
     const _onChange = () => {
-        const { initialized } = stateRef.current;
+        const { initialized } = state;
 
         const evt = {
             type: ENUMS.EVENT.CHANGE,
@@ -131,7 +127,7 @@ let TagsInput = (
 
         // Trigger onInit() instead of onChange on first load.
         if (initialized !== true) {
-            stateRef.current.initialized = true;
+            state.initialized = true;
             evt.type = ENUMS.EVENT.INIT;
             onInit(evt);
             return;
@@ -152,7 +148,6 @@ let TagsInput = (
         }
 
         if (type === ENUMS.EVENT.BLUR) {
-            setTimeout(_suggestHide, 1);
             onBlur(e);
         }
     };
@@ -177,7 +172,7 @@ let TagsInput = (
         }
 
         if (e.keyCode === 9) {
-            const { suggest = [] } = stateRef.current;
+            const { suggest = [] } = state;
             if (suggest.length > 0) {
                 _onArrowKey(e);
             }
@@ -227,9 +222,11 @@ let TagsInput = (
     };
 
     const _addTag = val => {
+        val = _.isObject(val) ? op.get(val, 'value') : val;
         val = isNaN(val) ? val : Number(val);
 
         const isValid = validator(val, { state, ref });
+
         let evt;
 
         if (isValid !== true) {
@@ -258,14 +255,16 @@ let TagsInput = (
 
         try {
             onAdd(evt);
-        } catch (err) {}
+        } catch (err) {
+            console.log(err);
+        }
 
         inputRef.current.value = '';
         inputRef.current.focus();
     };
 
     const _index = () => {
-        const { data = [] } = stateRef.current;
+        const { data = [] } = state;
 
         if (data.length > 0) {
             const index = data.map((item, i) => {
@@ -293,29 +292,16 @@ let TagsInput = (
         }
     };
 
-    const _isChild = child => {
-        if (!child) {
-            return true;
-        }
-
-        const parent = containerRef.current;
-        let node = child.parentNode;
-        while (node !== null) {
-            if (node == parent) {
-                return true;
-            }
-            node = node.parentNode;
-        }
-        return false;
-    };
+    const _isChild = child => isContainer(child, containerRef.current);
 
     const _search = search => {
         if (!search || String(search).length < 2) {
             setState({ suggest: [] });
+            _suggestHide();
             return;
         }
 
-        const { index } = stateRef.current;
+        const { index } = state;
 
         if (!index) {
             setState({ suggest: [] });
@@ -340,14 +326,14 @@ let TagsInput = (
             return;
         }
 
-        setTimeout(_suggestHide, 1);
+        _suggestHide();
     };
 
     const _suggestFocus = inc => {
         if (!suggestRef.current) return;
 
         _suggestShow();
-        let { suggest = [], suggestIndex = -1 } = stateRef.current;
+        let { suggest = [], suggestIndex = -1 } = state;
 
         const selector = `.${namespace}-suggest-btn`;
         const btns = suggestRef.current.querySelectorAll(selector);
@@ -367,8 +353,7 @@ let TagsInput = (
 
     const _suggestHide = () => {
         if (!suggestRef.current) return;
-
-        const { dismissable = false } = stateRef.current;
+        const { dismissable = false } = state;
 
         if (dismissable === true) {
             suggestRef.current.style.display = 'none';
@@ -382,7 +367,7 @@ let TagsInput = (
     };
 
     const _value = value => {
-        value = value || op.get(stateRef.current, 'value', []) || [];
+        value = value || op.get(state, 'value', []) || [];
         return Array.isArray(value) ? value : JSON.parse(value);
     };
 
@@ -392,14 +377,14 @@ let TagsInput = (
     useImperativeHandle(ref, () => ({
         container: containerRef.current,
         setState,
-        state: stateRef.current,
+        state: state,
         value: _value(),
     }));
 
     // Renderers
     const renderTag = (label, index) => (
         <span key={`${namespace}-tag-${index}`} className={`${namespace}-tag`}>
-            <span className='label'>{stateRef.current.formatter(label)}</span>
+            <span className='label'>{state.formatter(label)}</span>
             {editable && !props.disabled && !props.readOnly && (
                 <button type='button' onClick={() => _onRemove(index)}>
                     <Feather.X />
@@ -422,9 +407,7 @@ let TagsInput = (
                         [`${namespace}-tag`]: true,
                         dragging: snapshot.isDragging,
                     })}>
-                    <span className='label'>
-                        {stateRef.current.formatter(label)}
-                    </span>
+                    <span className='label'>{state.formatter(label)}</span>
                     {editable && !props.disabled && !props.readOnly && (
                         <button type='button' onClick={() => _onRemove(index)}>
                             <Feather.X />
@@ -436,7 +419,7 @@ let TagsInput = (
     );
 
     const renderSuggestions = () => {
-        const { suggest = [] } = stateRef.current;
+        const { suggest = [] } = state;
 
         return (
             <div className={`${namespace}-suggest`} ref={suggestRef}>
@@ -454,7 +437,10 @@ let TagsInput = (
                                         onKeyDown={_onArrowKey}
                                         className={`${namespace}-suggest-btn`}
                                         onClick={() =>
-                                            _addTag(item.value || item)
+                                            _addTag(
+                                                item.value || item,
+                                                'suggest',
+                                            )
                                         }>
                                         {item.label || item}
                                     </button>
@@ -525,7 +511,7 @@ let TagsInput = (
     };
 
     const render = () => {
-        const { focus = false } = stateRef.current;
+        const { focus = false } = state;
 
         const cname = cn({
             [className]: !!className,
@@ -535,13 +521,15 @@ let TagsInput = (
 
         return (
             <>
-                <input
-                    type='hidden'
-                    id={id}
-                    name={name}
-                    value={_valueString()}
-                    ref={valueRef}
-                />
+                {name && (
+                    <input
+                        type='hidden'
+                        id={id}
+                        name={name}
+                        value={_valueString()}
+                        ref={valueRef}
+                    />
+                )}
                 <div ref={containerRef} className={cname}>
                     {renderTags()}
                 </div>
@@ -564,14 +552,16 @@ let TagsInput = (
     useEffect(() => setState(props), Object.values(props));
 
     useEffect(() => {
-        const doc = iDocument || document;
+        if (!containerRef.current || typeof window === 'undefined') return;
 
-        doc.addEventListener('mouseup', _suggestDismiss);
+        window.addEventListener('mouseup', _suggestDismiss);
+        window.addEventListener('touchend', _suggestDismiss);
 
-        return function cleanup() {
-            doc.removeEventListener('mouseup', _suggestDismiss);
+        return () => {
+            window.removeEventListener('mouseup', _suggestDismiss);
+            window.removeEventListener('touchend', _suggestDismiss);
         };
-    });
+    }, [containerRef.current]);
 
     return render();
 };

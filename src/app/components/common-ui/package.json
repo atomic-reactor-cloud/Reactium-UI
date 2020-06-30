@@ -1,6 +1,6 @@
 {
   "name": "@atomic-reactor/reactium-ui",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "main": "index.js",
   "author": "Reactium LLC",
   "dependencies": {
@@ -21,7 +21,7 @@
     "victory": "^32.3.0"
   },
   "peerDependencies": {
-    "@atomic-reactor/reactium-sdk-core": "^0.0.69"
+    "@atomic-reactor/reactium-sdk-core": "^0.0.71"
   },
   "repository": {
     "url": "https://github.com/atomic-reactor-cloud/Reactium-UI",
