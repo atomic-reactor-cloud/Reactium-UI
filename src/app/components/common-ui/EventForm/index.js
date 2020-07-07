@@ -148,6 +148,12 @@ let EventForm = (initialProps, ref) => {
     const setNewValue = newValue => {
         if (unMounted()) return;
         newValue = newValue === null ? {} : newValue;
+
+        // cleanup value ref
+        Object.keys(valueRef.current).forEach(key => {
+            if (!newValue || !(key in newValue)) op.del(valueRef.current, key);
+        });
+
         Object.entries(newValue).forEach(([key, val]) =>
             op.set(valueRef.current, key, val),
         );
@@ -397,8 +403,8 @@ let EventForm = (initialProps, ref) => {
         if (unMounted()) return;
 
         const clear = isClearSignal(newValue);
-        applyValue(newValue, clear);
         setNewValue(newValue);
+        applyValue(newValue, clear);
         dispatchChange({
             value: clear ? {} : newValue,
             event: formRef.current,
@@ -553,7 +559,8 @@ let EventForm = (initialProps, ref) => {
     });
 
     useEffect(() => {
-        if (state.ready === true) applyValue(value, true);
+        if (state.ready === true && state.count > 0)
+            applyValue(valueRef.current);
     }, [state.count]);
 
     // Update handle on change
@@ -572,7 +579,7 @@ let EventForm = (initialProps, ref) => {
         if (initialValue === undefined || _.isEqual(value, initialValue))
             return;
 
-        applyValue(initialValue);
+        setValue(initialValue);
         dispatchChange({ value: initialValue });
     }, [initialValue]);
 
