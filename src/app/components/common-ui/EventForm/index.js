@@ -155,15 +155,31 @@ let EventForm = (initialProps, ref) => {
 
     const isToggle = type => ['checkbox', 'radio'].includes(type);
 
+    // applyValue called in number of useEffects
+    // can async override call on form.setValue(null)
+    // interpret clear, null, or {} as a clear
+    const isClearSignal = (newValue, clear = false) =>
+        clear === true ||
+        newValue === null ||
+        (typeof newValue === 'object' && Object.keys(newValue).length === 0);
+
     // -------------------------------------------------------------------------
     // Functions
     // -------------------------------------------------------------------------
     const applyValue = async (newValue, clear = false) => {
+        // double-check for clear signal because of useEffects
+        clear = isClearSignal(newValue, clear);
+
         if (unMounted()) return;
         if (controlled === true || typeof newValue === 'undefined') return;
         const elements = getElements();
-        if (clear === true) clearForm(elements);
-        newValue = clear === true ? newValue : { ...value, ...newValue };
+
+        if (clear) {
+            clearForm(elements);
+            newValue = null;
+        } else {
+            newValue = { ...value, ...newValue };
+        }
 
         Object.entries(elements).forEach(([name, element]) => {
             let val = op.get(newValue, name);
@@ -379,15 +395,14 @@ let EventForm = (initialProps, ref) => {
 
     const setValue = newValue => {
         if (unMounted()) return;
-        if (newValue === null) {
-            applyValue(newValue, true);
-        } else {
-            applyValue(newValue);
-        }
 
+        const clear = isClearSignal(newValue);
+        applyValue(newValue, clear);
         setNewValue(newValue);
-
-        dispatchChange({ value: newValue, event: formRef.current });
+        dispatchChange({
+            value: clear ? {} : newValue,
+            event: formRef.current,
+        });
     };
 
     const unMounted = () => !formRef.current;
@@ -553,7 +568,11 @@ let EventForm = (initialProps, ref) => {
 
     // update value from props
     useEffect(() => {
-        if (_.isEqual(value, initialValue)) return;
+        // ignore when would result in no change or when undefined
+        if (initialValue === undefined || _.isEqual(value, initialValue))
+            return;
+
+        applyValue(initialValue);
         dispatchChange({ value: initialValue });
     }, [initialValue]);
 
@@ -585,11 +604,6 @@ let EventForm = (initialProps, ref) => {
             Object.keys(temp.current.watch).forEach(clearInterval);
         };
     });
-
-    // initial value change
-    useEffect(() => {
-        if (!_.isEqual(value, initialValue)) applyValue(initialValue);
-    }, [Object.values(initialValue)]);
 
     // -------------------------------------------------------------------------
     // Render
@@ -638,7 +652,7 @@ EventForm.defaultProps = {
     onError: noop,
     throttleChanges: 1500,
     required: [],
-    value: {},
+    value: undefined,
 };
 
 export { EventForm, EventForm as default, FormEvent };
