@@ -45,6 +45,8 @@ const getRows = ({
             <Row key={`${id}-row-${i}`} selectable={selectable}>
                 {selectable === true && (
                     <Column
+                        i={i + 1}
+                        field={`${id}-row-col-select`}
                         key={`${id}-row-col-select`}
                         className={`${namespace}-select`}
                         width={30}
@@ -70,13 +72,18 @@ const getRows = ({
                     delete col.label;
 
                     return (
-                        <Column key={`${id}-row-${i}-col-${key}`} {...col}>
+                        <Column
+                            key={`${id}-row-${i}-col-${key}`}
+                            {...col}
+                            i={i + 1}>
                             {value}
                         </Column>
                     );
                 })}
                 {reorderable === true && (
                     <Column
+                        i={i + 1}
+                        field={`${id}-row-col-handle`}
                         provided={provided}
                         verticalAlign={ENUMS.VERTICAL_ALIGN.MIDDLE}
                         style={{ padding: 0, order: -1 }}

@@ -3,12 +3,7 @@
  * Imports
  * -----------------------------------------------------------------------------
  */
-
-import Sass from './Sass';
-import Events from './Events';
-import Methods from './Methods';
 import Code from 'toolkit/Code';
-import Properties from './Properties';
 
 import moment from 'moment';
 import op from 'object-path';
@@ -72,7 +67,7 @@ class DataTableMolecule extends Component {
 
     next = () => this.table.nextPage();
 
-    onChange = e =>
+    onChange = () =>
         this.setState({ page: this.table.page, pages: this.table.pages });
 
     prev = () => this.table.prevPage();
@@ -140,17 +135,16 @@ class DataTableMolecule extends Component {
 
         return (
             <DataTable
-                reorderable={false}
+                reorderable={true}
                 multiselect={true}
                 selectable={true}
-                sortable={false}
+                sortable={true}
                 scrollable={false}
                 sort={DataTable.ENUMS.SORT.DESC}
                 sortBy='name'
                 ref={elm => (this.table = elm)}
                 columns={columns}
                 data={data}
-                rowsPerPage={4}
                 footer={this.renderFooter()}
                 header={this.renderHeader({ title, search, tableData })}
                 onChange={this.onChange}

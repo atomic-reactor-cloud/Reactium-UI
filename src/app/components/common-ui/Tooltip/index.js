@@ -11,8 +11,9 @@ import React, {
     useImperativeHandle,
     useLayoutEffect as useWindowEffect,
     useRef,
-    useState,
 } from 'react';
+
+import { useDerivedState } from '@atomic-reactor/reactium-sdk-core';
 
 const noop = () => {};
 
@@ -28,29 +29,13 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
     // Refs
     const bodyRef = useRef();
     const containerRef = useRef();
-    const stateRef = useRef({
+
+    const [state, setState] = useDerivedState({
         timer: null,
         ...props,
     });
 
-    // State
-    const [, setNewState] = useState(stateRef.current);
-
-    // Internal Interface
-    const setState = newState => {
-        // Get the previous state
-
-        // Update the stateRef
-        stateRef.current = {
-            ...stateRef.current,
-            ...newState,
-        };
-
-        // Trigger useEffect()
-        setNewState(stateRef.current);
-    };
-
-    const getPosition = ({ align, verticalAlign, element, e }) => {
+    const getPosition = ({ align, verticalAlign, element }) => {
         let x = 0,
             y = 0;
 
@@ -92,17 +77,26 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         return { x: Math.floor(x), y: Math.floor(y) };
     };
 
+    const unMounted = () => !containerRef.current;
+
     const hide = e => {
+        if (unMounted()) return;
+
         const { autohide } = e;
         const element = e.target;
         const { tooltip } = element.dataset;
 
         if (tooltip) {
-            let { timer } = stateRef.current;
+            let { timer } = state;
 
             if (timer) {
                 clearTimeout(timer);
                 timer = null;
+            }
+
+            if (!autohide) {
+                element.removeEventListener('mouseleave', hide);
+                element.removeEventListener('focus', hide);
             }
 
             setState({
@@ -112,11 +106,6 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
                 verticalAlign:
                     props.verticalAlign || Tooltip.defaultProps.verticalAlign,
             });
-
-            if (!autohide) {
-                element.removeEventListener('mouseleave', hide);
-                element.removeEventListener('focus', hide);
-            }
 
             onHide({ event: ENUMS.EVENT.HIDE, target: e.target, ref });
         }
@@ -147,7 +136,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             autohide: defaultAutohide,
             timer,
             verticalAlign: defaultVerticalAlign,
-        } = stateRef.current;
+        } = state;
 
         if (timer) {
             clearTimeout(timer);
@@ -210,7 +199,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         hide,
         setState,
         show,
-        state: stateRef.current,
+        state: state,
     }));
 
     // Side Effects
@@ -223,7 +212,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
         win.addEventListener('mouseover', show);
 
         return () => {
-            const { timer } = stateRef.current;
+            const { timer } = state;
             if (timer) {
                 clearTimeout(timer);
             }
@@ -251,7 +240,7 @@ let Tooltip = ({ onHide, onShow, ...props }, ref) => {
             namespace,
             verticalAlign = ENUMS.VERTICAL_ALIGN.CENTER,
             visible = false,
-        } = stateRef.current;
+        } = state;
 
         const cname = cn({
             [className]: !!className,

@@ -13,7 +13,6 @@ const Heading = ({
     onClick = noop,
     sort,
     sortable,
-    sortBy,
     sortType,
     ...props
 }) => {
@@ -38,6 +37,7 @@ const Heading = ({
 
     return (
         <Column
+            field={field}
             title={
                 canSort ? `Sort by ${String(label).toLowerCase()} ${dir}` : null
             }

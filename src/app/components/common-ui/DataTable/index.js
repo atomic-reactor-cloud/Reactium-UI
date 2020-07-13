@@ -22,8 +22,9 @@ import React, {
     useEffect,
     useImperativeHandle,
     useRef,
-    useState,
 } from 'react';
+
+import { useDerivedState } from '@atomic-reactor/reactium-sdk-core';
 
 const noop = () => {};
 
@@ -47,8 +48,6 @@ let DataTable = (
         footer,
         header,
         onChange,
-        onDrop,
-        onDropOut,
         onSelect,
         onSort,
         onUnSelect,
@@ -58,33 +57,15 @@ let DataTable = (
     ref,
 ) => {
     // Refs
-    let contentRef;
     const containerRef = useRef();
     const scrollBarRef = useRef();
-    const stateRef = useRef({
+    // State
+    const [state, setState] = useDerivedState({
         ...props,
         reorderable,
         ...applyReorderProp(reorderable),
         updated: Date.now(),
     });
-
-    // State
-    const [state, setNewState] = useState(stateRef.current);
-
-    // Internal Interface
-    const setState = newState => {
-        if (op.get(newState, 'reorderable') === true) {
-            applyReorder(true);
-            return;
-        }
-
-        if (op.has(newState, 'data')) {
-            stateRef.current['updated'] = Date.now();
-        }
-
-        stateRef.current = { ...stateRef.current, ...newState };
-        setNewState(stateRef.current);
-    };
 
     const defaultFilter = (item, i, data, search) => {
         const { ids } = search;
@@ -102,9 +83,9 @@ let DataTable = (
             sort,
             sortable,
             sortBy,
-        } = stateRef.current;
+        } = state;
 
-        search = search || op.get(stateRef, 'current.search');
+        search = search || op.get(state, 'search');
 
         if (search) {
             // Data types to index
@@ -168,7 +149,7 @@ let DataTable = (
     };
 
     const getPages = () => {
-        const { rowsPerPage = -1 } = stateRef.current;
+        const { rowsPerPage = -1 } = state;
 
         if (rowsPerPage < 1) {
             return 1;
@@ -181,7 +162,7 @@ let DataTable = (
     };
 
     const getSelection = () => {
-        const { page, rowsPerPage } = stateRef.current;
+        const { page, rowsPerPage } = state;
         const limit = Math.max(0, rowsPerPage);
         const idx = page > 1 ? page * limit - limit : 0;
         const temp = getData();
@@ -191,7 +172,7 @@ let DataTable = (
     };
 
     const nextPage = () => {
-        const { page: currPage = 1 } = stateRef.current;
+        const { page: currPage = 1 } = state;
         const page = Math.min(currPage + 1, getPages());
 
         if (currPage !== page) {
@@ -200,7 +181,7 @@ let DataTable = (
     };
 
     const prevPage = () => {
-        const { page: currPage = 1 } = stateRef.current;
+        const { page: currPage = 1 } = state;
         const page = Math.max(1, currPage - 1);
 
         if (currPage !== page) {
@@ -209,7 +190,7 @@ let DataTable = (
     };
 
     const applyReorder = e => {
-        const { data, deleteOnDropOut, onDrop, onDropOut } = stateRef.current;
+        const { data, deleteOnDropOut, onDrop, onDropOut } = state;
 
         const startIndex = op.get(e, 'source.index');
         const endIndex = op.get(e, 'destination.index');
@@ -246,7 +227,7 @@ let DataTable = (
 
     const toggleItem = ({ checked, index, silent = false }) => {
         const data = getData();
-        const { multiselect } = stateRef.current;
+        const { multiselect } = state;
         const item = data[index];
 
         if (item) {
@@ -279,7 +260,6 @@ let DataTable = (
     };
 
     const onToggle = e => {
-        const data = getData();
         let { index = -1 } = e.target.dataset;
         index = Number(index);
 
@@ -301,19 +281,19 @@ let DataTable = (
         container: containerRef.current,
         data: getData(),
         nextPage,
-        page: stateRef.current.page,
+        page: state.page,
         pages: getPages(),
         prevPage,
         props,
-        search: stateRef.current.search,
+        search: state.search,
         selection: getSelection(),
         setState,
-        state: stateRef.current,
+        state: state,
     }));
 
     // Side Effects
     useEffect(() => {
-        const { page } = stateRef.current;
+        const { page } = state;
 
         if (page > getPages()) {
             setState({ page: 1 });
@@ -321,15 +301,11 @@ let DataTable = (
 
         onChange({
             type: ENUMS.EVENT.CHANGE,
-            page: stateRef.current.page,
+            page: state.page,
             pages: getPages(),
             data: getData(),
         });
-    }, [
-        op.get(stateRef.current, 'data'),
-        op.get(stateRef.current, 'page'),
-        op.get(props, 'data'),
-    ]);
+    }, [op.get(state, 'data'), op.get(state, 'page'), op.get(props, 'data')]);
 
     useEffect(() => {
         setState({ data: op.get(props, 'data') });
@@ -340,7 +316,7 @@ let DataTable = (
     }, [op.get(props, 'columns')]);
 
     const setContentRef = elm => {
-        const { height, scrollable } = stateRef.current;
+        const { height, scrollable } = state;
         if (elm && !scrollable) {
             if (height !== elm.offsetHeight) {
                 setState({ height: elm.offsetHeight });
@@ -352,19 +328,13 @@ let DataTable = (
         const {
             children,
             className,
-            columns,
             height,
             id,
             namespace,
-            reorderable,
-            rowsPerPage,
             scrollable,
             selectable,
-            sort,
-            sortable,
-            sortBy,
             style,
-        } = stateRef.current;
+        } = state;
 
         const data = getData();
 
@@ -372,11 +342,11 @@ let DataTable = (
             <div ref={elm => setContentRef(elm)}>
                 {children}
                 <Rows
-                    {...stateRef.current}
+                    {...state}
                     onReorder={applyReorder}
                     data={data}
                     selection={getSelection()}
-                    state={stateRef.current}
+                    state={state}
                     onToggle={onToggle}
                 />
             </div>
@@ -395,7 +365,7 @@ let DataTable = (
                 <Header namespace={namespace}>{header}</Header>
                 <Headings
                     data={data}
-                    {...stateRef.current}
+                    {...state}
                     onClick={applySort}
                     onToggleAll={onToggleAll}
                 />
