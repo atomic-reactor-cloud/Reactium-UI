@@ -23,10 +23,6 @@ const AreaChartMolecule = props => {
     );
 };
 
-AreaChartMolecule.dependencies = () => {
-    return typeof module !== 'undefined' ? model.children : [];
-};
-
 // Default properties
 AreaChartMolecule.defaultProps = {
     data: [
